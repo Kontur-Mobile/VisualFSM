@@ -1,0 +1,92 @@
+apply plugin: 'maven-publish'
+//apply plugin: 'signing'
+
+if (!project.tasks.findByName('sourcesJar')) {
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
+        if (pluginManager.hasPlugin('com.android.library')) {
+            from android.sourceSets.main.java.srcDirs
+        } else {
+            from sourceSets.main.java.srcDirs
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                def secureProperties = new Properties()
+                def securePropertiesFile = rootProject.file('secure.properties')
+                secureProperties.load(new FileInputStream(securePropertiesFile))
+
+                def releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                def snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                url = version.toString().endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+                credentials {
+                    username = secureProperties.sonatypeUserName
+                    password = secureProperties.sonatypeUserPassword
+                }
+            }
+        }
+
+        if (!pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+            publications {
+                release(MavenPublication) {
+                    if (pluginManager.hasPlugin('com.android.library')) {
+                        from components.release
+                    } else {
+                        from components.java
+                    }
+                    artifact sourcesJar
+                    artifactId = project.name
+                }
+            }
+        }
+
+        publications.all {
+            pom.withXml {
+                def root = asNode()
+
+                root.children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+
+                    description "VisualFSM - Kotlin Multiplatform library for FSM with visualization and analysis tools."
+                    name project.name
+                    url "https://github.com/Kontur-Mobile/visualfsm"
+                    licenses {
+                        license {
+                            name "The Apache Software License, Version 2.0"
+                            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    scm {
+                        url "https://github.com/Kontur-Mobile/visualfsm"
+                        connection "scm:git:git://github.com/Kontur-Mobile/visualfsm.git"
+                        developerConnection "scm:git:git://github.com/Kontur-Mobile/visualfsm.git"
+                    }
+                    developers {
+                        developer {
+                            id "skbkontur"
+                            name "SKB Kontur"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+//    signing {
+//        if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+//            publishing.publications.all {
+//                sign it
+//            }
+//        } else {
+//            sign publishing.publications.release
+//        }
+//    }
+}
