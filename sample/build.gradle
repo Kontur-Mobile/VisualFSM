@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(':multiplatform')
-    testImplementation project(':tools')
+    implementation project(':visualfsm-core')
+    testImplementation project(':visualfsm-tools')
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'

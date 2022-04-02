@@ -1,10 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'java'
-    id 'maven-publish'
 }
 
-group = 'ru.kontur.mobile.visualfsm-tools'
+group = 'ru.kontur.mobile.visualfsm'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -12,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    implementation project(':multiplatform')
-    implementation project(':rx')
+    implementation project(':visualfsm-core')
+    implementation project(':visualfsm-rx')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

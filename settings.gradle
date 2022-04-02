@@ -1,3 +1,2 @@
-include ':multiplatform', ':rx', ':sample', ':sample-rx'
-include 'tools'
+include ':visualfsm-core', ':visualfsm-rx', ':visualfsm-tools', ':sample', ':sample-rx'
 
