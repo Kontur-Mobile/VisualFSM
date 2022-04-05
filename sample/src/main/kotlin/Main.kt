@@ -5,7 +5,7 @@ import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 
 fun main() {
-    val demoFSMFeature = DemoFSMFeature(object :TransitionCallbacks<AuthFSMState> {
+    val demoFSMFeature = DemoFSMFeature(object : TransitionCallbacks<AuthFSMState> {
         override fun onActionLaunched(action: Action<AuthFSMState>, currentState: AuthFSMState) {
             println("onActionLaunched\naction=$action\ncurrentState=$currentState")
         }
@@ -41,4 +41,3 @@ fun main() {
 
     println("Demo FSM sample end")
 }
-

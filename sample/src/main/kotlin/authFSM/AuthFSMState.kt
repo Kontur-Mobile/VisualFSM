@@ -16,6 +16,11 @@ sealed class AuthFSMState : State {
         val errorMessage: String = ""
     ) : AuthFSMState()
 
+    data class ConfirmationRequested(
+        val mail: String,
+        val password: String
+    ) : AuthFSMState()
+
     sealed class AsyncWorkState : AuthFSMState() {
         data class Checking(
             val mail: String,

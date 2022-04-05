@@ -5,16 +5,16 @@ import authFSM.AuthFSMTransition
 
 class StartRegistration : AuthFSMAction() {
     inner class OnRegistrationStart :
-        AuthFSMTransition<Registration, AsyncWorkState.Registering>(
+        AuthFSMTransition<Registration, ConfirmationRequested>(
             Registration::class,
-            AsyncWorkState.Registering::class
+            ConfirmationRequested::class
         ) {
         override fun predicate(state: Registration): Boolean {
             return state.password == state.repeatedPassword
         }
 
-        override fun transform(state: Registration): AsyncWorkState.Registering {
-            return AsyncWorkState.Registering(state.mail, state.password)
+        override fun transform(state: Registration): ConfirmationRequested {
+            return ConfirmationRequested(state.mail, state.password)
         }
     }
 

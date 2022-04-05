@@ -6,6 +6,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import ru.kontur.mobile.visualfsm.AsyncWorker
 import authFSM.AuthFSMState.*
+import authFSM.actions.HandleAuthResult
+import authFSM.actions.HandleRegistrationResult
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
     private val scope = CoroutineScope(Dispatchers.Default);
@@ -18,8 +20,22 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
                     return@collect
                 }
                 when (state) {
-                    is AsyncWorkState.Checking -> authInteractor.check(state.mail, state.password)
-                    is AsyncWorkState.Registering -> authInteractor.register(state.mail, state.password)
+                    is AsyncWorkState.Checking -> {
+                        executeIfNotExist(state) {
+                            launch {
+                                val result = authInteractor.check(state.mail, state.password)
+                                proceed(HandleAuthResult(result))
+                            }
+                        }
+                    }
+                    is AsyncWorkState.Registering -> {
+                        executeIfNotExist(state) {
+                            launch {
+                                val result = authInteractor.register(state.mail, state.password)
+                                proceed(HandleRegistrationResult(result))
+                            }
+                        }
+                    }
                 }
             }
         }
