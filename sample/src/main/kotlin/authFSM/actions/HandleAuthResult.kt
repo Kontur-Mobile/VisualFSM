@@ -6,51 +6,51 @@ import authFSM.AuthResult
 
 class HandleAuthResult(val result: AuthResult) : AuthFSMAction() {
 
-    inner class OnSuccess :
-        AuthFSMTransition<AsyncWorkState.Checking, UserAuthorized>(
-            AsyncWorkState.Checking::class,
+    inner class Success :
+        AuthFSMTransition<AsyncWorkState.Authenticating, UserAuthorized>(
+            AsyncWorkState.Authenticating::class,
             UserAuthorized::class
         ) {
-        override fun predicate(state: AsyncWorkState.Checking): Boolean {
+        override fun predicate(state: AsyncWorkState.Authenticating): Boolean {
             return result == AuthResult.SUCCESS
         }
 
-        override fun transform(state: AsyncWorkState.Checking): UserAuthorized {
+        override fun transform(state: AsyncWorkState.Authenticating): UserAuthorized {
             return UserAuthorized(state.mail)
         }
     }
 
-    inner class OnBadCredential :
-        AuthFSMTransition<AsyncWorkState.Checking, Login>(
-            AsyncWorkState.Checking::class,
+    inner class BadCredential :
+        AuthFSMTransition<AsyncWorkState.Authenticating, Login>(
+            AsyncWorkState.Authenticating::class,
             Login::class
         ) {
-        override fun predicate(state: AsyncWorkState.Checking): Boolean {
+        override fun predicate(state: AsyncWorkState.Authenticating): Boolean {
             return result == AuthResult.BAD_CREDENTIAL
         }
 
-        override fun transform(state: AsyncWorkState.Checking): Login {
+        override fun transform(state: AsyncWorkState.Authenticating): Login {
             return Login(state.mail, state.password, "Bad credential")
         }
     }
 
-    inner class OnConnectionFailed :
-        AuthFSMTransition<AsyncWorkState.Checking, Login>(
-            AsyncWorkState.Checking::class,
+    inner class ConnectionFailed :
+        AuthFSMTransition<AsyncWorkState.Authenticating, Login>(
+            AsyncWorkState.Authenticating::class,
             Login::class
         ) {
-        override fun predicate(state: AsyncWorkState.Checking): Boolean {
+        override fun predicate(state: AsyncWorkState.Authenticating): Boolean {
             return result == AuthResult.NO_INTERNET
         }
 
-        override fun transform(state: AsyncWorkState.Checking): Login {
+        override fun transform(state: AsyncWorkState.Authenticating): Login {
             return Login(state.mail, state.password, "No internet")
         }
     }
 
     override val transitions = listOf(
-        OnSuccess(),
-        OnBadCredential(),
-        OnConnectionFailed(),
+        Success(),
+        BadCredential(),
+        ConnectionFailed(),
     )
 }

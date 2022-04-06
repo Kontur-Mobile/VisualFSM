@@ -3,13 +3,13 @@ package authFSM.actions
 import authFSM.AuthFSMState.*
 import authFSM.AuthFSMTransition
 
-class HandleConfirmation(val confirm: Boolean) : AuthFSMAction() {
-    inner class OnConfirm :
+class HandleConfirmation(val confirmed: Boolean) : AuthFSMAction() {
+    inner class Confirm :
         AuthFSMTransition<ConfirmationRequested, AsyncWorkState.Registering>(
             ConfirmationRequested::class, AsyncWorkState.Registering::class
         ) {
         override fun predicate(state: ConfirmationRequested): Boolean {
-            return confirm
+            return confirmed
         }
 
         override fun transform(state: ConfirmationRequested): AsyncWorkState.Registering {
@@ -17,12 +17,12 @@ class HandleConfirmation(val confirm: Boolean) : AuthFSMAction() {
         }
     }
 
-    inner class OnCancel :
+    inner class Cancel :
         AuthFSMTransition<ConfirmationRequested, Registration>(
             ConfirmationRequested::class, Registration::class
         ) {
         override fun predicate(state: ConfirmationRequested): Boolean {
-            return !confirm
+            return !confirmed
         }
 
         override fun transform(state: ConfirmationRequested): Registration {
@@ -31,7 +31,7 @@ class HandleConfirmation(val confirm: Boolean) : AuthFSMAction() {
     }
 
     override val transitions = listOf(
-        OnConfirm(),
-        OnCancel(),
+        Confirm(),
+        Cancel(),
     )
 }

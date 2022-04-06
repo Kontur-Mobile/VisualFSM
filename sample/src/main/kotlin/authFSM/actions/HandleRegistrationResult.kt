@@ -6,7 +6,7 @@ import authFSM.RegistrationResult
 
 class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction() {
 
-    inner class OnSuccess :
+    inner class Success :
         AuthFSMTransition<AsyncWorkState.Registering, Login>(
             AsyncWorkState.Registering::class,
             Login::class
@@ -20,7 +20,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class OnBadCredential :
+    inner class BadCredential :
         AuthFSMTransition<AsyncWorkState.Registering, Registration>(
             AsyncWorkState.Registering::class,
             Registration::class
@@ -34,7 +34,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class OnConnectionFailed :
+    inner class ConnectionFailed :
         AuthFSMTransition<AsyncWorkState.Registering, Registration>(
             AsyncWorkState.Registering::class,
             Registration::class
@@ -49,8 +49,8 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
     }
 
     override val transitions = listOf(
-        OnSuccess(),
-        OnBadCredential(),
-        OnConnectionFailed(),
+        Success(),
+        BadCredential(),
+        ConnectionFailed(),
     )
 }

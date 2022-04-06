@@ -4,7 +4,7 @@ import authFSM.AuthFSMState.*
 import authFSM.AuthFSMTransition
 
 class StartRegistration : AuthFSMAction() {
-    inner class OnRegistrationStart :
+    inner class RegistrationStart :
         AuthFSMTransition<Registration, ConfirmationRequested>(
             Registration::class,
             ConfirmationRequested::class
@@ -18,7 +18,7 @@ class StartRegistration : AuthFSMAction() {
         }
     }
 
-    inner class OnValidationFailed :
+    inner class ValidationFailed :
         AuthFSMTransition<Registration, Registration>(
             Registration::class,
             Registration::class
@@ -38,7 +38,7 @@ class StartRegistration : AuthFSMAction() {
     }
 
     override val transitions = listOf(
-        OnRegistrationStart(),
-        OnValidationFailed(),
+        RegistrationStart(),
+        ValidationFailed(),
     )
 }

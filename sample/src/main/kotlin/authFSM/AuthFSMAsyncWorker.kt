@@ -20,7 +20,7 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
                     return@collect
                 }
                 when (state) {
-                    is AsyncWorkState.Checking -> {
+                    is AsyncWorkState.Authenticating -> {
                         executeIfNotExist(state) {
                             launch {
                                 val result = authInteractor.check(state.mail, state.password)
