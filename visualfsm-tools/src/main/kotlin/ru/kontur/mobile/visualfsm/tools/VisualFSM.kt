@@ -19,7 +19,7 @@ object VisualFSM {
         baseTransitionClass: KClass<out Transition<*, *>>,
         baseState: KClass<out State>,
         initialState: KClass<out State>,
-        useTransitionName: Boolean = false,
+        useTransitionName: Boolean = true,
     ): String {
         val result = StringBuilder()
 
@@ -27,7 +27,11 @@ object VisualFSM {
 
         result.appendLine("\"${initialState.qualifiedName!!.substringAfterLast("${baseState.simpleName}.")}\"")
 
-        getEdgeListGraph(baseActionClass, baseTransitionClass, useTransitionName).forEach { (fromStateName, toStateName, edgeName) ->
+        getEdgeListGraph(
+            baseActionClass,
+            baseTransitionClass,
+            useTransitionName
+        ).forEach { (fromStateName, toStateName, edgeName) ->
             // Пробел перед названием action'а нужен для аккуратного отображения
             result.appendLine(
                 "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
@@ -37,7 +41,7 @@ object VisualFSM {
         }
 
         getUnreachableStates(baseActionClass, baseTransitionClass, baseState, initialState).forEach {
-            result.appendLine("\"$it\" [color=\"red\"]")
+            result.appendLine("\"${it.simpleStateNameWithSealedName(baseState)}\" [color=\"red\"]")
         }
 
         result.appendLine("}\n")
@@ -62,8 +66,10 @@ object VisualFSM {
             val transactions = actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
 
             transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments.first().type?.classifier as KClass<out State>
-                val toState = transitionKClass.supertypes.first().arguments.last().type?.classifier as KClass<out State>
+                val fromState = transitionKClass.supertypes.first().arguments
+                    .first().type?.classifier as KClass<out State>
+                val toState = transitionKClass.supertypes.first().arguments
+                    .last().type?.classifier as KClass<out State>
 
                 val nameFromEdgeAnnotation = transitionKClass.findAnnotation<Edge>()?.name
 
@@ -179,8 +185,10 @@ object VisualFSM {
             val transactions = actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
 
             transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments.first().type!!.classifier as KClass<out State>
-                val toState = transitionKClass.supertypes.first().arguments.last().type!!.classifier as KClass<out State>
+                val fromState = transitionKClass.supertypes.first().arguments
+                    .first().type!!.classifier as KClass<out State>
+                val toState = transitionKClass.supertypes.first().arguments
+                    .last().type!!.classifier as KClass<out State>
 
                 graph[fromState]?.add(toState)
             }

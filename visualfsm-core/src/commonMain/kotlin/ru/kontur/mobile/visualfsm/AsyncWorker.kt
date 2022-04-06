@@ -30,7 +30,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Запускает асинхронную операцию [stateToLaunch], если нет активной с эквивалентным state.
      * Приоритет выполняющейся операции с эквивалентным state.
      */
-    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit) {
+    protected fun executeIfNotExist(stateToLaunch: STATE, func: () -> Job) {
         if (launchedAsyncStateContinuation?.isActive == true && stateToLaunch == launchedAsyncState) {
             return
         }
@@ -42,7 +42,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Запускает асинхронную операцию [stateToLaunch], если есть активная операция - отписываемся от результата старой операции.
      * Приоритет новой операции.
      */
-    protected fun executeAndDisposeExist(stateToLaunch: STATE, func: suspend () -> Unit) {
+    protected fun executeAndDisposeExist(stateToLaunch: STATE, func: () -> Job) {
         launchedAsyncState = stateToLaunch
         launchedAsyncStateContinuation?.cancel()
         launchedAsyncStateContinuation = mainScope.launch { func() }
