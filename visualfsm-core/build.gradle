@@ -26,6 +26,10 @@ kotlin {
             }
         }
     }
+    iosArm32()
+    iosArm64()
+    iosX64()
+
     def hostOs = System.getProperty("os.name")
     def isMingwX64 = hostOs.startsWith("Windows")
     def nativeTarget
