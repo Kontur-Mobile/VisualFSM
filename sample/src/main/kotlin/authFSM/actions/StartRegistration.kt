@@ -3,7 +3,7 @@ package authFSM.actions
 import authFSM.AuthFSMState.*
 import authFSM.AuthFSMTransition
 
-class StartRegistration : AuthFSMAction() {
+class StartRegistration(val mail: String, val password: String) : AuthFSMAction() {
     inner class RegistrationStart :
         AuthFSMTransition<Registration, ConfirmationRequested>(
             Registration::class,

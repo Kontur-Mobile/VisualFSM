@@ -3,7 +3,7 @@ package authFSM.actions
 import authFSM.AuthFSMState.*
 import authFSM.AuthFSMTransition
 
-class Authenticate() : AuthFSMAction() {
+class Authenticate(val mail: String, val password: String) : AuthFSMAction() {
     inner class AuthenticationStart :
         AuthFSMTransition<Login, AsyncWorkState.Authenticating>(
             Login::class,

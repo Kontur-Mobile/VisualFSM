@@ -10,7 +10,7 @@ import authFSM.actions.HandleAuthResult
 import authFSM.actions.HandleRegistrationResult
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    private val scope = CoroutineScope(Dispatchers.Default);
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     override fun initSubscription(states: Flow<AuthFSMState>): Job {
         return scope.launch {
