@@ -29,6 +29,7 @@ kotlin {
     iosArm32()
     iosArm64()
     iosX64()
+    iosSimulatorArm64()
 
     def hostOs = System.getProperty("os.name")
     def isMingwX64 = hostOs.startsWith("Windows")
@@ -42,7 +43,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
             }
         }
         commonTest {

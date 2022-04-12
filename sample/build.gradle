@@ -14,7 +14,7 @@ dependencies {
     implementation project(':visualfsm-core')
     testImplementation project(':visualfsm-tools')
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 
