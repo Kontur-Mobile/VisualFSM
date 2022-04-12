@@ -16,6 +16,5 @@ class AuthFeature(callbacks: TransitionCallbacks<AuthFSMState>) :
 
     fun registration(mail: String, password: String) {
         proceed(StartRegistration(mail, password))
-        proceed(HandleConfirmation(true))
     }
 }
