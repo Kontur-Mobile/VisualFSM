@@ -4,7 +4,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 
 abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
-    private val mainScope = CoroutineScope(Dispatchers.Default)
+    protected abstract val taskScope: CoroutineScope
+    protected abstract val subscriptionScope: CoroutineScope
     private lateinit var store: Store<STATE, ACTION>
     private var launchedAsyncState: STATE? = null
     private var subscriptionContinuation: Job? = null
@@ -12,7 +13,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
     fun bind(store: Store<STATE, ACTION>) {
         this.store = store
-        subscriptionContinuation = initSubscription(store.observeState())
+        subscriptionContinuation = subscriptionScope.launch { initSubscription(store.observeState()) }
     }
 
     fun unbind() {
@@ -20,7 +21,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
         subscriptionContinuation?.cancel()
     }
 
-    abstract fun initSubscription(states: Flow<STATE>): Job
+    abstract suspend fun initSubscription(states: Flow<STATE>)
 
     fun proceed(action: ACTION) {
         store.proceed(action)
@@ -30,7 +31,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Запускает асинхронную операцию [stateToLaunch], если нет активной с эквивалентным state.
      * Приоритет выполняющейся операции с эквивалентным state.
      */
-    protected fun executeIfNotExist(stateToLaunch: STATE, func: () -> Job) {
+    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit) {
         if (launchedAsyncStateContinuation?.isActive == true && stateToLaunch == launchedAsyncState) {
             return
         }
@@ -42,10 +43,10 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Запускает асинхронную операцию [stateToLaunch], если есть активная операция - отписываемся от результата старой операции.
      * Приоритет новой операции.
      */
-    protected fun executeAndDisposeExist(stateToLaunch: STATE, func: () -> Job) {
+    protected fun executeAndDisposeExist(stateToLaunch: STATE, func: suspend () -> Unit) {
         launchedAsyncState = stateToLaunch
         launchedAsyncStateContinuation?.cancel()
-        launchedAsyncStateContinuation = mainScope.launch { func() }
+        launchedAsyncStateContinuation = taskScope.launch { func() }
     }
 
     /**

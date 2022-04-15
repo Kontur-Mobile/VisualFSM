@@ -10,31 +10,26 @@ import authFSM.actions.HandleAuthResult
 import authFSM.actions.HandleRegistrationResult
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    private val scope = CoroutineScope(Dispatchers.Default)
+    override val taskScope = CoroutineScope(Dispatchers.IO)
+    override val subscriptionScope = CoroutineScope(Dispatchers.Default)
 
-    override fun initSubscription(states: Flow<AuthFSMState>): Job {
-        return scope.launch {
-            states.collect { state ->
-                if (state !is AsyncWorkState) {
-                    dispose()
-                    return@collect
-                }
-                when (state) {
-                    is AsyncWorkState.Authenticating -> {
-                        executeIfNotExist(state) {
-                            launch {
-                                val result = authInteractor.check(state.mail, state.password)
-                                proceed(HandleAuthResult(result))
-                            }
-                        }
+    override suspend fun initSubscription(states: Flow<AuthFSMState>) {
+        states.collect { state ->
+            if (state !is AsyncWorkState) {
+                dispose()
+                return@collect
+            }
+            when (state) {
+                is AsyncWorkState.Authenticating -> {
+                    executeIfNotExist(state) {
+                        val result = authInteractor.check(state.mail, state.password)
+                        proceed(HandleAuthResult(result))
                     }
-                    is AsyncWorkState.Registering -> {
-                        executeIfNotExist(state) {
-                            launch {
-                                val result = authInteractor.register(state.mail, state.password)
-                                proceed(HandleRegistrationResult(result))
-                            }
-                        }
+                }
+                is AsyncWorkState.Registering -> {
+                    executeIfNotExist(state) {
+                        val result = authInteractor.register(state.mail, state.password)
+                        proceed(HandleRegistrationResult(result))
                     }
                 }
             }
