@@ -20,16 +20,19 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
-                def secureProperties = new Properties()
-                def securePropertiesFile = rootProject.file('secure.properties')
-                secureProperties.load(new FileInputStream(securePropertiesFile))
-
-                def releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                def snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                url = version.toString().endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
-                credentials {
-                    username = secureProperties.sonatypeUserName
-                    password = secureProperties.sonatypeUserPassword
+                if(file('secure.properties').exists()) {
+                    def securePropertiesFile = rootProject.file('secure.properties')
+                    def secureProperties = new Properties()
+                    secureProperties.load(new FileInputStream(securePropertiesFile))
+                    def releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    def snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                    url = version.toString().endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+                    credentials {
+                        username = secureProperties.sonatypeUserName
+                        password = secureProperties.sonatypeUserPassword
+                    }
+                }else {
+                    println("File secure.properties is not exist. Only local maven publishing available.")
                 }
             }
         }
