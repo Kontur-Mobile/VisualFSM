@@ -1,9 +1,24 @@
 package ru.kontur.mobile.visualfsm
 
+/**
+ * Is an input object for the State machine.
+ * The [action][Action] chooses [transition][Transition] and performs it
+ */
 interface Action<STATE : State> {
 
+    /**
+     * Must hold every [Transition] declared inside [Action]
+     */
     val transitions: List<Transition<out STATE, out STATE>>
 
+    /**
+     * Selects and starts a [transition][Transition].
+     * Calls [transition callbacks][TransitionCallbacks] methods.
+     *
+     * @param oldState current [state][State]
+     * @param callbacks [transition callbacks][TransitionCallbacks]
+     * @return [new state][State]
+     */
     fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>): STATE {
         callbacks.onActionLaunched(this, oldState)
 
@@ -33,6 +48,9 @@ interface Action<STATE : State> {
     private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
         (transitions as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
 
-    private fun isCorrectTransition(transition: Transition<STATE, STATE>, oldState: STATE): Boolean =
+    private fun isCorrectTransition(
+        transition: Transition<STATE, STATE>,
+        oldState: STATE
+    ): Boolean =
         (transition.fromState == oldState::class) && transition.predicate(oldState)
 }

@@ -12,7 +12,9 @@ import kotlin.reflect.full.findAnnotation
 object VisualFSM {
 
     /**
-     * @return граф в формате DOT для Graphviz
+     * Generates a FSM DOT graph for Graphviz
+     *
+     * @return a DOT graph for Graphviz
      */
     fun generateDigraph(
         baseActionClass: KClass<out Action<*>>,
@@ -40,7 +42,12 @@ object VisualFSM {
             )
         }
 
-        getUnreachableStates(baseActionClass, baseTransitionClass, baseState, initialState).forEach {
+        getUnreachableStates(
+            baseActionClass,
+            baseTransitionClass,
+            baseState,
+            initialState
+        ).forEach {
             result.appendLine("\"${it.simpleStateNameWithSealedName(baseState)}\" [color=\"red\"]")
         }
 
@@ -50,7 +57,9 @@ object VisualFSM {
     }
 
     /**
-     * @return список ребер в виде [(начальное состояние, конечное состояние, имя ребра),...]
+     * Builds an Edge list
+     *
+     * @return a list of edges in following order [(initial state, final state, edge name), ...]
      */
     @Suppress("UNCHECKED_CAST")
     fun getEdgeListGraph(
@@ -63,7 +72,8 @@ object VisualFSM {
         val actions = baseActionClass.sealedSubclasses
 
         actions.forEach { actionClass: KClass<out Action<*>> ->
-            val transactions = actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
+            val transactions =
+                actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
@@ -93,7 +103,9 @@ object VisualFSM {
     }
 
     /**
-     * @return список недостижимых состояний от начального состояния несвязного графа, если граф связный - пустой список
+     * Checks all the states for reachability
+     *
+     * @return a list of unreachable states for a disconnected graph, and an empty list for a connected one
      */
     fun getUnreachableStates(
         baseActionClass: KClass<out Action<*>>,
@@ -141,7 +153,9 @@ object VisualFSM {
     }
 
     /**
-     * @return список конечных состояний
+     * Builds a list of final states
+     *
+     * @return a list of final states
      */
     fun getFinalStates(
         baseActionClass: KClass<out Action<*>>,
@@ -166,7 +180,9 @@ object VisualFSM {
     }
 
     /**
-     * @return словарь смежности состояний в виде [(состояние to [состояние, ...]),...]
+     * Builds an Adjacency Map of states
+     *
+     * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
      */
     private fun getAdjacencyMap(
         baseActionClass: KClass<out Action<*>>,
@@ -182,7 +198,8 @@ object VisualFSM {
         graph.putAll(stateNames.map { it to LinkedList() })
 
         actions.forEach { actionClass: KClass<out Action<*>> ->
-            val transactions = actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
+            val transactions =
+                actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
@@ -198,9 +215,8 @@ object VisualFSM {
     }
 
     /**
-     * Рекурсивное наполнение множества состояний графа,
-     * каждый класс состояния может не являтся состоянием а выполнять группирующую роль
-     * и иметь наследников которые являются классами состояний
+     * Recursively fills a set with graph states. Every [State] class might not be a state,
+     * they could just combine and have those [State] classes as inheritors
      */
     private fun populateStateNamesSet(
         stateNames: HashSet<KClass<out State>>,
