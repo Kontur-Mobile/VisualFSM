@@ -46,7 +46,7 @@ abstract class Store<STATE : State, ACTION : Action<STATE>>(
         val newState = reduce(action, currentState)
         val changed = newState != currentState
         if (changed) {
-            stateFlow.tryEmit(newState)
+            stateFlow.value = newState
         }
     }
 

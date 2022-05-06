@@ -1,9 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
@@ -13,13 +11,13 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Represents [a coroutine scope][CoroutineScope] for the currently running async task
      */
-    protected abstract val taskScope: CoroutineScope
+    protected open val taskScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     /**
      * Is [a coroutine scope][CoroutineScope] used to subscribe
      * to [store's][Store] [flow of states][State]
      */
-    protected abstract val subscriptionScope: CoroutineScope
+    protected open val subscriptionScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private lateinit var store: Store<STATE, ACTION>
     private var launchedAsyncState: STATE? = null
@@ -95,7 +93,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Disposes async task
      */
     protected fun dispose() {
-        launchedAsyncState = null
         launchedAsyncStateContinuation?.cancel()
+        launchedAsyncState = null
     }
 }
