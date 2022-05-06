@@ -16,11 +16,11 @@ object VisualFSM {
      *
      * @return a DOT graph for Graphviz
      */
-    fun generateDigraph(
-        baseActionClass: KClass<out Action<*>>,
-        baseTransitionClass: KClass<out Transition<*, *>>,
-        baseState: KClass<out State>,
-        initialState: KClass<out State>,
+    fun <STATE : State> generateDigraph(
+        baseActionClass: KClass<out Action<STATE>>,
+        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
+        baseState: KClass<STATE>,
+        initialState: KClass<out STATE>,
         useTransitionName: Boolean = true,
     ): String {
         val result = StringBuilder()
@@ -62,24 +62,24 @@ object VisualFSM {
      * @return a list of edges in following order [(initial state, final state, edge name), ...]
      */
     @Suppress("UNCHECKED_CAST")
-    fun getEdgeListGraph(
-        baseActionClass: KClass<out Action<*>>,
-        baseTransitionClass: KClass<out Transition<*, *>>,
+    fun <STATE : State> getEdgeListGraph(
+        baseActionClass: KClass<out Action<STATE>>,
+        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         useTransitionName: Boolean,
-    ): List<Triple<KClass<out State>, KClass<out State>, String>> {
-        val edgeList = mutableListOf<Triple<KClass<out State>, KClass<out State>, String>>()
+    ): List<Triple<KClass<out STATE>, KClass<out STATE>, String>> {
+        val edgeList = mutableListOf<Triple<KClass<out STATE>, KClass<out STATE>, String>>()
 
         val actions = baseActionClass.sealedSubclasses
 
-        actions.forEach { actionClass: KClass<out Action<*>> ->
+        actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions =
                 actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
-                    .first().type?.classifier as KClass<out State>
+                    .first().type?.classifier as KClass<out STATE>
                 val toState = transitionKClass.supertypes.first().arguments
-                    .last().type?.classifier as KClass<out State>
+                    .last().type?.classifier as KClass<out STATE>
 
                 val nameFromEdgeAnnotation = transitionKClass.findAnnotation<Edge>()?.name
 
@@ -107,15 +107,15 @@ object VisualFSM {
      *
      * @return a list of unreachable states for a disconnected graph, and an empty list for a connected one
      */
-    fun getUnreachableStates(
-        baseActionClass: KClass<out Action<*>>,
-        baseTransitionClass: KClass<out Transition<*, *>>,
-        baseState: KClass<out State>,
-        initialState: KClass<out State>,
-    ): List<KClass<out State>> {
-        val result = mutableListOf<KClass<out State>>()
-        val stateToVisited = mutableMapOf<KClass<out State>, Boolean>()
-        val queue = LinkedList<KClass<out State>>()
+    fun <STATE : State> getUnreachableStates(
+        baseActionClass: KClass<out Action<STATE>>,
+        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
+        baseState: KClass<STATE>,
+        initialState: KClass<out STATE>,
+    ): List<KClass<out STATE>> {
+        val result = mutableListOf<KClass<out STATE>>()
+        val stateToVisited = mutableMapOf<KClass<out STATE>, Boolean>()
+        val queue = LinkedList<KClass<out STATE>>()
 
         val graph = getAdjacencyMap(
             baseActionClass,
@@ -157,12 +157,12 @@ object VisualFSM {
      *
      * @return a list of final states
      */
-    fun getFinalStates(
-        baseActionClass: KClass<out Action<*>>,
-        baseTransitionClass: KClass<out Transition<*, *>>,
-        baseState: KClass<out State>,
-    ): List<KClass<out State>> {
-        val finalStates = mutableListOf<KClass<out State>>()
+    fun <STATE : State> getFinalStates(
+        baseActionClass: KClass<out Action<STATE>>,
+        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
+        baseState: KClass<STATE>,
+    ): List<KClass<out STATE>> {
+        val finalStates = mutableListOf<KClass<out STATE>>()
 
         val graph = getAdjacencyMap(
             baseActionClass,
@@ -184,14 +184,14 @@ object VisualFSM {
      *
      * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
      */
-    private fun getAdjacencyMap(
-        baseActionClass: KClass<out Action<*>>,
-        baseTransitionClass: KClass<out Transition<*, *>>,
-        baseState: KClass<out State>,
-    ): Map<KClass<out State>, List<KClass<out State>>> {
-        val stateNames = HashSet<KClass<out State>>()
+    private fun <STATE : State> getAdjacencyMap(
+        baseActionClass: KClass<out Action<STATE>>,
+        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
+        baseState: KClass<STATE>,
+    ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
+        val stateNames = HashSet<KClass<out STATE>>()
         val actions = baseActionClass.sealedSubclasses
-        val graph = mutableMapOf<KClass<out State>, MutableList<KClass<out State>>>()
+        val graph = mutableMapOf<KClass<out STATE>, MutableList<KClass<out STATE>>>()
 
         populateStateNamesSet(stateNames, baseState)
 
@@ -203,9 +203,9 @@ object VisualFSM {
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
-                    .first().type!!.classifier as KClass<out State>
+                    .first().type!!.classifier as KClass<out STATE>
                 val toState = transitionKClass.supertypes.first().arguments
-                    .last().type!!.classifier as KClass<out State>
+                    .last().type!!.classifier as KClass<out STATE>
 
                 graph[fromState]?.add(toState)
             }
@@ -218,9 +218,9 @@ object VisualFSM {
      * Recursively fills a set with graph states. Every [State] class might not be a state,
      * they could just combine and have those [State] classes as inheritors
      */
-    private fun populateStateNamesSet(
-        stateNames: HashSet<KClass<out State>>,
-        stateClass: KClass<out State>,
+    private fun <STATE : State> populateStateNamesSet(
+        stateNames: HashSet<KClass<out STATE>>,
+        stateClass: KClass<out STATE>,
     ) {
         stateClass.sealedSubclasses.forEach { sealedSubclass ->
             if (sealedSubclass.nestedClasses.isEmpty()) {
@@ -231,7 +231,7 @@ object VisualFSM {
         }
     }
 
-    private fun KClass<out State>.simpleStateNameWithSealedName(fsmName: KClass<out State>): String {
+    private fun <STATE : State> KClass<out STATE>.simpleStateNameWithSealedName(fsmName: KClass<out STATE>): String {
         return this.qualifiedName!!.substringAfterLast("${fsmName.simpleName}.")
     }
 }
