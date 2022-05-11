@@ -2,22 +2,17 @@ package ru.kontur.mobile.visualfsm
 
 
 /**
- * Strategy for start and stop of state-based asynchronous tasks
+ * Task for [AsyncWorker] for start or stop of state-based asynchronous work
  */
-sealed class AsyncWorkStrategy {
-
-    /**
-     * Ignore next state
-     */
-    object Ignore : AsyncWorkStrategy()
+sealed class AsyncWorkerTask {
 
     /**
      * Cancel current task
      */
-    object CancelCurrent : AsyncWorkStrategy()
+    object CancelCurrent : AsyncWorkerTask()
 
     /**
-     * Starts async task for [state]
+     * Starts async work for [state]
      * only if there are no tasks currently running with this state
      *
      * @param state [a state][State] that async task starts for
@@ -26,10 +21,10 @@ sealed class AsyncWorkStrategy {
     data class ExecuteIfNotExist<STATE : State>(
         val state: STATE,
         val func: suspend () -> Unit
-    ) : AsyncWorkStrategy()
+    ) : AsyncWorkerTask()
 
     /**
-     * Starts async task for [state]
+     * Starts async work for [state]
      * and cancels previously started task if there is currently running one
      *
      * @param state [a state][State] that async task starts for
@@ -38,5 +33,5 @@ sealed class AsyncWorkStrategy {
     data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
         val func: suspend () -> Unit
-    ) : AsyncWorkStrategy()
+    ) : AsyncWorkerTask()
 }

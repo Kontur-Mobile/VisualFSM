@@ -3,22 +3,17 @@ package ru.kontur.mobile.visualfsm
 import io.reactivex.disposables.Disposable
 
 /**
- * Strategy for start and stop of state-based asynchronous tasks
+ * Task for [AsyncWorkerRx] for start or stop of state-based asynchronous work
  */
-sealed class AsyncWorkStrategyRx {
-
-    /**
-     * Ignore next state
-     */
-    object Ignore : AsyncWorkStrategyRx()
+sealed class AsyncWorkerTaskRx {
 
     /**
      * Dispose current task
      */
-    object DisposeCurrent : AsyncWorkStrategyRx()
+    object DisposeCurrent : AsyncWorkerTaskRx()
 
     /**
-     * Starts async task for [state]
+     * Starts async work for [state]
      * only if there are no tasks currently running with this state
      *
      * @param state [a state][State] that async task starts for
@@ -27,10 +22,10 @@ sealed class AsyncWorkStrategyRx {
     data class ExecuteIfNotExist<STATE : State>(
         val state: STATE,
         val func: () -> Disposable
-    ) : AsyncWorkStrategyRx()
+    ) : AsyncWorkerTaskRx()
 
     /**
-     * Starts async task for [state]
+     * Starts async work for [state]
      * and dispose previously started task if there is currently running one
      *
      * @param state [a state][State] that async task starts for
@@ -39,5 +34,5 @@ sealed class AsyncWorkStrategyRx {
     data class ExecuteAndDisposeExist<STATE : State>(
         val state: STATE,
         val func: () -> Disposable
-    ) : AsyncWorkStrategyRx()
+    ) : AsyncWorkerTaskRx()
 }

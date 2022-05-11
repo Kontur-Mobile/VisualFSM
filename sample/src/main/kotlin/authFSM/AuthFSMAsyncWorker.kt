@@ -6,12 +6,12 @@ import ru.kontur.mobile.visualfsm.AsyncWorker
 import authFSM.AuthFSMState.*
 import authFSM.actions.HandleAuthResult
 import authFSM.actions.HandleRegistrationResult
-import ru.kontur.mobile.visualfsm.AsyncWorkStrategy
+import ru.kontur.mobile.visualfsm.AsyncWorkerTask
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override fun onNextState(state: AuthFSMState): AsyncWorkStrategy {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask {
         return if (state !is AsyncWorkState) {
-            AsyncWorkStrategy.CancelCurrent
+            AsyncWorkerTask.CancelCurrent
         } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {

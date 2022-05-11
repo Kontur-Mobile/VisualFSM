@@ -59,9 +59,9 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Provides a state to manage async work
      *
      * @param state a next [state][State]
-     * @return selected [strategy][AsyncWorkStrategy] for async work handling
+     * @return selected [strategy][AsyncWorkerTask] for async work handling
      */
-    abstract fun onNextState(state: STATE): AsyncWorkStrategy
+    abstract fun onNextState(state: STATE): AsyncWorkerTask
 
     /**
      * Override onStateSubscriptionError if you need handle subscription error
@@ -82,37 +82,36 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Select AsyncWorkStrategy.ExecuteIfNotExist [strategy][AsyncWorkStrategy]
+     * Select AsyncWorkStrategy.ExecuteIfNotExist [strategy][AsyncWorkerTask]
      *
      * @param stateToLaunch [a state][State] that async task starts for
      * @param func a task that should be started
      */
-    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkStrategy {
-        return AsyncWorkStrategy.ExecuteIfNotExist(stateToLaunch, func)
+    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkerTask {
+        return AsyncWorkerTask.ExecuteIfNotExist(stateToLaunch, func)
     }
 
     /**
-     * Select AsyncWorkStrategy.ExecuteAndCancelExist [strategy][AsyncWorkStrategy]
+     * Select AsyncWorkStrategy.ExecuteAndCancelExist [strategy][AsyncWorkerTask]
      *
      * @param stateToLaunch [a state][State] that async task starts for
      * @param func a task that should be started
      */
-    protected fun executeAndCancelExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkStrategy {
-        return AsyncWorkStrategy.ExecuteAndCancelExist(stateToLaunch, func)
+    protected fun executeAndCancelExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkerTask {
+        return AsyncWorkerTask.ExecuteAndCancelExist(stateToLaunch, func)
     }
 
     /**
      * Handle new task with selected strategy
      */
     @Suppress("UNCHECKED_CAST")
-    private fun handleAsyncWorkStrategy(strategy: AsyncWorkStrategy) {
+    private fun handleAsyncWorkStrategy(strategy: AsyncWorkerTask) {
         when (strategy) {
-            AsyncWorkStrategy.Ignore -> Unit
-            AsyncWorkStrategy.CancelCurrent -> cancel()
-            is AsyncWorkStrategy.ExecuteAndCancelExist<*> -> {
+            AsyncWorkerTask.CancelCurrent -> cancel()
+            is AsyncWorkerTask.ExecuteAndCancelExist<*> -> {
                 cancelAndLaunch(strategy.state as STATE, strategy.func)
             }
-            is AsyncWorkStrategy.ExecuteIfNotExist<*> -> {
+            is AsyncWorkerTask.ExecuteIfNotExist<*> -> {
                 if (launchedAsyncStateJob?.isActive != true || strategy.state != launchedAsyncState) {
                     cancelAndLaunch(strategy.state as STATE, strategy.func)
                 }
