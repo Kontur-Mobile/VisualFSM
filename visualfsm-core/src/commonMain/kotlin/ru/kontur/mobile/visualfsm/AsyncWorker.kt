@@ -1,7 +1,10 @@
 package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
@@ -35,9 +38,11 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
         subscriptionJob = subscriptionScope.launch {
             store.observeState().map {
                 onNextState(it)
-            }.collect {
+            }.onEach {
                 handleAsyncWorkStrategy(it)
-            }
+            }.catch {
+                onStateSubscriptionError(it)
+            }.collect()
         }
     }
 
@@ -57,6 +62,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @return selected [strategy][AsyncWorkStrategy] for async work handling
      */
     abstract fun onNextState(state: STATE): AsyncWorkStrategy
+
+    /**
+     * Override onStateSubscriptionError if you need handle subscription error
+     *
+     * @param throwable a [Throwable]
+     */
+    open fun onStateSubscriptionError(throwable: Throwable) {
+        throw throwable
+    }
 
     /**
      * Submits an [action][Action] to be executed to the [store][Store]
