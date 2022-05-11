@@ -17,10 +17,10 @@ sealed class AsyncWorkStrategy {
     object CancelCurrent : AsyncWorkStrategy()
 
     /**
-     * Starts async task for [stateToLaunch]
+     * Starts async task for [state]
      * only if there are no tasks currently running with this state
      *
-     * @param stateToLaunch [a state][State] that async task starts for
+     * @param state [a state][State] that async task starts for
      * @param func a suspend function that should be executed
      */
     data class ExecuteIfNotExist<STATE : State>(
@@ -29,10 +29,10 @@ sealed class AsyncWorkStrategy {
     ) : AsyncWorkStrategy()
 
     /**
-     * Starts async task for [stateToLaunch]
+     * Starts async task for [state]
      * and cancels previously started task if there is currently running one
      *
-     * @param stateToLaunch [a state][State] that async task starts for
+     * @param state [a state][State] that async task starts for
      * @param func a suspend function that should be executed
      */
     data class ExecuteAndCancelExist<STATE : State>(
