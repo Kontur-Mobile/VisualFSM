@@ -68,8 +68,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Starts async task for [stateToLaunch]
-     * only if there are no tasks currently running with this state
+     * Select AsyncWorkStrategy.ExecuteIfNotExist [strategy][AsyncWorkStrategy]
      *
      * @param stateToLaunch [a state][State] that async task starts for
      * @param func a task that should be started
@@ -79,8 +78,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Starts async task for [stateToLaunch]
-     * and cancel previously started task if there is currently running one
+     * Select AsyncWorkStrategy.ExecuteAndCancelExist [strategy][AsyncWorkStrategy]
      *
      * @param stateToLaunch [a state][State] that async task starts for
      * @param func a task that should be started
