@@ -2,19 +2,17 @@ package authFSM
 
 import AuthInteractor
 import authFSM.actions.AuthFSMAction
-import kotlinx.coroutines.flow.Flow
 import ru.kontur.mobile.visualfsm.AsyncWorker
 import authFSM.AuthFSMState.*
 import authFSM.actions.HandleAuthResult
 import authFSM.actions.HandleRegistrationResult
+import ru.kontur.mobile.visualfsm.AsyncWorkStrategy
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override suspend fun initSubscription(states: Flow<AuthFSMState>) {
-        states.collect { state ->
-            if (state !is AsyncWorkState) {
-                dispose()
-                return@collect
-            }
+    override fun onNextState(state: AuthFSMState): AsyncWorkStrategy {
+        return if (state !is AsyncWorkState) {
+            AsyncWorkStrategy.CancelCurrent
+        } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {
                     executeIfNotExist(state) {
@@ -23,7 +21,7 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
                     }
                 }
                 is AsyncWorkState.Registering -> {
-                    executeAndDisposeExist(state) {
+                    executeAndCancelExist(state) {
                         val result = authInteractor.register(state.mail, state.password)
                         proceed(HandleRegistrationResult(result))
                     }
