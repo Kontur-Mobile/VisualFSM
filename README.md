@@ -106,7 +106,7 @@ in `AsyncWorkState`.
 
 To subscribe to `State`, you need to override the `onNextState` method, and for each state to construct 
 AsyncWorkerTask for processing in the AsyncWorker.
-For each operation on successfully or on error, you must call the proceed method and pass `Action` to handle the result.
+For each operation result (success and error) you must call the proceed method and pass `Action` to handle the result.
 Don't forget to handle each task's errors in `onNextState` method, if an unhandled exception occurs,
 then fsm may stuck in the current state and the onStateSubscriptionError method will be called.
 
