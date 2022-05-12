@@ -1,7 +1,10 @@
 package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
@@ -17,12 +20,12 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Is [a coroutine scope][CoroutineScope] used to subscribe
      * to [store's][Store] [flow of states][State]
      */
-    protected open val subscriptionScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    protected open val subscriptionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-    private lateinit var store: Store<STATE, ACTION>
+    private var store: Store<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
-    private var subscriptionContinuation: Job? = null
-    private var launchedAsyncStateContinuation: Job? = null
+    private var subscriptionJob: Job? = null
+    private var launchedAsyncStateJob: Job? = null
 
     /**
      * Binds received [store][Store] to [async worker][AsyncWorker]
@@ -32,25 +35,46 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      */
     fun bind(store: Store<STATE, ACTION>) {
         this.store = store
-        subscriptionContinuation = subscriptionScope.launch {
-            initSubscription(store.observeState())
+        subscriptionJob = subscriptionScope.launch {
+            store.observeState().map {
+                onNextState(it)
+            }.onEach {
+                handleTask(it)
+            }.catch {
+                onStateSubscriptionError(it)
+            }.collect()
         }
     }
 
     /**
-     * Disposes async task and stops observing states
+     * Unbind from store, cancel async task and stops observing states
      */
     fun unbind() {
-        dispose()
-        subscriptionContinuation?.cancel()
+        store = null
+        cancel()
+        subscriptionJob?.cancel()
     }
 
     /**
-     * Provides a state flow to manage async work based on state changes
+     * Provides a state to manage async work
+     * Don't forget to handle each task's errors in this method,
+     * if an unhandled exception occurs, then fsm may stuck in the current state
+     * and the onStateSubscriptionError method will be called
      *
-     * @param states a [flow][Flow] of [states][State]
+     * @param state a next [state][State]
+     * @return [AsyncWorkerTask] for async work handling
      */
-    abstract suspend fun initSubscription(states: Flow<STATE>)
+    protected abstract fun onNextState(state: STATE): AsyncWorkerTask<STATE>
+
+    /**
+     * Called when catched subscription error
+     * Override this for logs or metrics
+     * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
+     * @param throwable catched [Throwable]
+     */
+    protected open fun onStateSubscriptionError(throwable: Throwable) {
+        throw throwable
+    }
 
     /**
      * Submits an [action][Action] to be executed to the [store][Store]
@@ -58,42 +82,40 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action [Action] to run
      */
     fun proceed(action: ACTION) {
-        store.proceed(action)
+        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
     }
 
     /**
-     * Starts async task for [stateToLaunch]
-     * only if there are no tasks currently running with this state
-     *
-     * @param stateToLaunch [a state][State] that async task starts for
-     * @param func a task that should be started
+     * Handle new task
      */
-    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit) {
-        if (launchedAsyncStateContinuation?.isActive == true && stateToLaunch == launchedAsyncState) {
-            return
+    private fun handleTask(task: AsyncWorkerTask<STATE>) {
+        when (task) {
+            is AsyncWorkerTask.Cancel -> cancel()
+            is AsyncWorkerTask.ExecuteAndCancelExist -> {
+                cancelAndLaunch(task.state, task.func)
+            }
+            is AsyncWorkerTask.ExecuteIfNotExist -> {
+                if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
+                    cancelAndLaunch(task.state, task.func)
+                }
+            }
         }
-
-        executeAndDisposeExist(stateToLaunch, func)
     }
 
     /**
-     * Starts async task for [stateToLaunch]
-     * and disposes previously started task if there is currently running one
-     *
-     * @param stateToLaunch [a state][State] that async task starts for
-     * @param func a task that should be started
+     * Cancel current task and launch new
      */
-    protected fun executeAndDisposeExist(stateToLaunch: STATE, func: suspend () -> Unit) {
+    private fun cancelAndLaunch(stateToLaunch: STATE, func: suspend () -> Unit) {
         launchedAsyncState = stateToLaunch
-        launchedAsyncStateContinuation?.cancel()
-        launchedAsyncStateContinuation = taskScope.launch { func() }
+        launchedAsyncStateJob?.cancel()
+        launchedAsyncStateJob = taskScope.launch { func() }
     }
 
     /**
-     * Disposes async task
+     * Cancel current task
      */
-    protected fun dispose() {
-        launchedAsyncStateContinuation?.cancel()
+    private fun cancel() {
+        launchedAsyncStateJob?.cancel()
         launchedAsyncState = null
     }
 }

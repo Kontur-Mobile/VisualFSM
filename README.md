@@ -21,7 +21,7 @@ Base classes, JVM and KMM parts
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Support of RxJava
+Support of RxJava (StoreRx, AsyncWorkerRx, FeatureRx and dependent classes)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
@@ -104,12 +104,22 @@ either success or error, the `Action` will be called and the FSM will be set wit
 convenience those states that are responsible for async tasks launch, it is recommended to join them
 in `AsyncWorkState`.
 
-There might be a case when we can get a `State` via a subscription that is fully equivalent to
-current running async request, so for this case there are two possible strategies:
+To subscribe to `State`, you need to override the `onNextState` method, and for each state to construct 
+AsyncWorkerTask for processing in the AsyncWorker.
+For each operation result (success and error) you must call the proceed method and pass `Action` to handle the result.
+Don't forget to handle each task's errors in `onNextState` method, if an unhandled exception occurs,
+then fsm may stuck in the current state and the onStateSubscriptionError method will be called.
 
-* executeIfNotExist - launch only if equivalent operation is not currently running (priority is
+There might be a case when we can get a `State` via a subscription that is fully equivalent to
+current running async request, so for this case there are two type of AsyncWorkTask:
+
+* AsyncWorkerTask.ExecuteIfNotExist - launch only if equivalent operation is not currently running (priority is
   given to a running operation)
-* executeAndDisposeExist - relaunch async task (priority is for the new on).
+* AsyncWorkerTask.ExecuteAndCancelExist - relaunch async work (priority is for the new on).
+
+To handle a state change to state without async work, you must use a task:
+
+* AsyncWorkerTask.Cancel - stop asynchronous work, if running
 
 <img src="docs/asyncworker.png" alt="graph" width="600"/>
 
@@ -131,7 +141,7 @@ no `Transition`s or multiple `Transition`s available.
 
 ## Sample of usage
 
-A sample FSM of authorization and registration of a user: [sample](../sample).
+A sample FSM of authorization and registration of a user: [sample](./sample).
 
 ### AuthFSMState.kt
 
@@ -180,26 +190,20 @@ AsyncWorker subscribes on state changes, starts async tasks for those in `AsyncW
 calls `Action` to process the result after the async work is done.
 
 ```kotlin
-class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) :
-    AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override val taskScope = CoroutineScope(Dispatchers.Default)
-    override val subscriptionScope = CoroutineScope(Dispatchers.Main)
-
-    override suspend fun initSubscription(states: Flow<AuthFSMState>) {
-        states.collect { state ->
-            if (state !is AsyncWorkState) {
-                dispose()
-                return@collect
-            }
+class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask<AuthFSMState> {
+        return if (state !is AsyncWorkState) {
+            AsyncWorkerTask.Cancel()
+        } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteAndCancelExist(state) {
                         val result = authInteractor.check(state.mail, state.password)
                         proceed(HandleAuthResult(result))
                     }
                 }
                 is AsyncWorkState.Registering -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteIfNotExist(state) {
                         val result = authInteractor.register(state.mail, state.password)
                         proceed(HandleRegistrationResult(result))
                     }
