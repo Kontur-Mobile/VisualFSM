@@ -4,12 +4,14 @@ package ru.kontur.mobile.visualfsm
  * Is an input object for the State machine.
  * The [action][Action] chooses [transition][Transition] and performs it
  */
-interface Action<STATE : State> {
+abstract class Action<STATE : State> {
 
     /**
-     * Must hold every [Transition] declared inside [Action]
+     * Returns every [Transition] declared inside [Action]
+     *
+     * @return every [Transition] declared inside [Action]
      */
-    val transitions: List<Transition<out STATE, out STATE>>
+    abstract fun getTransitions(): List<Transition<out STATE, out STATE>>
 
     /**
      * Selects and starts a [transition][Transition].
@@ -46,7 +48,7 @@ interface Action<STATE : State> {
 
     @Suppress("UNCHECKED_CAST")
     private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
-        (transitions as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
+        (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
 
     private fun isCorrectTransition(
         transition: Transition<STATE, STATE>,

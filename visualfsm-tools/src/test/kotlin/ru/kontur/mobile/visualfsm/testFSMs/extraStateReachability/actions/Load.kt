@@ -40,7 +40,7 @@ class Load : ExtraStateReachabilityFSMAction() {
         override fun transform(state: Updating) = state
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         InitialToLoadingTransition(),
         LoadingToLoadingTransition(),
         LoadedToUpdatingTransition(),
