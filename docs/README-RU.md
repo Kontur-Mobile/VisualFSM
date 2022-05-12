@@ -103,6 +103,13 @@ _поиск ошибок_, _добавление нового функциона
 рекомендуется объединять в родительский `AsyncWorkState`, так эти состояния будет зрительно проще
 выявлять на диаграмме состояний.
 
+Для подписки на `State` необходимо переопределить метод `onNextState`, в котором на каждое 
+входящее состояние сконструировать подходящий AsyncWorkerTask для обработки в AsyncWorker.
+По окончании каждой операции успешно или с ошибкой, необходимо вызвать proceed метод и передать
+`Action` обработки результата.
+Не забудьте обработать ошибки каждой задачи в этом методе, если возникает необработанное исключение,
+то fsm может зависнуть в текущем состоянии и будет вызван метод `onStateSubscriptionError`.
+
 Для обработки сценария в котором по подписке пришёл `State`, в точности эквивалентный уже работающему
 асинхронному запросу, необходимо выбрать подходящий тип задачи:
 
@@ -185,9 +192,9 @@ sealed class AuthFSMState : State {
 
 ```kotlin
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override fun onNextState(state: AuthFSMState): AsyncWorkerTask {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask<AuthFSMState> {
         return if (state !is AsyncWorkState) {
-            AsyncWorkerTask.Cancel
+            AsyncWorkerTask.Cancel()
         } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {

@@ -104,6 +104,12 @@ either success or error, the `Action` will be called and the FSM will be set wit
 convenience those states that are responsible for async tasks launch, it is recommended to join them
 in `AsyncWorkState`.
 
+To subscribe to `State`, you need to override the `onNextState` method, and for each state to construct 
+AsyncWorkerTask for processing in the AsyncWorker.
+For each operation on successfully or on error, you must call the proceed method and pass `Action` to handle the result.
+Don't forget to handle each task's errors in `onNextState` method, if an unhandled exception occurs,
+then fsm may stuck in the current state and the onStateSubscriptionError method will be called.
+
 There might be a case when we can get a `State` via a subscription that is fully equivalent to
 current running async request, so for this case there are two type of AsyncWorkTask:
 
@@ -135,7 +141,7 @@ no `Transition`s or multiple `Transition`s available.
 
 ## Sample of usage
 
-A sample FSM of authorization and registration of a user: [sample](../sample).
+A sample FSM of authorization and registration of a user: [sample](./sample).
 
 ### AuthFSMState.kt
 
@@ -185,9 +191,9 @@ calls `Action` to process the result after the async work is done.
 
 ```kotlin
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override fun onNextState(state: AuthFSMState): AsyncWorkerTask {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask<AuthFSMState> {
         return if (state !is AsyncWorkState) {
-            AsyncWorkerTask.Cancel
+            AsyncWorkerTask.Cancel()
         } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {
