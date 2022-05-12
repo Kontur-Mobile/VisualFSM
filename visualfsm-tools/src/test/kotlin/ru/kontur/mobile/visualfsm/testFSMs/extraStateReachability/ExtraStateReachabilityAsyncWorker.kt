@@ -1,15 +1,15 @@
 package ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability
 
-import ru.kontur.mobile.visualfsm.AsyncWorkerTaskRx
 import ru.kontur.mobile.visualfsm.AsyncWorkerRx
+import ru.kontur.mobile.visualfsm.AsyncWorkerTaskRx
 import ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability.actions.ExtraStateReachabilityFSMAction
 
 class ExtraStateReachabilityAsyncWorker :
     AsyncWorkerRx<ExtraStateReachabilityFSMState, ExtraStateReachabilityFSMAction>() {
 
-    override fun onNextState(state: ExtraStateReachabilityFSMState): AsyncWorkerTaskRx {
+    override fun onNextState(state: ExtraStateReachabilityFSMState): AsyncWorkerTaskRx<ExtraStateReachabilityFSMState> {
         return if (state !is ExtraStateReachabilityFSMState.AsyncWorkState) {
-            AsyncWorkerTaskRx.Cancel
+            AsyncWorkerTaskRx.Cancel()
         } else when (state) {
             is ExtraStateReachabilityFSMState.AsyncWorkState.Loading -> TODO()
             is ExtraStateReachabilityFSMState.AsyncWorkState.Updating -> TODO()

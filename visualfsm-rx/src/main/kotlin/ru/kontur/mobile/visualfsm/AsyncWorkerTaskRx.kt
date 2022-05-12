@@ -5,12 +5,12 @@ import io.reactivex.disposables.Disposable
 /**
  * Task for [AsyncWorkerRx] for manage state-based asynchronous work
  */
-sealed class AsyncWorkerTaskRx {
+sealed class AsyncWorkerTaskRx<STATE : State> {
 
     /**
      * Dispose current task
      */
-    object Cancel : AsyncWorkerTaskRx()
+    class Cancel<STATE : State> : AsyncWorkerTaskRx<STATE>()
 
     /**
      * Starts async work for [state]
@@ -22,7 +22,7 @@ sealed class AsyncWorkerTaskRx {
     data class ExecuteIfNotExist<STATE : State>(
         val state: STATE,
         val func: () -> Disposable
-    ) : AsyncWorkerTaskRx()
+    ) : AsyncWorkerTaskRx<STATE>()
 
     /**
      * Starts async work for [state]
@@ -34,5 +34,5 @@ sealed class AsyncWorkerTaskRx {
     data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
         val func: () -> Disposable
-    ) : AsyncWorkerTaskRx()
+    ) : AsyncWorkerTaskRx<STATE>()
 }

@@ -57,11 +57,14 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
     /**
      * Provides a state to manage async work
+     * Don't forget to handle each task's errors in this method,
+     * if an unhandled exception occurs, then fsm may stuck in the current state
+     * and the onStateSubscriptionError method will be called
      *
      * @param state a next [state][State]
      * @return [AsyncWorkerTask] for async work handling
      */
-    abstract fun onNextState(state: STATE): AsyncWorkerTask
+    protected abstract fun onNextState(state: STATE): AsyncWorkerTask<STATE>
 
     /**
      * Called when catched subscription error
@@ -69,7 +72,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
      * @param throwable catched [Throwable]
      */
-    open fun onStateSubscriptionError(throwable: Throwable) {
+    protected open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
     }
 
@@ -85,16 +88,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Handle new task
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun handleTask(task: AsyncWorkerTask) {
+    private fun handleTask(task: AsyncWorkerTask<STATE>) {
         when (task) {
-            AsyncWorkerTask.Cancel -> cancel()
-            is AsyncWorkerTask.ExecuteAndCancelExist<*> -> {
-                cancelAndLaunch(task.state as STATE, task.func)
+            is AsyncWorkerTask.Cancel -> cancel()
+            is AsyncWorkerTask.ExecuteAndCancelExist -> {
+                cancelAndLaunch(task.state, task.func)
             }
-            is AsyncWorkerTask.ExecuteIfNotExist<*> -> {
+            is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
-                    cancelAndLaunch(task.state as STATE, task.func)
+                    cancelAndLaunch(task.state, task.func)
                 }
             }
         }

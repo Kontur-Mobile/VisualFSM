@@ -37,11 +37,14 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
 
     /**
      * Provides a state to manage async work
+     * Don't forget to handle each task's errors in this method,
+     * if an unhandled exception occurs, then fsm may stuck in the current state
+     * and the onStateSubscriptionError method will be called
      *
      * @param state a next [state][State]
-     * @return [AsyncWorkerTask] for async work handling
+     * @return [AsyncWorkerTaskRx] for async work handling
      */
-    abstract fun onNextState(state: STATE): AsyncWorkerTaskRx
+    protected abstract fun onNextState(state: STATE): AsyncWorkerTaskRx<STATE>
 
     /**
      * Called when catched subscription error
@@ -49,7 +52,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
      * @param throwable catched [Throwable]
      */
-    open fun onStateSubscriptionError(throwable: Throwable) {
+    protected open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
     }
 
@@ -65,16 +68,15 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Handle new task
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun handleTask(task: AsyncWorkerTaskRx) {
+    private fun handleTask(task: AsyncWorkerTaskRx<STATE>) {
         when (task) {
-            AsyncWorkerTaskRx.Cancel -> dispose()
-            is AsyncWorkerTaskRx.ExecuteAndCancelExist<*> -> {
-                disposeAndLaunch(task.state as STATE, task.func)
+            is AsyncWorkerTaskRx.Cancel -> dispose()
+            is AsyncWorkerTaskRx.ExecuteAndCancelExist -> {
+                disposeAndLaunch(task.state, task.func)
             }
-            is AsyncWorkerTaskRx.ExecuteIfNotExist<*> -> {
+            is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
-                    disposeAndLaunch(task.state as STATE, task.func)
+                    disposeAndLaunch(task.state, task.func)
                 }
             }
         }
