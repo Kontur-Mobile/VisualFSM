@@ -1,7 +1,6 @@
 package ru.kontur.mobile.visualfsm
 
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 
 /**
@@ -16,13 +15,14 @@ abstract class StoreRx<STATE : State, ACTION : Action<STATE>>(
     private val transitionCallbacks: TransitionCallbacks<STATE>
 ) {
 
+    @Volatile
     private var currentState = initialState
     private val stateRxObservableField = BehaviorSubject.createDefault(initialState).toSerialized()
 
     /**
-     * Provides a [flow][Flow] of [states][State]
+     * Provides a [observable][Observable] of [states][State]
      *
-     * @return a [flow][Flow] of [states][State]
+     * @return a [observable][Observable] of [states][State]
      */
     internal fun observeState(): Observable<STATE> {
         return stateRxObservableField
@@ -33,9 +33,8 @@ abstract class StoreRx<STATE : State, ACTION : Action<STATE>>(
      *
      * @return current [state][State]
      */
-    @Synchronized
-    internal fun getStateSingle(): Single<STATE> {
-        return Single.fromCallable { currentState }
+    internal fun getCurrentState(): STATE {
+        return currentState
     }
 
     /**

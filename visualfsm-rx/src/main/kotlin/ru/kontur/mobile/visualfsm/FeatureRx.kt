@@ -1,7 +1,6 @@
 package ru.kontur.mobile.visualfsm
 
 import io.reactivex.Observable
-import io.reactivex.Single
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -20,9 +19,9 @@ abstract class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     }
 
     /**
-     * Provides a [flow][Flow] of [states][State]
+     * Provides a [observable][Observable] of [states][State]
      *
-     * @return a [flow][Flow] of [states][State]
+     * @return a [observable][Observable] of [states][State]
      */
     fun observeState(): Observable<STATE> {
         return store.observeState()
@@ -31,11 +30,10 @@ abstract class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     /**
      * Returns current state
      *
-     * @throws NoSuchElementException if flow of states is empty
      * @return current [state][State]
      */
-    fun getSingleState(): Single<STATE> {
-        return store.getStateSingle()
+    fun getCurrentState(): STATE {
+        return store.getCurrentState()
     }
 
     /**
