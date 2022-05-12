@@ -39,7 +39,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
             store.observeState().map {
                 onNextState(it)
             }.onEach {
-                handleAsyncWorkStrategy(it)
+                handleTask(it)
             }.catch {
                 onStateSubscriptionError(it)
             }.collect()
@@ -59,7 +59,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Provides a state to manage async work
      *
      * @param state a next [state][State]
-     * @return selected [strategy][AsyncWorkerTask] for async work handling
+     * @return task - an [AsyncWorkerTask] for async work handling
      */
     abstract fun onNextState(state: STATE): AsyncWorkerTask
 
@@ -82,38 +82,18 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Select AsyncWorkStrategy.ExecuteIfNotExist [strategy][AsyncWorkerTask]
-     *
-     * @param stateToLaunch [a state][State] that async task starts for
-     * @param func a task that should be started
-     */
-    protected fun executeIfNotExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkerTask {
-        return AsyncWorkerTask.ExecuteIfNotExist(stateToLaunch, func)
-    }
-
-    /**
-     * Select AsyncWorkStrategy.ExecuteAndCancelExist [strategy][AsyncWorkerTask]
-     *
-     * @param stateToLaunch [a state][State] that async task starts for
-     * @param func a task that should be started
-     */
-    protected fun executeAndCancelExist(stateToLaunch: STATE, func: suspend () -> Unit): AsyncWorkerTask {
-        return AsyncWorkerTask.ExecuteAndCancelExist(stateToLaunch, func)
-    }
-
-    /**
-     * Handle new task with selected strategy
+     * Handle new task
      */
     @Suppress("UNCHECKED_CAST")
-    private fun handleAsyncWorkStrategy(strategy: AsyncWorkerTask) {
-        when (strategy) {
-            AsyncWorkerTask.CancelCurrent -> cancel()
+    private fun handleTask(task: AsyncWorkerTask) {
+        when (task) {
+            AsyncWorkerTask.Cancel -> cancel()
             is AsyncWorkerTask.ExecuteAndCancelExist<*> -> {
-                cancelAndLaunch(strategy.state as STATE, strategy.func)
+                cancelAndLaunch(task.state as STATE, task.func)
             }
             is AsyncWorkerTask.ExecuteIfNotExist<*> -> {
-                if (launchedAsyncStateJob?.isActive != true || strategy.state != launchedAsyncState) {
-                    cancelAndLaunch(strategy.state as STATE, strategy.func)
+                if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
+                    cancelAndLaunch(task.state as STATE, task.func)
                 }
             }
         }

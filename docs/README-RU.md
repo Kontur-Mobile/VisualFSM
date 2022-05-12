@@ -98,17 +98,17 @@ _поиск ошибок_, _добавление нового функциона
 
 `AsyncWorker` управляет запуском и остановкой асинхронной работы. `AsyncWorker` запускает
 асинхронный запрос или останавливает его, если ему по подписке придёт соответствующий `State`. Как
-только запрос завершится успешно или с ошибкой, вызовется определённый `Action`, и в FSM будет
-установлен новый `State`. Для удобства состояния, которые запускают какую-либо асинхронную работу,
+только запрос завершится успешно или с ошибкой, результат необходимо передать в FSM вызвав `Action`,
+и в FSM будет установлен новый `State`. Для удобства состояния, которые запускают какую-либо асинхронную работу,
 рекомендуется объединять в родительский `AsyncWorkState`, так эти состояния будет зрительно проще
 выявлять на диаграмме состояний.
 
-Для случая если по подписке пришёл `State`, который в точности эквивалентен уже работающему
-асинхронному запросу, есть две стратегии запуска новой задачи:
+Для обработки сценария в котором по подписке пришёл `State`, в точности эквивалентный уже работающему
+асинхронному запросу, необходимо выбрать подходящий тип задачи:
 
-* executeIfNotExist - запустить, только если эквивалентная операция в данный момент не выполняется (
+* ExecuteIfNotExist - запустить, только если эквивалентная операция в данный момент не выполняется (
   приоритет выполняющейся)
-* executeAndDisposeExist - перезапустить асинхронную операцию (приоритет новой).
+* ExecuteAndCancelExist - перезапустить асинхронную операцию (приоритет новой).
 
 <img src="asyncworker.png" alt="graph" width="600"/>
 
@@ -179,26 +179,20 @@ sealed class AuthFSMState : State {
 асинхронную работу, по окончании асинхронной работы вызывает `Action` для обработки результата.
 
 ```kotlin
-class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) :
-    AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override val taskScope = CoroutineScope(Dispatchers.Default)
-    override val subscriptionScope = CoroutineScope(Dispatchers.Main)
-
-    override suspend fun initSubscription(states: Flow<AuthFSMState>) {
-        states.collect { state ->
-            if (state !is AsyncWorkState) {
-                dispose()
-                return@collect
-            }
+class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask {
+        return if (state !is AsyncWorkState) {
+            AsyncWorkerTask.Cancel
+        } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteAndCancelExist(state) {
                         val result = authInteractor.check(state.mail, state.password)
                         proceed(HandleAuthResult(result))
                     }
                 }
                 is AsyncWorkState.Registering -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteIfNotExist(state) {
                         val result = authInteractor.register(state.mail, state.password)
                         proceed(HandleRegistrationResult(result))
                     }

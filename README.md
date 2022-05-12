@@ -105,11 +105,11 @@ convenience those states that are responsible for async tasks launch, it is reco
 in `AsyncWorkState`.
 
 There might be a case when we can get a `State` via a subscription that is fully equivalent to
-current running async request, so for this case there are two possible strategies:
+current running async request, so for this case there are two type of AsyncWorkTask:
 
-* executeIfNotExist - launch only if equivalent operation is not currently running (priority is
+* ExecuteIfNotExist - launch only if equivalent operation is not currently running (priority is
   given to a running operation)
-* executeAndDisposeExist - relaunch async task (priority is for the new on).
+* ExecuteAndCancelExist - relaunch async work (priority is for the new on).
 
 <img src="docs/asyncworker.png" alt="graph" width="600"/>
 
@@ -180,26 +180,20 @@ AsyncWorker subscribes on state changes, starts async tasks for those in `AsyncW
 calls `Action` to process the result after the async work is done.
 
 ```kotlin
-class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) :
-    AsyncWorker<AuthFSMState, AuthFSMAction>() {
-    override val taskScope = CoroutineScope(Dispatchers.Default)
-    override val subscriptionScope = CoroutineScope(Dispatchers.Main)
-
-    override suspend fun initSubscription(states: Flow<AuthFSMState>) {
-        states.collect { state ->
-            if (state !is AsyncWorkState) {
-                dispose()
-                return@collect
-            }
+class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorker<AuthFSMState, AuthFSMAction>() {
+    override fun onNextState(state: AuthFSMState): AsyncWorkerTask {
+        return if (state !is AsyncWorkState) {
+            AsyncWorkerTask.Cancel
+        } else {
             when (state) {
                 is AsyncWorkState.Authenticating -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteAndCancelExist(state) {
                         val result = authInteractor.check(state.mail, state.password)
                         proceed(HandleAuthResult(result))
                     }
                 }
                 is AsyncWorkState.Registering -> {
-                    executeIfNotExist(state) {
+                    AsyncWorkerTask.ExecuteIfNotExist(state) {
                         val result = authInteractor.register(state.mail, state.password)
                         proceed(HandleRegistrationResult(result))
                     }

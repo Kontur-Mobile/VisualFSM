@@ -9,7 +9,7 @@ class AllStatesReachabilityAsyncWorker :
 
     override fun onNextState(state: AllStatesReachabilityFSMState): AsyncWorkerTaskRx {
         return if (state !is AllStatesReachabilityFSMState.AsyncWorkState) {
-            AsyncWorkerTaskRx.DisposeCurrent
+            AsyncWorkerTaskRx.Cancel
         } else when (state) {
             is AllStatesReachabilityFSMState.AsyncWorkState.Loading -> TODO()
             is AllStatesReachabilityFSMState.AsyncWorkState.Updating -> TODO()

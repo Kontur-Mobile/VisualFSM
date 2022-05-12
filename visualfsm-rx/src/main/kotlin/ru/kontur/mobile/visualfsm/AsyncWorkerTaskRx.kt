@@ -10,7 +10,7 @@ sealed class AsyncWorkerTaskRx {
     /**
      * Dispose current task
      */
-    object DisposeCurrent : AsyncWorkerTaskRx()
+    object Cancel : AsyncWorkerTaskRx()
 
     /**
      * Starts async work for [state]
@@ -31,7 +31,7 @@ sealed class AsyncWorkerTaskRx {
      * @param state [a state][State] that async task starts for
      * @param func the function that subscribes to task rx chain, must return a disposable
      */
-    data class ExecuteAndDisposeExist<STATE : State>(
+    data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
         val func: () -> Disposable
     ) : AsyncWorkerTaskRx()

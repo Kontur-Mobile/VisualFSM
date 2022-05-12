@@ -22,7 +22,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
         this.store = store
         subscriptionDisposable = store.observeState()
             .map(::onNextState)
-            .subscribe(::handleAsyncWorkStrategy, ::onStateSubscriptionError)
+            .subscribe(::handleTask, ::onStateSubscriptionError)
     }
 
     /**
@@ -39,7 +39,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * Provides a state to manage async work
      *
      * @param state a next [state][State]
-     * @return selected [strategy][AsyncWorkerTask] for async work handling
+     * @return task - an [AsyncWorkerTask] for async work handling
      */
     abstract fun onNextState(state: STATE): AsyncWorkerTaskRx
 
@@ -62,38 +62,18 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Construct AsyncWorkStrategy.ExecuteIfNotExist [strategy][AsyncWorkerTask]
-     *
-     * @param state [a state][State] that async task starts for
-     * @param func the function that subscribes to task rx chain, must return a disposable
-     */
-    protected fun executeIfNotExist(state: STATE, func: () -> Disposable): AsyncWorkerTaskRx {
-        return AsyncWorkerTaskRx.ExecuteIfNotExist(state, func)
-    }
-
-    /**
-     * Construct AsyncWorkStrategy.ExecuteAndDisposeExist [strategy][AsyncWorkerTask]
-     *
-     * @param state [a state][State] that async task starts for
-     * @param func the function that subscribes to task rx chain, must return a disposable
-     */
-    protected fun executeAndDisposeExist(state: STATE, func: () -> Disposable): AsyncWorkerTaskRx {
-        return AsyncWorkerTaskRx.ExecuteAndDisposeExist(state, func)
-    }
-
-    /**
-     * Handle new task with selected strategy
+     * Handle new task
      */
     @Suppress("UNCHECKED_CAST")
-    private fun handleAsyncWorkStrategy(strategy: AsyncWorkerTaskRx) {
-        when (strategy) {
-            AsyncWorkerTaskRx.DisposeCurrent -> dispose()
-            is AsyncWorkerTaskRx.ExecuteAndDisposeExist<*> -> {
-                disposeAndLaunch(strategy.state as STATE, strategy.func)
+    private fun handleTask(task: AsyncWorkerTaskRx) {
+        when (task) {
+            AsyncWorkerTaskRx.Cancel -> dispose()
+            is AsyncWorkerTaskRx.ExecuteAndCancelExist<*> -> {
+                disposeAndLaunch(task.state as STATE, task.func)
             }
             is AsyncWorkerTaskRx.ExecuteIfNotExist<*> -> {
-                if (launchedAsyncStateDisposable?.isDisposed != true || strategy.state == launchedAsyncState) {
-                    disposeAndLaunch(strategy.state as STATE, strategy.func)
+                if (launchedAsyncStateDisposable?.isDisposed != true || task.state == launchedAsyncState) {
+                    disposeAndLaunch(task.state as STATE, task.func)
                 }
             }
         }

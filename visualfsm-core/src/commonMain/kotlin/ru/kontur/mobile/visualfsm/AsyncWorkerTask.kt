@@ -9,7 +9,7 @@ sealed class AsyncWorkerTask {
     /**
      * Cancel current task
      */
-    object CancelCurrent : AsyncWorkerTask()
+    object Cancel : AsyncWorkerTask()
 
     /**
      * Starts async work for [state]
