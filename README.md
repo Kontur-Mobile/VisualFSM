@@ -21,7 +21,7 @@ Base classes, JVM and KMM parts
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Support of RxJava
+Support of RxJava (StoreRx, AsyncWorkerRx, FeatureRx and dependent classes)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
@@ -107,9 +107,13 @@ in `AsyncWorkState`.
 There might be a case when we can get a `State` via a subscription that is fully equivalent to
 current running async request, so for this case there are two type of AsyncWorkTask:
 
-* ExecuteIfNotExist - launch only if equivalent operation is not currently running (priority is
+* AsyncWorkerTask.ExecuteIfNotExist - launch only if equivalent operation is not currently running (priority is
   given to a running operation)
-* ExecuteAndCancelExist - relaunch async work (priority is for the new on).
+* AsyncWorkerTask.ExecuteAndCancelExist - relaunch async work (priority is for the new on).
+
+To handle a state change to state without async work, you must use a task:
+
+* AsyncWorkerTask.Cancel - stop asynchronous work, if running
 
 <img src="docs/asyncworker.png" alt="graph" width="600"/>
 

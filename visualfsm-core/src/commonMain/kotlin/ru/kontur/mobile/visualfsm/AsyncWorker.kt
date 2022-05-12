@@ -47,7 +47,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Unbind with store, cancel async task and stops observing states
+     * Unbind from store, cancel async task and stops observing states
      */
     fun unbind() {
         store = null
@@ -59,14 +59,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * Provides a state to manage async work
      *
      * @param state a next [state][State]
-     * @return task - an [AsyncWorkerTask] for async work handling
+     * @return [AsyncWorkerTask] for async work handling
      */
     abstract fun onNextState(state: STATE): AsyncWorkerTask
 
     /**
-     * Override onStateSubscriptionError if you need handle subscription error
-     *
-     * @param throwable a [Throwable]
+     * Called when catched subscription error
+     * Override this for logs or metrics
+     * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
+     * @param throwable catched [Throwable]
      */
     open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
@@ -78,7 +79,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action [Action] to run
      */
     fun proceed(action: ACTION) {
-        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding with Store")
+        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
     }
 
     /**

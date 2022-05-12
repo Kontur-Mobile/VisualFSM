@@ -2,7 +2,7 @@ package ru.kontur.mobile.visualfsm
 
 
 /**
- * Task for [AsyncWorker] for start or stop of state-based asynchronous work
+ * Task for [AsyncWorker] for manage state-based asynchronous work
  */
 sealed class AsyncWorkerTask {
 

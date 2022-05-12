@@ -21,7 +21,7 @@
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Поддержка RxJava
+Поддержка RxJava (StoreRx, AsyncWorkerRx, FeatureRx и их зависимости)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
@@ -106,9 +106,14 @@ _поиск ошибок_, _добавление нового функциона
 Для обработки сценария в котором по подписке пришёл `State`, в точности эквивалентный уже работающему
 асинхронному запросу, необходимо выбрать подходящий тип задачи:
 
-* ExecuteIfNotExist - запустить, только если эквивалентная операция в данный момент не выполняется (
+* AsyncWorkerTask.ExecuteIfNotExist - запустить, только если эквивалентная операция в данный момент не выполняется (
   приоритет выполняющейся)
-* ExecuteAndCancelExist - перезапустить асинхронную операцию (приоритет новой).
+* AsyncWorkerTask.ExecuteAndCancelExist - перезапустить асинхронную операцию (приоритет новой).
+
+Для обработки смены состояния на состояние без асинхронной работы, необходимо использовать задачу:
+
+* AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
+
 
 <img src="asyncworker.png" alt="graph" width="600"/>
 

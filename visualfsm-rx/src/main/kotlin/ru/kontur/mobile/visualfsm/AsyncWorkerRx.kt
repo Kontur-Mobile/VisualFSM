@@ -26,7 +26,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Unbind with store, dispose async task and stops observing states
+     * Unbind from store, dispose async task and stops observing states
      */
     @Synchronized
     fun unbind() {
@@ -39,14 +39,15 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * Provides a state to manage async work
      *
      * @param state a next [state][State]
-     * @return task - an [AsyncWorkerTask] for async work handling
+     * @return [AsyncWorkerTask] for async work handling
      */
     abstract fun onNextState(state: STATE): AsyncWorkerTaskRx
 
     /**
-     * Override onStateSubscriptionError if you need handle subscription error
-     *
-     * @param throwable a [Throwable]
+     * Called when catched subscription error
+     * Override this for logs or metrics
+     * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
+     * @param throwable catched [Throwable]
      */
     open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
@@ -58,7 +59,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun proceed(action: ACTION) {
-        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding with Store")
+        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
     }
 
     /**
@@ -72,7 +73,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
                 disposeAndLaunch(task.state as STATE, task.func)
             }
             is AsyncWorkerTaskRx.ExecuteIfNotExist<*> -> {
-                if (launchedAsyncStateDisposable?.isDisposed != true || task.state == launchedAsyncState) {
+                if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
                     disposeAndLaunch(task.state as STATE, task.func)
                 }
             }

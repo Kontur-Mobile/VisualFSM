@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm
 import io.reactivex.disposables.Disposable
 
 /**
- * Task for [AsyncWorkerRx] for start or stop of state-based asynchronous work
+ * Task for [AsyncWorkerRx] for manage state-based asynchronous work
  */
 sealed class AsyncWorkerTaskRx {
 
