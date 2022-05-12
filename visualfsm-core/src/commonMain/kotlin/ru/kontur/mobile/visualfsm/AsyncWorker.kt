@@ -61,7 +61,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param state a next [state][State]
      * @return [AsyncWorkerTask] for async work handling
      */
-    abstract fun onNextState(state: STATE): AsyncWorkerTask
+    abstract fun onNextState(state: STATE): AsyncWorkerTask<STATE>
 
     /**
      * Called when catched subscription error
@@ -85,16 +85,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Handle new task
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun handleTask(task: AsyncWorkerTask) {
+    private fun handleTask(task: AsyncWorkerTask<STATE>) {
         when (task) {
-            AsyncWorkerTask.Cancel -> cancel()
-            is AsyncWorkerTask.ExecuteAndCancelExist<*> -> {
-                cancelAndLaunch(task.state as STATE, task.func)
+            is AsyncWorkerTask.Cancel -> cancel()
+            is AsyncWorkerTask.ExecuteAndCancelExist -> {
+                cancelAndLaunch(task.state, task.func)
             }
-            is AsyncWorkerTask.ExecuteIfNotExist<*> -> {
+            is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
-                    cancelAndLaunch(task.state as STATE, task.func)
+                    cancelAndLaunch(task.state, task.func)
                 }
             }
         }
