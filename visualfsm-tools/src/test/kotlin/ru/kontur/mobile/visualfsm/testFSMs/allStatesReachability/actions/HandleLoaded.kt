@@ -23,7 +23,7 @@ class HandleLoaded : AllStatesReachabilityFSMAction() {
         override fun transform(state: Updating) = Loaded
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         LoadingToLoadedTransition(),
         UpdatingToLoadedTransition()
     )

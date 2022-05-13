@@ -1,15 +1,15 @@
 package ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions
 
-import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMTransition
 
 class HandleInData : DemoFSMAction() {
 
-    inner class FinishSaving() : DemoFSMTransition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.FinalState.DataSent>(
-        DemoFSMState.AsyncWorkState.DataIn.Saving::class,
-        DemoFSMState.FinalState.DataSent::class
-    ) {
+    inner class FinishSaving() :
+        DemoFSMTransition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.FinalState.DataSent>(
+            DemoFSMState.AsyncWorkState.DataIn.Saving::class,
+            DemoFSMState.FinalState.DataSent::class
+        ) {
         override fun transform(state: DemoFSMState.AsyncWorkState.DataIn.Saving): DemoFSMState.FinalState.DataSent {
             return DemoFSMState.FinalState.DataSent
         }
@@ -33,10 +33,9 @@ class HandleInData : DemoFSMAction() {
         }
     }
 
-    override val transitions: List<Transition<out DemoFSMState, out DemoFSMState>>
-        get() = listOf(
-            FinishSaving(),
-            ErrorSaving(),
-            RepeatError()
-        )
+    override fun getTransitions() = listOf(
+        FinishSaving(),
+        ErrorSaving(),
+        RepeatError()
+    )
 }
