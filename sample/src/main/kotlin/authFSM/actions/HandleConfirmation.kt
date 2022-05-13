@@ -30,7 +30,7 @@ class HandleConfirmation(val confirmed: Boolean) : AuthFSMAction() {
         }
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         Confirm(),
         Cancel(),
     )

@@ -48,7 +48,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         Success(),
         BadCredential(),
         ConnectionFailed(),

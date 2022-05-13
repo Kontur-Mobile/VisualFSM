@@ -14,7 +14,7 @@ class Authenticate(val mail: String, val password: String) : AuthFSMAction() {
         }
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         AuthenticationStart(),
     )
 }

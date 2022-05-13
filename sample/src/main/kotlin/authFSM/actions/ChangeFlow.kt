@@ -1,6 +1,5 @@
 package authFSM.actions
 
-import authFSM.AuthFSMState
 import authFSM.AuthFSMState.*
 import authFSM.AuthFSMTransition
 import authFSM.Flow
@@ -31,7 +30,7 @@ class ChangeFlow(val newFlow: Flow) : AuthFSMAction() {
         }
     }
 
-    override val transitions = listOf(
+    override fun getTransitions() = listOf(
         RegisterToLogin(),
         LoginToRegistration(),
     )

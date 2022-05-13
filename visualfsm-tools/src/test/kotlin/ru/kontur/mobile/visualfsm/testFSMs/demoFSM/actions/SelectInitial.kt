@@ -1,6 +1,5 @@
 package ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions
 
-import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMTransition
 
@@ -42,10 +41,9 @@ class SelectInitial : DemoFSMAction() {
         }
     }
 
-    override val transitions: List<Transition<out DemoFSMState, out DemoFSMState>>
-        get() = listOf(
-            StartLoadData(),
-            StartFindData(),
-            StartSaveData()
-        )
+    override fun getTransitions() = listOf(
+        StartLoadData(),
+        StartFindData(),
+        StartSaveData()
+    )
 }
