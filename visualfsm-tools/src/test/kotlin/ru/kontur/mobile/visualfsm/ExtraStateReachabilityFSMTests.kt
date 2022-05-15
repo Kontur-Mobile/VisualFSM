@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.tools.VisualFSM.generateDigraph
 import ru.kontur.mobile.visualfsm.tools.VisualFSM.getUnreachableStates
 import ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability.ExtraStateReachabilityFSMState
-import ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability.ExtraStateReachabilityFSMTransition
 import ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability.actions.ExtraStateReachabilityFSMAction
 
 class ExtraStateReachabilityFSMTests {
@@ -14,7 +13,6 @@ class ExtraStateReachabilityFSMTests {
         println(
             generateDigraph(
                 ExtraStateReachabilityFSMAction::class,
-                ExtraStateReachabilityFSMTransition::class,
                 ExtraStateReachabilityFSMState::class,
                 ExtraStateReachabilityFSMState.Initial::class,
             )
@@ -26,7 +24,6 @@ class ExtraStateReachabilityFSMTests {
     fun allStatesReachableTest() {
         val notReachableStates = getUnreachableStates(
             ExtraStateReachabilityFSMAction::class,
-            ExtraStateReachabilityFSMTransition::class,
             ExtraStateReachabilityFSMState::class,
             ExtraStateReachabilityFSMState.Initial::class,
         )

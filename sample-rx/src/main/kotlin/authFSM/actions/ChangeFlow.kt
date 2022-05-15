@@ -1,15 +1,15 @@
 package authFSM.actions
 
 import authFSM.AuthFSMState.*
-import authFSM.AuthFSMTransition
 import authFSM.Flow
 import ru.kontur.mobile.visualfsm.Edge
+import ru.kontur.mobile.visualfsm.Transition
 
 class ChangeFlow(val newFlow: Flow) : AuthFSMAction() {
 
     @Edge("ToLogin")
     inner class RegisterToLogin :
-        AuthFSMTransition<Registration, Login>(
+        Transition<Registration, Login>(
             Registration::class,
             Login::class
         ) {
@@ -21,7 +21,7 @@ class ChangeFlow(val newFlow: Flow) : AuthFSMAction() {
 
     @Edge("ToRegistration")
     inner class LoginToRegistration :
-        AuthFSMTransition<Login, Registration>(
+        Transition<Login, Registration>(
             Login::class,
             Registration::class
         ) {

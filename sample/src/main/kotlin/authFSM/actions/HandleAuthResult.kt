@@ -1,13 +1,13 @@
 package authFSM.actions
 
 import authFSM.AuthFSMState.*
-import authFSM.AuthFSMTransition
 import authFSM.AuthResult
+import ru.kontur.mobile.visualfsm.Transition
 
 class HandleAuthResult(val result: AuthResult) : AuthFSMAction() {
 
     inner class Success :
-        AuthFSMTransition<AsyncWorkState.Authenticating, UserAuthorized>(
+        Transition<AsyncWorkState.Authenticating, UserAuthorized>(
             AsyncWorkState.Authenticating::class,
             UserAuthorized::class
         ) {
@@ -21,7 +21,7 @@ class HandleAuthResult(val result: AuthResult) : AuthFSMAction() {
     }
 
     inner class BadCredential :
-        AuthFSMTransition<AsyncWorkState.Authenticating, Login>(
+        Transition<AsyncWorkState.Authenticating, Login>(
             AsyncWorkState.Authenticating::class,
             Login::class
         ) {
@@ -35,7 +35,7 @@ class HandleAuthResult(val result: AuthResult) : AuthFSMAction() {
     }
 
     inner class ConnectionFailed :
-        AuthFSMTransition<AsyncWorkState.Authenticating, Login>(
+        Transition<AsyncWorkState.Authenticating, Login>(
             AsyncWorkState.Authenticating::class,
             Login::class
         ) {

@@ -1,12 +1,12 @@
 package ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions
 
+import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
-import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMTransition
 
 class HandleInData : DemoFSMAction() {
 
     inner class FinishSaving() :
-        DemoFSMTransition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.FinalState.DataSent>(
+        Transition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.FinalState.DataSent>(
             DemoFSMState.AsyncWorkState.DataIn.Saving::class,
             DemoFSMState.FinalState.DataSent::class
         ) {
@@ -15,7 +15,7 @@ class HandleInData : DemoFSMAction() {
         }
     }
 
-    inner class ErrorSaving() : DemoFSMTransition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.Error>(
+    inner class ErrorSaving() : Transition<DemoFSMState.AsyncWorkState.DataIn.Saving, DemoFSMState.Error>(
         DemoFSMState.AsyncWorkState.DataIn.Saving::class,
         DemoFSMState.Error::class
     ) {
@@ -24,7 +24,7 @@ class HandleInData : DemoFSMAction() {
         }
     }
 
-    inner class RepeatError() : DemoFSMTransition<DemoFSMState.Error, DemoFSMState.Error>(
+    inner class RepeatError() : Transition<DemoFSMState.Error, DemoFSMState.Error>(
         DemoFSMState.Error::class,
         DemoFSMState.Error::class
     ) {

@@ -1,11 +1,11 @@
 package authFSM.actions
 
 import authFSM.AuthFSMState.*
-import authFSM.AuthFSMTransition
+import ru.kontur.mobile.visualfsm.Transition
 
 class StartRegistration(val mail: String, val password: String) : AuthFSMAction() {
     inner class RegistrationStart :
-        AuthFSMTransition<Registration, ConfirmationRequested>(
+        Transition<Registration, ConfirmationRequested>(
             Registration::class,
             ConfirmationRequested::class
         ) {
@@ -19,7 +19,7 @@ class StartRegistration(val mail: String, val password: String) : AuthFSMAction(
     }
 
     inner class ValidationFailed :
-        AuthFSMTransition<Registration, Registration>(
+        Transition<Registration, Registration>(
             Registration::class,
             Registration::class
         ) {

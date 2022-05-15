@@ -18,7 +18,6 @@ object VisualFSM {
      */
     fun <STATE : State> generateDigraph(
         baseActionClass: KClass<out Action<STATE>>,
-        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
         useTransitionName: Boolean = true,
@@ -31,7 +30,6 @@ object VisualFSM {
 
         getEdgeListGraph(
             baseActionClass,
-            baseTransitionClass,
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // Пробел перед названием action'а нужен для аккуратного отображения
@@ -44,7 +42,6 @@ object VisualFSM {
 
         getUnreachableStates(
             baseActionClass,
-            baseTransitionClass,
             baseState,
             initialState
         ).forEach {
@@ -64,7 +61,6 @@ object VisualFSM {
     @Suppress("UNCHECKED_CAST")
     fun <STATE : State> getEdgeListGraph(
         baseActionClass: KClass<out Action<STATE>>,
-        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         useTransitionName: Boolean,
     ): List<Triple<KClass<out STATE>, KClass<out STATE>, String>> {
         val edgeList = mutableListOf<Triple<KClass<out STATE>, KClass<out STATE>, String>>()
@@ -73,7 +69,7 @@ object VisualFSM {
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
+                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
@@ -109,7 +105,6 @@ object VisualFSM {
      */
     fun <STATE : State> getUnreachableStates(
         baseActionClass: KClass<out Action<STATE>>,
-        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
     ): List<KClass<out STATE>> {
@@ -119,7 +114,6 @@ object VisualFSM {
 
         val graph = getAdjacencyMap(
             baseActionClass,
-            baseTransitionClass,
             baseState,
         )
 
@@ -159,14 +153,12 @@ object VisualFSM {
      */
     fun <STATE : State> getFinalStates(
         baseActionClass: KClass<out Action<STATE>>,
-        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         baseState: KClass<STATE>,
     ): List<KClass<out STATE>> {
         val finalStates = mutableListOf<KClass<out STATE>>()
 
         val graph = getAdjacencyMap(
             baseActionClass,
-            baseTransitionClass,
             baseState,
         )
 
@@ -186,7 +178,6 @@ object VisualFSM {
      */
     private fun <STATE : State> getAdjacencyMap(
         baseActionClass: KClass<out Action<STATE>>,
-        baseTransitionClass: KClass<out Transition<out STATE, out STATE>>,
         baseState: KClass<STATE>,
     ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
         val stateNames = HashSet<KClass<out STATE>>()
@@ -199,7 +190,7 @@ object VisualFSM {
 
         actions.forEach { actionClass: KClass<out Action<*>> ->
             val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(baseTransitionClass) }
+                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments

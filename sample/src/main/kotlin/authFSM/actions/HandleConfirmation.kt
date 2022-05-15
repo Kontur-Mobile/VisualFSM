@@ -1,11 +1,11 @@
 package authFSM.actions
 
 import authFSM.AuthFSMState.*
-import authFSM.AuthFSMTransition
+import ru.kontur.mobile.visualfsm.Transition
 
 class HandleConfirmation(val confirmed: Boolean) : AuthFSMAction() {
     inner class Confirm :
-        AuthFSMTransition<ConfirmationRequested, AsyncWorkState.Registering>(
+        Transition<ConfirmationRequested, AsyncWorkState.Registering>(
             ConfirmationRequested::class, AsyncWorkState.Registering::class
         ) {
         override fun predicate(state: ConfirmationRequested): Boolean {
@@ -18,7 +18,7 @@ class HandleConfirmation(val confirmed: Boolean) : AuthFSMAction() {
     }
 
     inner class Cancel :
-        AuthFSMTransition<ConfirmationRequested, Registration>(
+        Transition<ConfirmationRequested, Registration>(
             ConfirmationRequested::class, Registration::class
         ) {
         override fun predicate(state: ConfirmationRequested): Boolean {

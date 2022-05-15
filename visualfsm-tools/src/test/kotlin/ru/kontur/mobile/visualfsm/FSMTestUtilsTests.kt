@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.*
-import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMTransition
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions.DemoFSMAction
 
 class FSMTestUtilsTests {
@@ -42,7 +41,6 @@ class FSMTestUtilsTests {
         println(
             VisualFSM.generateDigraph(
                 baseActionClass = DemoFSMAction::class,
-                baseTransitionClass = DemoFSMTransition::class,
                 baseState = DemoFSMState::class,
                 initialState = Initial::class,
                 true
@@ -56,7 +54,6 @@ class FSMTestUtilsTests {
     fun getFinalStatesTest() {
         val finalStates = VisualFSM.getFinalStates(
             baseActionClass = DemoFSMAction::class,
-            baseTransitionClass = DemoFSMTransition::class,
             baseState = DemoFSMState::class,
         )
 
@@ -67,13 +64,11 @@ class FSMTestUtilsTests {
     fun getEdgeListGraphTest() {
         val edgeListWithTransitionName = VisualFSM.getEdgeListGraph(
             baseActionClass = DemoFSMAction::class,
-            baseTransitionClass = DemoFSMTransition::class,
             useTransitionName = true
         )
 
         val edgeListWithoutTransitionName = VisualFSM.getEdgeListGraph(
             baseActionClass = DemoFSMAction::class,
-            baseTransitionClass = DemoFSMTransition::class,
             useTransitionName = false
         )
 
