@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class VisualFSMToolsTests {
+class StateMachineTests {
 
     @Test
     fun generateDigraphTest(){
