@@ -1,13 +1,13 @@
 package ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.actions
 
+import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMState.AsyncWorkState.Loading
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMState.AsyncWorkState.Updating
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMState.Loaded
-import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMTransition
 
 class HandleLoaded : AllStatesReachabilityFSMAction() {
 
-    inner class LoadingToLoadedTransition : AllStatesReachabilityFSMTransition<Loading, Loaded>(
+    inner class LoadingToLoadedTransition : Transition<Loading, Loaded>(
         Loading::class,
         Loaded::class
     ) {
@@ -15,7 +15,7 @@ class HandleLoaded : AllStatesReachabilityFSMAction() {
         override fun transform(state: Loading) = Loaded
     }
 
-    inner class UpdatingToLoadedTransition : AllStatesReachabilityFSMTransition<Updating, Loaded>(
+    inner class UpdatingToLoadedTransition : Transition<Updating, Loaded>(
         Updating::class,
         Loaded::class
     ) {

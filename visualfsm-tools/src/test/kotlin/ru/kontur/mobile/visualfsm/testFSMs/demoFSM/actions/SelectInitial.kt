@@ -1,11 +1,11 @@
 package ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions
 
+import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
-import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMTransition
 
 class SelectInitial : DemoFSMAction() {
 
-    inner class StartLoadData() : DemoFSMTransition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Loading>(
+    inner class StartLoadData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Loading>(
         DemoFSMState.Initial::class,
         DemoFSMState.AsyncWorkState.DataOut.Loading::class
     ) {
@@ -14,7 +14,7 @@ class SelectInitial : DemoFSMAction() {
         }
     }
 
-    inner class StartFindData() : DemoFSMTransition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Finding>(
+    inner class StartFindData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Finding>(
         DemoFSMState.Initial::class,
         DemoFSMState.AsyncWorkState.DataOut.Finding::class
     ) {
@@ -23,7 +23,7 @@ class SelectInitial : DemoFSMAction() {
         }
     }
 
-    inner class StartSaveData() : DemoFSMTransition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataIn.Saving>(
+    inner class StartSaveData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataIn.Saving>(
         DemoFSMState.Initial::class,
         DemoFSMState.AsyncWorkState.DataIn.Saving::class
     ) {
@@ -32,7 +32,7 @@ class SelectInitial : DemoFSMAction() {
         }
     }
 
-    inner class NoData() : DemoFSMTransition<DemoFSMState.Initial, DemoFSMState.FinalInitialState>(
+    inner class NoData() : Transition<DemoFSMState.Initial, DemoFSMState.FinalInitialState>(
         DemoFSMState.Initial::class,
         DemoFSMState.FinalInitialState::class
     ) {

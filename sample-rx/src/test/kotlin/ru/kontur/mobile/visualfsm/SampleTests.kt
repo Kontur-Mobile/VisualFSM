@@ -1,8 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
-import demoFSM.DemoFSMState
-import demoFSM.DemoFSMTransition
-import demoFSM.actions.DemoFSMAction
+import authFSM.AuthFSMState
+import authFSM.actions.AuthFSMAction
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
@@ -13,10 +12,9 @@ class SampleTests {
     fun generateDigraph() {
         println(
             VisualFSM.generateDigraph(
-                DemoFSMAction::class,
-                DemoFSMTransition::class,
-                DemoFSMState::class,
-                DemoFSMState.Initial::class,
+                AuthFSMAction::class,
+                AuthFSMState::class,
+                AuthFSMState.Login::class,
             )
         )
         Assertions.assertTrue(true)
@@ -25,10 +23,9 @@ class SampleTests {
     @Test
     fun allStatesReachableTest() {
         val notReachableStates = VisualFSM.getUnreachableStates(
-            DemoFSMAction::class,
-            DemoFSMTransition::class,
-            DemoFSMState::class,
-            DemoFSMState.Initial::class,
+            AuthFSMAction::class,
+            AuthFSMState::class,
+            AuthFSMState.Login::class,
         )
 
         Assertions.assertTrue(
