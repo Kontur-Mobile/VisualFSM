@@ -30,11 +30,10 @@ abstract class Feature<STATE : State, ACTION : Action<STATE>>(
     /**
      * Returns current state
      *
-     * @throws NoSuchElementException if flow of states is empty
      * @return current [state][State]
      */
-    suspend fun getSingleState(): STATE {
-        return store.getStateSingle()
+    fun getSingleState(): STATE {
+        return store.getCurrentState()
     }
 
     /**

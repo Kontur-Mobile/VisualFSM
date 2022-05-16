@@ -3,7 +3,6 @@ package ru.kontur.mobile.visualfsm
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.single
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
@@ -32,8 +31,8 @@ abstract class Store<STATE : State, ACTION : Action<STATE>>(
      *
      * @return current [state][State]
      */
-    internal suspend fun getStateSingle(): STATE {
-        return stateFlow.single()
+    internal fun getCurrentState(): STATE {
+        return stateFlow.value
     }
 
     /**
