@@ -145,9 +145,10 @@ A sample FSM of authorization and registration of a user: [sample](./sample).
 ```kotlin
     // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
     val authFeature = Feature(
-    initialState = AuthFSMState.Login("", ""),
-    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
-    transitionCallbacks = TransitionCallbacksImpl())
+        initialState = AuthFSMState.Login("", ""),
+        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+        transitionCallbacks = TransitionCallbacksImpl()
+    )
 
     // Observe states on Feature
     authFeature.observeState().collect {state -> }

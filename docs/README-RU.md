@@ -145,9 +145,10 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 ```kotlin
     // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
     val authFeature = Feature(
-    initialState = AuthFSMState.Login("", ""),
-    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
-    transitionCallbacks = TransitionCallbacksImpl())
+        initialState = AuthFSMState.Login("", ""),
+        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+        transitionCallbacks = TransitionCallbacksImpl()
+    )
 
     // Подписка на состояния в Feature
     authFeature.observeState().collect {state -> }
