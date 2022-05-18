@@ -21,7 +21,7 @@ Base classes, JVM and KMM parts
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Support of RxJava (StoreRx, AsyncWorkerRx, FeatureRx and dependent classes)
+Support of RxJava (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
@@ -49,15 +49,16 @@ A simplified FSM graph sample of user authorization and registration.
 Validation on reachability for all states, on set of terminal states and lack of unexpected dead-end
 states, custom graph checks in unit tests.
 
-### The equality of regular and async states
+### Managing asynchronous operations
 
-Every async action is presented as a single state, because of this we can have a common set of
+Every async action can be represented by separate states, because of this we can have a common set of
 states that are lining up to a directed graph.
+
+An AsyncWorker object allows you to simplify the processing of states with asynchronous work.
 
 ## Structure of VisualFSM
 
-The main entities are `State`, `Action`, `AsyncWorker`, `Transition`, `Store`, `Feature`,
-and `TransitionCallbacks`.
+The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
 
 ### State of VisualFSM
 
@@ -142,6 +143,25 @@ no `Transition`s or multiple `Transition`s available.
 ## Sample of usage
 
 A sample FSM of authorization and registration of a user: [sample](./sample).
+
+### AuthFeature
+
+```kotlin
+    // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
+    val authFeature = Feature(
+    initialState = AuthFSMState.Login("", ""),
+    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+    transitionCallbacks = TransitionCallbacksImpl())
+
+    // Observe states on Feature
+    authFeature.observeState().collect {state -> }
+
+    // Observe states on FeatureRx
+    authFeature.observeState().subscribe {state -> } 
+
+    // Proceed Action
+    authFeature.proceed(Authenticate("", ""))
+```
 
 ### AuthFSMState.kt
 
@@ -264,24 +284,6 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         BadCredential(),
         ConnectionFailed(),
     )
-}
-```
-
-### AuthFeature.kt
-
-```kotlin
-class AuthFeature(callbacks: TransitionCallbacks<AuthFSMState>) :
-    Feature<AuthFSMState, AuthFSMAction>(
-        AuthFSMStore(callbacks),
-        AuthFSMAsyncWorker(AuthInteractor())
-    ) {
-    fun auth() {
-        proceed(Authenticate())
-    }
-
-    fun registration() {
-        proceed(StartRegistration())
-    }
 }
 ```
 

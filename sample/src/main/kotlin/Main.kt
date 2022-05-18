@@ -9,9 +9,9 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
 
 fun main() {
     val authFeature = Feature(
-        AuthFSMState.Login("", ""),
-        AuthFSMAsyncWorker(AuthInteractor()),
-        object : TransitionCallbacks<AuthFSMState> {
+        initialState = AuthFSMState.Login("", ""),
+        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+        transitionCallbacks = object : TransitionCallbacks<AuthFSMState> {
             override fun onActionLaunched(action: Action<AuthFSMState>, currentState: AuthFSMState) {
                 println("onActionLaunched\naction=$action\ncurrentState=$currentState")
             }

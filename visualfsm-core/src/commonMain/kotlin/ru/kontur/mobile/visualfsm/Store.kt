@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions
  */
 internal class Store<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE, private val transitionCallbacks: TransitionCallbacks<STATE>
+    initialState: STATE, private val transitionCallbacks: TransitionCallbacks<STATE>?
 ) {
 
     private val stateFlow = MutableStateFlow(initialState)

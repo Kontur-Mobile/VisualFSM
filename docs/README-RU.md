@@ -21,7 +21,7 @@
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Поддержка RxJava (StoreRx, AsyncWorkerRx, FeatureRx и их зависимости)
+Поддержка RxJava (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
@@ -49,15 +49,15 @@ _поиск ошибок_, _добавление нового функциона
 Проверка на достижимость всех состояний, проверка множества терминальных состояний и отсутствия
 незапланированных тупиковых состояний, кастомные проверки графа в unit-тестах.
 
-### Равенство обычных и асинхронных состояний
+### Управление асинхронными операциями
 
-Каждое асинхронное действие представлено отдельным состоянием – благодаря этому мы имеем единый
-набор состояний, которые выстраиваются в направленный граф.
+Асинхронная работа может быть представлена отдельными состояниями – благодаря этому мы имеем единый
+набор состояний, которые выстраиваются в направленный граф. 
+Объект AsyncWorker позволяет упростить обработку состояний в которых выполняется асинхронная работа. 
 
 ## Структура VisualFSM
 
-Основные сущности, которые используются, – `State`, `Action`, `Transition`, `AsyncWorker`, `Store`
-, `Feature` и `TransitionCallbacks`.
+Основные сущности, которые используются, – `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
 
 ### State в VisualFSM
 
@@ -124,14 +124,9 @@ _поиск ошибок_, _добавление нового функциона
 
 <img src="asyncworker.png" alt="graph" width="600"/>
 
-### Store в VisualFSM
-
-`Store` — ядро FSM, хранит текущий `State`, предоставляет подписку на него и обрабатывает
-входящие `Action`.
-
 ### Feature в VisualFSM
 
-`Feature` — фасад к FSM, используется во `View`.
+`Feature` — фасад к FSM, предоставляет подписку на `State` и принимает `Action` для обработки.
 
 ### TransitionCallbacks в VisualFSM
 
@@ -143,6 +138,26 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 ## Пример использования
 
 Пример реализации FSM авторизации и регистрации пользователя: [sample](../sample).
+
+
+### AuthFeature
+
+```kotlin
+    // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
+    val authFeature = Feature(
+    initialState = AuthFSMState.Login("", ""),
+    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+    transitionCallbacks = TransitionCallbacksImpl())
+
+    // Подписка на состояния в Feature
+    authFeature.observeState().collect {state -> }
+
+    // Подписка на состояния в FeatureRx
+    authFeature.observeState().subscribe {state -> } 
+
+    // Выполнение Action
+    authFeature.proceed(Authenticate("", ""))
+```
 
 ### AuthFSMState.kt
 
@@ -265,23 +280,6 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         BadCredential(),
         ConnectionFailed(),
     )
-}
-```
-
-### AuthFeature.kt
-
-```kotlin
-class AuthFeature(callbacks: TransitionCallbacks<AuthFSMState>) : Feature<AuthFSMState, AuthFSMAction>(
-    AuthFSMStore(callbacks),
-    AuthFSMAsyncWorker(AuthInteractor())
-) {
-    fun auth() {
-        proceed(Authenticate())
-    }
-
-    fun registration() {
-        proceed(StartRegistration())
-    }
 }
 ```
 

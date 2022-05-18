@@ -7,18 +7,18 @@ import io.reactivex.Observable
  * and [proceed] method to call [actions][Action]
  *
  * @param initialState initial [state][State]
- * @param asyncWorker [AsyncWorkerRx] instance
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions
+ * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions (optional)
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
-    asyncWorker: AsyncWorkerRx<STATE, ACTION>,
-    transitionCallbacks: TransitionCallbacks<STATE>,
+    asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+    transitionCallbacks: TransitionCallbacks<STATE>? = null,
 ) {
     private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
 
     init {
-        asyncWorker.bind(this)
+        asyncWorker?.bind(this)
     }
 
     /**

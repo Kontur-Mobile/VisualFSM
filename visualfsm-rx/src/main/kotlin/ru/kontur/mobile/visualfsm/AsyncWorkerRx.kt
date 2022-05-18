@@ -25,12 +25,13 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Unbind from store, dispose async task and stops observing states
+     * Dispose current task and unbind feature. Use it if the async worker is no longer needed (onCleared)
+     * If you only need to stop the current task, use feature.proceed(_SomeActionForStop_())
      */
     fun unbind() {
-        feature = null
         dispose()
         subscriptionDisposable?.dispose()
+        feature = null
     }
 
     /**
@@ -55,7 +56,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Submits an [action][Action] to be executed in the [StoreRx]
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
      * @param action launched [Action]
      */

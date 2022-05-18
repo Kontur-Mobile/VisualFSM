@@ -29,9 +29,9 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
     /**
      * Binds received [feature][Feature] to [async worker][AsyncWorker]
-     * and starts [observing][Store.observeState] [states][State]
+     * and starts [observing][Feature.observeState] [states][State]
      *
-     * @param feature provided [Store]
+     * @param feature provided [Feature]
      */
     internal fun bind(feature: Feature<STATE, ACTION>) {
         this.feature = feature
@@ -47,7 +47,8 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Cancel current task and unbind store. Use it if the async worker is no longer needed (onCleared)
+     * Cancel current task and unbind feature. Use it if the async worker is no longer needed (onCleared)
+     * If you only need to stop the current task, use feature.proceed(_SomeActionForStop_())
      */
     fun unbind() {
         cancel()
@@ -77,7 +78,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Submits an [action][Action] to be executed to the [store][Store]
+     * Submits an [action][Action] to be executed to the [feature][Feature]
      *
      * @param action [Action] to run
      */

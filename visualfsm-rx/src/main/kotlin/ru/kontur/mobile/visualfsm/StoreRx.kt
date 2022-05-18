@@ -12,7 +12,7 @@ import io.reactivex.subjects.BehaviorSubject
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
-    private val transitionCallbacks: TransitionCallbacks<STATE>
+    private val transitionCallbacks: TransitionCallbacks<STATE>?
 ) {
 
     @Volatile

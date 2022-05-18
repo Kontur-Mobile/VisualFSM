@@ -7,19 +7,19 @@ import kotlinx.coroutines.flow.Flow
  * and [proceed] method to call [actions][Action]
  *
  * @param initialState initial [state][State]
- * @param asyncWorker [AsyncWorker] instance
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions
+ * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions (optional)
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
-    asyncWorker: AsyncWorker<STATE, ACTION>,
-    transitionCallbacks: TransitionCallbacks<STATE>,
+    asyncWorker: AsyncWorker<STATE, ACTION>? = null,
+    transitionCallbacks: TransitionCallbacks<STATE>? = null,
 ) {
 
     private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
 
     init {
-        asyncWorker.bind(this)
+        asyncWorker?.bind(this)
     }
 
     /**
