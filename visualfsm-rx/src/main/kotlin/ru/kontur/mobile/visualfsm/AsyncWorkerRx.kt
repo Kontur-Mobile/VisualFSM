@@ -61,7 +61,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun proceed(action: ACTION) {
-        feature?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
+        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
     }
 
     /**

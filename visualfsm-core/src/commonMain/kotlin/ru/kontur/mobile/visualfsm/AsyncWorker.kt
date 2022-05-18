@@ -83,7 +83,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action [Action] to run
      */
     fun proceed(action: ACTION) {
-        feature?.proceed(action) ?: throw IllegalStateException("Store is unbound")
+        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
     }
 
     /**

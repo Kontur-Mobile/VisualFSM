@@ -124,14 +124,10 @@ To handle a state change to state without async work, you must use a task:
 
 <img src="docs/asyncworker.png" alt="graph" width="600"/>
 
-### Store of VisualFSM
-
-`Store` is the core of FSM, it stores current `State`, provides subscription on current `State`, and
-processes incoming `Action`s.
-
 ### Feature of VisualFSM
 
-`Feature` is the facade for FSM, is used in `View`.
+`Feature` is the facade for FSM, provides subscription on current `State`, and
+processes incoming `Action`s.
 
 ### TransitionCallbacks of VisualFSM
 
