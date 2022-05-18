@@ -6,21 +6,20 @@ import io.reactivex.disposables.Disposable
  * Manages the start and stop of state-based asynchronous tasks
  */
 abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
-    private var store: StoreRx<STATE, ACTION>? = null
+    private var feature: FeatureRx<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
     private var subscriptionDisposable: Disposable? = null
     private var launchedAsyncStateDisposable: Disposable? = null
 
     /**
-     * Binds received [store][StoreRx] to [async worker][AsyncWorkerRx]
-     * and starts [observing][StoreRx.observeState] [states][State]
+     * Binds received [feature][FeatureRx] to [async worker][AsyncWorkerRx]
+     * and starts [observing][FeatureRx.observeState] [states][State]
      *
-     * @param store provided [StoreRx]
+     * @param feature provided [FeatureRx]
      */
-    @Synchronized
-    fun bind(store: StoreRx<STATE, ACTION>) {
-        this.store = store
-        subscriptionDisposable = store.observeState()
+    internal fun bind(feature: FeatureRx<STATE, ACTION>) {
+        this.feature = feature
+        subscriptionDisposable = feature.observeState()
             .map(::onNextState)
             .subscribe(::handleTask, ::onStateSubscriptionError)
     }
@@ -28,9 +27,8 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Unbind from store, dispose async task and stops observing states
      */
-    @Synchronized
     fun unbind() {
-        store = null
+        feature = null
         dispose()
         subscriptionDisposable?.dispose()
     }
@@ -62,7 +60,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun proceed(action: ACTION) {
-        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
+        feature?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
     }
 
     /**

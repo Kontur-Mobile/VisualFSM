@@ -4,18 +4,22 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
- * and manages [actions][Action] start with [proceed] method call
+ * and [proceed] method to call [actions][Action]
  *
- * @param store [Store] instance
+ * @param initialState initial [state][State]
  * @param asyncWorker [AsyncWorker] instance
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions
  */
-abstract class Feature<STATE : State, ACTION : Action<STATE>>(
-    private val store: Store<STATE, ACTION>,
+open class Feature<STATE : State, ACTION : Action<STATE>>(
+    initialState: STATE,
     asyncWorker: AsyncWorker<STATE, ACTION>,
+    transitionCallbacks: TransitionCallbacks<STATE>,
 ) {
 
+    private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
+
     init {
-        asyncWorker.bind(store)
+        asyncWorker.bind(this)
     }
 
     /**
@@ -41,7 +45,7 @@ abstract class Feature<STATE : State, ACTION : Action<STATE>>(
      *
      * @param action [Action] to run
      */
-    protected fun proceed(action: ACTION) {
+    open fun proceed(action: ACTION) {
         return store.proceed(action)
     }
 }
