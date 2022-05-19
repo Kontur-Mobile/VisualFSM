@@ -51,10 +51,10 @@ states, custom graph checks in unit tests.
 
 ### Managing asynchronous operations
 
-Every async action can be represented by separate states, because of this we can have a common set of
+Every async work can be represented by separate states, because of this we can have a common set of
 states that are lining up to a directed graph.
 
-An AsyncWorker object allows you to simplify the processing of states with asynchronous work.
+An AsyncWorker allows you to simplify the processing of states with asynchronous work.
 
 ## Structure of VisualFSM
 
@@ -127,7 +127,7 @@ To handle a state change to state without async work, you must use a task:
 ### Feature of VisualFSM
 
 `Feature` is the facade for FSM, provides subscription on current `State`, and
-processes incoming `Action`s.
+proceeds incoming `Action`s.
 
 ### TransitionCallbacks of VisualFSM
 

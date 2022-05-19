@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
- * and [proceed] method to call [actions][Action]
+ * and [proceed] method to execute [actions][Action]
  *
  * @param initialState initial [state][State]
  * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
