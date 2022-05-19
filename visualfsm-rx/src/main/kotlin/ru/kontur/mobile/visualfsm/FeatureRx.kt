@@ -4,18 +4,21 @@ import io.reactivex.Observable
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
- * and manages [actions][Action] start with [proceed] method call
+ * and [proceed] method to execute [actions][Action]
  *
- * @param store [StoreRx] instance
- * @param asyncWorker [AsyncWorkerRx] instance
+ * @param initialState initial [state][State]
+ * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
-abstract class FeatureRx<STATE : State, ACTION : Action<STATE>>(
-    private val store: StoreRx<STATE, ACTION>,
-    asyncWorker: AsyncWorkerRx<STATE, ACTION>,
+open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
+    initialState: STATE,
+    asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+    transitionCallbacks: TransitionCallbacks<STATE>? = null,
 ) {
+    private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
 
     init {
-        asyncWorker.bind(store)
+        asyncWorker?.bind(this)
     }
 
     /**
@@ -41,7 +44,7 @@ abstract class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      *
      * @param action [Action] to run
      */
-    protected fun proceed(action: ACTION) {
+    open fun proceed(action: ACTION) {
         return store.proceed(action)
     }
 }

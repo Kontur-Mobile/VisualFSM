@@ -22,21 +22,21 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      */
     protected open val subscriptionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-    private var store: Store<STATE, ACTION>? = null
+    private var feature: Feature<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
     private var subscriptionJob: Job? = null
     private var launchedAsyncStateJob: Job? = null
 
     /**
-     * Binds received [store][Store] to [async worker][AsyncWorker]
-     * and starts [observing][Store.observeState] [states][State]
+     * Binds received [feature][Feature] to [async worker][AsyncWorker]
+     * and starts [observing][Feature.observeState] [states][State]
      *
-     * @param store provided [Store]
+     * @param feature provided [Feature]
      */
-    fun bind(store: Store<STATE, ACTION>) {
-        this.store = store
+    internal fun bind(feature: Feature<STATE, ACTION>) {
+        this.feature = feature
         subscriptionJob = subscriptionScope.launch {
-            store.observeState().map {
+            feature.observeState().map {
                 onNextState(it)
             }.onEach {
                 handleTask(it)
@@ -47,12 +47,13 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Unbind from store, cancel async task and stops observing states
+     * Cancel current task and unbind feature. Use it if the async worker is no longer needed (onCleared)
+     * If you only need to stop the current task, use feature.proceed(_SomeActionForStop_())
      */
     fun unbind() {
-        store = null
         cancel()
         subscriptionJob?.cancel()
+        feature = null
     }
 
     /**
@@ -77,12 +78,12 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Submits an [action][Action] to be executed to the [store][Store]
+     * Submits an [action][Action] to be executed to the [feature][Feature]
      *
      * @param action [Action] to run
      */
     fun proceed(action: ACTION) {
-        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
+        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
     }
 
     /**

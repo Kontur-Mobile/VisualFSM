@@ -21,27 +21,27 @@ abstract class Action<STATE : State> {
      * @param callbacks [transition callbacks][TransitionCallbacks]
      * @return [new state][State]
      */
-    fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>): STATE {
-        callbacks.onActionLaunched(this, oldState)
+    fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>?): STATE {
+        callbacks?.onActionLaunched(this, oldState)
 
         val availableTransitions = getAvailableTransitions(oldState)
 
         if (availableTransitions.size > 1) {
-            callbacks.onMultipleTransitionError(this, oldState)
+            callbacks?.onMultipleTransitionError(this, oldState)
         }
 
         val selectedTransition = availableTransitions.firstOrNull()
 
         if (selectedTransition == null) {
-            callbacks.onNoTransitionError(this, oldState)
+            callbacks?.onNoTransitionError(this, oldState)
             return oldState
         }
 
-        callbacks.onTransitionSelected(this, selectedTransition, oldState)
+        callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
         val newState = selectedTransition.transform(oldState)
 
-        callbacks.onNewStateReduced(this, selectedTransition, oldState, newState)
+        callbacks?.onNewStateReduced(this, selectedTransition, oldState, newState)
 
         return newState
     }

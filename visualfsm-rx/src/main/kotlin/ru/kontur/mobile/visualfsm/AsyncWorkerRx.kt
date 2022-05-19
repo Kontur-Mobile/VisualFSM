@@ -6,33 +6,32 @@ import io.reactivex.disposables.Disposable
  * Manages the start and stop of state-based asynchronous tasks
  */
 abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
-    private var store: StoreRx<STATE, ACTION>? = null
+    private var feature: FeatureRx<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
     private var subscriptionDisposable: Disposable? = null
     private var launchedAsyncStateDisposable: Disposable? = null
 
     /**
-     * Binds received [store][StoreRx] to [async worker][AsyncWorkerRx]
-     * and starts [observing][StoreRx.observeState] [states][State]
+     * Binds received [feature][FeatureRx] to [async worker][AsyncWorkerRx]
+     * and starts [observing][FeatureRx.observeState] [states][State]
      *
-     * @param store provided [StoreRx]
+     * @param feature provided [FeatureRx]
      */
-    @Synchronized
-    fun bind(store: StoreRx<STATE, ACTION>) {
-        this.store = store
-        subscriptionDisposable = store.observeState()
+    internal fun bind(feature: FeatureRx<STATE, ACTION>) {
+        this.feature = feature
+        subscriptionDisposable = feature.observeState()
             .map(::onNextState)
             .subscribe(::handleTask, ::onStateSubscriptionError)
     }
 
     /**
-     * Unbind from store, dispose async task and stops observing states
+     * Dispose current task and unbind feature. Use it if the async worker is no longer needed (onCleared)
+     * If you only need to stop the current task, use feature.proceed(_SomeActionForStop_())
      */
-    @Synchronized
     fun unbind() {
-        store = null
         dispose()
         subscriptionDisposable?.dispose()
+        feature = null
     }
 
     /**
@@ -57,12 +56,12 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     }
 
     /**
-     * Submits an [action][Action] to be executed in the [StoreRx]
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
      * @param action launched [Action]
      */
     fun proceed(action: ACTION) {
-        store?.proceed(action) ?: throw IllegalStateException("Use bind function to binding to Store")
+        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
     }
 
     /**
