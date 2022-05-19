@@ -8,7 +8,7 @@ import io.reactivex.Observable
  *
  * @param initialState initial [state][State]
  * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,

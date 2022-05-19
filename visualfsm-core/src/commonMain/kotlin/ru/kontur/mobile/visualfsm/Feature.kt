@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * @param initialState initial [state][State]
  * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,

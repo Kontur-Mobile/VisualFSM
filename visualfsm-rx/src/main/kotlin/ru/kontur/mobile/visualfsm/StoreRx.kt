@@ -8,7 +8,7 @@ import io.reactivex.subjects.BehaviorSubject
  * It is the core of the state machine, takes an [action][Action] as input and returns [states][State] as output
  *
  * @param initialState initial [state][State]
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] that used on some [Action] and [Transition] actions
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
