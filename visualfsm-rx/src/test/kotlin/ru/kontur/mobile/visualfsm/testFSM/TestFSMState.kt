@@ -6,4 +6,5 @@ sealed class TestFSMState : State {
     object A: TestFSMState()
     object B: TestFSMState()
     object C: TestFSMState()
+    object D: TestFSMState()
 }
