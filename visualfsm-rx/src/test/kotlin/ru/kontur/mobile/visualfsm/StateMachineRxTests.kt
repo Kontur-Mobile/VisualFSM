@@ -1,6 +1,6 @@
 package ru.kontur.mobile.visualfsm
 
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
@@ -20,7 +20,7 @@ class StateMachineRxTests {
             initialState = TestFSMState.Initial::class
         )
 
-        Assertions.assertEquals(
+        assertEquals(
             "\n" +
                     "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\"\n" +
@@ -69,11 +69,11 @@ class StateMachineRxTests {
     fun startAsyncTest() {
         val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 1))
+        assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
     }
 
     @Test
@@ -81,11 +81,11 @@ class StateMachineRxTests {
         val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 1))
+        assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
 
         testObserver.awaitCount(3)
 
@@ -103,11 +103,11 @@ class StateMachineRxTests {
         val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("error", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("error", 1))
+        assertEquals(TestFSMState.Async("error", 1), feature.getCurrentState())
 
         testObserver.awaitCount(3)
         testObserver.assertValues(
@@ -123,22 +123,21 @@ class StateMachineRxTests {
         val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 100))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 100))
+        assertEquals(TestFSMState.Async("async1", 100), feature.getCurrentState())
 
         feature.proceed(Cancel())
 
         //Task canceled
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         //Start new
         feature.proceed(Start("async2", 150))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async2", 150))
-
+        assertEquals(TestFSMState.Async("async2", 150), feature.getCurrentState())
 
         testObserver.awaitCount(5)
         testObserver.assertValues(
@@ -146,7 +145,8 @@ class StateMachineRxTests {
             TestFSMState.Async("async1", 100),
             TestFSMState.Initial,
             TestFSMState.Async("async2", 150),
-            TestFSMState.Complete("async2"))
+            TestFSMState.Complete("async2")
+        )
         testObserver.dispose()
     }
 }

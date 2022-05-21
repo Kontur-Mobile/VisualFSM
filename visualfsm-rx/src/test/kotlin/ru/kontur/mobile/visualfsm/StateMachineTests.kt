@@ -3,7 +3,6 @@ package ru.kontur.mobile.visualfsm
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.*
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -24,7 +23,7 @@ class StateMachineTests {
             initialState = TestFSMState.Initial::class
         )
 
-        Assertions.assertEquals(
+        assertEquals(
             "\n" +
                     "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\"\n" +
@@ -73,11 +72,11 @@ class StateMachineTests {
     fun startAsyncTest() {
         val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 1))
+        assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
     }
 
     @Test
@@ -91,11 +90,11 @@ class StateMachineTests {
             }
         }
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 1))
+        assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
 
         job.await()
 
@@ -120,11 +119,11 @@ class StateMachineTests {
             }
         }
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("error", 1))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("error", 1))
+        assertEquals(TestFSMState.Async("error", 1), feature.getCurrentState())
 
         job.await()
 
@@ -149,21 +148,21 @@ class StateMachineTests {
             }
         }
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 100))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async1", 100))
+        assertEquals(TestFSMState.Async("async1", 100), feature.getCurrentState())
 
         feature.proceed(Cancel())
 
         //Task canceled
-        assertTrue(feature.getCurrentState() == TestFSMState.Initial)
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         //Start new
         feature.proceed(Start("async2", 150))
 
-        assertTrue(feature.getCurrentState() == TestFSMState.Async("async2", 150))
+        assertEquals(TestFSMState.Async("async2", 150), feature.getCurrentState())
 
         job.await()
 
