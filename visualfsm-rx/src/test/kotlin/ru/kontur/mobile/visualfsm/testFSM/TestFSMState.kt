@@ -3,8 +3,8 @@ package ru.kontur.mobile.visualfsm.testFSM
 import ru.kontur.mobile.visualfsm.State
 
 sealed class TestFSMState : State {
-    object A: TestFSMState()
-    object B: TestFSMState()
-    object C: TestFSMState()
-    object D: TestFSMState()
+    object Initial : TestFSMState()
+    data class Async(val label: String, val milliseconds: Int) : TestFSMState()
+    data class Complete(val label: String) : TestFSMState()
+    object Error : TestFSMState()
 }

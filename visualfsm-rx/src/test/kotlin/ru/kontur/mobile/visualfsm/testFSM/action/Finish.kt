@@ -3,19 +3,19 @@ package ru.kontur.mobile.visualfsm.testFSM.action
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 
-class Finish(val result: Boolean) : TestFSMAction() {
+class Finish(val success: Boolean) : TestFSMAction() {
 
-    inner class BtoC : Transition<TestFSMState.B, TestFSMState.C>(TestFSMState.B::class, TestFSMState.C::class) {
-        override fun predicate(state: TestFSMState.B) = result
+    inner class Success : Transition<TestFSMState.Async, TestFSMState.Complete>(TestFSMState.Async::class, TestFSMState.Complete::class) {
+        override fun predicate(state: TestFSMState.Async) = success
 
-        override fun transform(state: TestFSMState.B) = TestFSMState.C
+        override fun transform(state: TestFSMState.Async) = TestFSMState.Complete(state.label)
     }
 
-    inner class BtoD : Transition<TestFSMState.B, TestFSMState.D>(TestFSMState.B::class, TestFSMState.D::class) {
-        override fun predicate(state: TestFSMState.B) = !result
+    inner class Error : Transition<TestFSMState.Async, TestFSMState.Error>(TestFSMState.Async::class, TestFSMState.Error::class) {
+        override fun predicate(state: TestFSMState.Async) = !success
 
-        override fun transform(state: TestFSMState.B) = TestFSMState.D
+        override fun transform(state: TestFSMState.Async) = TestFSMState.Error
     }
 
-    override fun getTransitions() = listOf(BtoC(), BtoD())
+    override fun getTransitions() = listOf(Success(), Error())
 }

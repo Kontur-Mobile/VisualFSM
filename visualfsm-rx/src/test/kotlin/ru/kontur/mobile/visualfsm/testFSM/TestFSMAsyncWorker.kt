@@ -11,10 +11,18 @@ import java.util.concurrent.TimeUnit
 class TestFSMAsyncWorker : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
     override fun onNextState(state: TestFSMState): AsyncWorkerTaskRx<TestFSMState> {
         return when (state) {
-            B -> AsyncWorkerTaskRx.ExecuteAndCancelExist(state) {
-                Single.just(true).delay(5, TimeUnit.SECONDS).subscribe({ proceed(Finish(true)) }, {})
+            is Async -> AsyncWorkerTaskRx.ExecuteAndCancelExist(state) {
+                Single.fromCallable {
+                    if ("error" == state.label) throw Exception("Error on async operation")
+                }
+                    .delay(state.milliseconds.toLong(), TimeUnit.MILLISECONDS)
+                    .subscribe({
+                        proceed(Finish(true))
+                    }, {
+                        proceed(Finish(false))
+                    })
             }
-            A, C, D -> AsyncWorkerTaskRx.Cancel()
+            else -> AsyncWorkerTaskRx.Cancel()
         }
     }
 }
