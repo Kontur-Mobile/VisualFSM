@@ -36,7 +36,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      *
      * @return current [state][State]
      */
-    fun getSingleState(): STATE {
+    fun getCurrentState(): STATE {
         return store.getCurrentState()
     }
 

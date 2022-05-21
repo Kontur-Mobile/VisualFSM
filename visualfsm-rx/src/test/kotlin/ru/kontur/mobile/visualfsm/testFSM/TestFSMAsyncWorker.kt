@@ -1,28 +1,24 @@
 package ru.kontur.mobile.visualfsm.testFSM
 
-import io.reactivex.Single
-import ru.kontur.mobile.visualfsm.AsyncWorkerRx
-import ru.kontur.mobile.visualfsm.AsyncWorkerTaskRx
+import kotlinx.coroutines.delay
+import ru.kontur.mobile.visualfsm.AsyncWorker
+import ru.kontur.mobile.visualfsm.AsyncWorkerTask
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.*
 import ru.kontur.mobile.visualfsm.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
-import java.util.concurrent.TimeUnit
 
-class TestFSMAsyncWorker : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
-    override fun onNextState(state: TestFSMState): AsyncWorkerTaskRx<TestFSMState> {
+class TestFSMAsyncWorker : AsyncWorker<TestFSMState, TestFSMAction>() {
+    override fun onNextState(state: TestFSMState): AsyncWorkerTask<TestFSMState> {
         return when (state) {
-            is Async -> AsyncWorkerTaskRx.ExecuteAndCancelExist(state) {
-                Single.fromCallable {
-                    if ("error" == state.label) throw Exception("Error on async operation")
+            is Async -> AsyncWorkerTask.ExecuteAndCancelExist(state) {
+                delay(state.milliseconds.toLong())
+                if ("error" == state.label) {
+                    proceed(Finish(false))
+                } else {
+                    proceed(Finish(true))
                 }
-                    .delay(state.milliseconds.toLong(), TimeUnit.MILLISECONDS)
-                    .subscribe({
-                        proceed(Finish(true))
-                    }, {
-                        proceed(Finish(false))
-                    })
             }
-            else -> AsyncWorkerTaskRx.Cancel()
+            else -> AsyncWorkerTask.Cancel()
         }
     }
 }
