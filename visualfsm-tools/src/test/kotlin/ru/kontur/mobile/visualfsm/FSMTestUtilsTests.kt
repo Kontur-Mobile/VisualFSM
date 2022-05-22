@@ -40,7 +40,7 @@ class FSMTestUtilsTests {
     fun generateDemoFSMGraph() {
         println(
             VisualFSM.generateDigraph(
-                baseActionClass = DemoFSMAction::class,
+                baseAction = DemoFSMAction::class,
                 baseState = DemoFSMState::class,
                 initialState = Initial::class,
                 true
@@ -53,7 +53,7 @@ class FSMTestUtilsTests {
     @Test
     fun getFinalStatesTest() {
         val finalStates = VisualFSM.getFinalStates(
-            baseActionClass = DemoFSMAction::class,
+            baseAction = DemoFSMAction::class,
             baseState = DemoFSMState::class,
         )
 
@@ -63,12 +63,12 @@ class FSMTestUtilsTests {
     @Test
     fun getEdgeListGraphTest() {
         val edgeListWithTransitionName = VisualFSM.getEdgeListGraph(
-            baseActionClass = DemoFSMAction::class,
+            baseAction = DemoFSMAction::class,
             useTransitionName = true
         )
 
         val edgeListWithoutTransitionName = VisualFSM.getEdgeListGraph(
-            baseActionClass = DemoFSMAction::class,
+            baseAction = DemoFSMAction::class,
             useTransitionName = false
         )
 

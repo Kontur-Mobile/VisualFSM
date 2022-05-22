@@ -17,7 +17,7 @@ object VisualFSM {
      * @return a DOT graph for Graphviz
      */
     fun <STATE : State> generateDigraph(
-        baseActionClass: KClass<out Action<STATE>>,
+        baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
         useTransitionName: Boolean = true,
@@ -29,7 +29,7 @@ object VisualFSM {
         result.appendLine("\"${initialState.qualifiedName!!.substringAfterLast("${baseState.simpleName}.")}\"")
 
         getEdgeListGraph(
-            baseActionClass,
+            baseAction,
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // Пробел перед названием action'а нужен для аккуратного отображения
@@ -41,7 +41,7 @@ object VisualFSM {
         }
 
         getUnreachableStates(
-            baseActionClass,
+            baseAction,
             baseState,
             initialState
         ).forEach {
@@ -60,12 +60,12 @@ object VisualFSM {
      */
     @Suppress("UNCHECKED_CAST")
     fun <STATE : State> getEdgeListGraph(
-        baseActionClass: KClass<out Action<STATE>>,
+        baseAction: KClass<out Action<STATE>>,
         useTransitionName: Boolean,
     ): List<Triple<KClass<out STATE>, KClass<out STATE>, String>> {
         val edgeList = mutableListOf<Triple<KClass<out STATE>, KClass<out STATE>, String>>()
 
-        val actions = baseActionClass.sealedSubclasses
+        val actions = baseAction.sealedSubclasses
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions =
@@ -104,7 +104,7 @@ object VisualFSM {
      * @return a list of unreachable states for a disconnected graph, and an empty list for a connected one
      */
     fun <STATE : State> getUnreachableStates(
-        baseActionClass: KClass<out Action<STATE>>,
+        baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
     ): List<KClass<out STATE>> {
@@ -113,7 +113,7 @@ object VisualFSM {
         val queue = LinkedList<KClass<out STATE>>()
 
         val graph = getAdjacencyMap(
-            baseActionClass,
+            baseAction,
             baseState,
         )
 
@@ -152,13 +152,13 @@ object VisualFSM {
      * @return a list of final states
      */
     fun <STATE : State> getFinalStates(
-        baseActionClass: KClass<out Action<STATE>>,
+        baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
     ): List<KClass<out STATE>> {
         val finalStates = mutableListOf<KClass<out STATE>>()
 
         val graph = getAdjacencyMap(
-            baseActionClass,
+            baseAction,
             baseState,
         )
 
@@ -177,11 +177,11 @@ object VisualFSM {
      * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
      */
     private fun <STATE : State> getAdjacencyMap(
-        baseActionClass: KClass<out Action<STATE>>,
+        baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
     ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
         val stateNames = HashSet<KClass<out STATE>>()
-        val actions = baseActionClass.sealedSubclasses
+        val actions = baseAction.sealedSubclasses
         val graph = mutableMapOf<KClass<out STATE>, MutableList<KClass<out STATE>>>()
 
         populateStateNamesSet(stateNames, baseState)
