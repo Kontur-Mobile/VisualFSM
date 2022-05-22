@@ -3,11 +3,11 @@ package ru.kontur.mobile.visualfsm.testFSM.action
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 
-class Start : TestFSMAction() {
+class Start(val label: String, val milliseconds: Int) : TestFSMAction() {
 
-    inner class AtoB : Transition<TestFSMState.A, TestFSMState.B>(TestFSMState.A::class, TestFSMState.B::class) {
-        override fun transform(state: TestFSMState.A) = TestFSMState.B
+    inner class Start : Transition<TestFSMState.Initial, TestFSMState.Async>(TestFSMState.Initial::class, TestFSMState.Async::class) {
+        override fun transform(state: TestFSMState.Initial) = TestFSMState.Async(label, milliseconds)
     }
 
-    override fun getTransitions() = listOf(AtoB())
+    override fun getTransitions() = listOf(Start())
 }

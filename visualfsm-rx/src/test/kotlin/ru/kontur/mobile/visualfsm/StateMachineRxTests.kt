@@ -1,19 +1,16 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.test.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
-class StateMachineTests {
+class StateMachineRxTests {
 
     @Test
     fun generateDigraphTest() {
@@ -70,7 +67,7 @@ class StateMachineTests {
 
     @Test
     fun startAsyncTest() {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
+        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -80,15 +77,9 @@ class StateMachineTests {
     }
 
     @Test
-    fun endAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(3).collect {
-                states.add(it)
-            }
-        }
+    fun endAsyncTest() {
+        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -96,28 +87,21 @@ class StateMachineTests {
 
         assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
 
-        job.await()
+        testObserver.awaitCount(3)
 
-        assertEquals(
-            states,
-            listOf(
-                TestFSMState.Initial,
-                TestFSMState.Async("async1", 1),
-                TestFSMState.Complete("async1")
-            )
+        testObserver.assertValues(
+            TestFSMState.Initial,
+            TestFSMState.Async("async1", 1),
+            TestFSMState.Complete("async1")
         )
+
+        testObserver.dispose()
     }
 
     @Test
-    fun errorAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(3).collect {
-                states.add(it)
-            }
-        }
+    fun errorAsyncTest() {
+        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -125,28 +109,19 @@ class StateMachineTests {
 
         assertEquals(TestFSMState.Async("error", 1), feature.getCurrentState())
 
-        job.await()
-
-        assertEquals(
-            states,
-            listOf(
-                TestFSMState.Initial,
-                TestFSMState.Async("error", 1),
-                TestFSMState.Error
-            )
+        testObserver.awaitCount(3)
+        testObserver.assertValues(
+            TestFSMState.Initial,
+            TestFSMState.Async("error", 1),
+            TestFSMState.Error
         )
+        testObserver.dispose()
     }
 
     @Test
-    fun cancelAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(5).collect {
-                states.add(it)
-            }
-        }
+    fun cancelAsyncTest() {
+        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -164,17 +139,14 @@ class StateMachineTests {
 
         assertEquals(TestFSMState.Async("async2", 150), feature.getCurrentState())
 
-        job.await()
-
-        assertEquals(
-            states,
-            listOf(
-                TestFSMState.Initial,
-                TestFSMState.Async("async1", 100),
-                TestFSMState.Initial,
-                TestFSMState.Async("async2", 150),
-                TestFSMState.Complete("async2")
-            )
+        testObserver.awaitCount(5)
+        testObserver.assertValues(
+            TestFSMState.Initial,
+            TestFSMState.Async("async1", 100),
+            TestFSMState.Initial,
+            TestFSMState.Async("async2", 150),
+            TestFSMState.Complete("async2")
         )
+        testObserver.dispose()
     }
 }
