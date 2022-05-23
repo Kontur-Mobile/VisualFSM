@@ -12,9 +12,9 @@ class AuthFSMTests {
     fun generateDigraph() {
         println(
             VisualFSM.generateDigraph(
-                AuthFSMAction::class,
-                AuthFSMState::class,
-                AuthFSMState.Login::class,
+                baseAction = AuthFSMAction::class,
+                baseState = AuthFSMState::class,
+                initialState = AuthFSMState.Login::class,
             )
         )
         Assertions.assertTrue(true)
@@ -23,9 +23,9 @@ class AuthFSMTests {
     @Test
     fun allStatesReachableTest() {
         val notReachableStates = VisualFSM.getUnreachableStates(
-            AuthFSMAction::class,
-            AuthFSMState::class,
-            AuthFSMState.Login::class,
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
+            initialState = AuthFSMState.Login::class,
         )
 
         Assertions.assertTrue(
@@ -37,8 +37,8 @@ class AuthFSMTests {
     @Test
     fun oneFinalStateTest() {
         val finalStates = VisualFSM.getFinalStates(
-            AuthFSMAction::class,
-            AuthFSMState::class,
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
         )
 
         Assertions.assertTrue(

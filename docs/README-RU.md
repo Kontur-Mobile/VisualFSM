@@ -139,6 +139,12 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 
 Пример реализации FSM авторизации и регистрации пользователя: [sample](../sample).
 
+Пример тестов для FSM авторизации и регистрации: [AuthFSMTests.kt](../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+
+Построение графа в формате DOT для graphviz выполняется с помощью метода `VisualFSM.generateDigraph(...)`
+
+Для визуализации на CI используйте утилиту [graphviz](https://graphviz.org/doc/info/command.html), для визуализации на компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/). 
+
 
 ### AuthFeature
 
@@ -282,6 +288,53 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         BadCredential(),
         ConnectionFailed(),
     )
+}
+```
+
+### AuthFSMTests.kt
+
+```kotlin
+
+class AuthFSMTests {
+
+    @Test
+    fun generateDigraph() {
+        println(
+            VisualFSM.generateDigraph(
+                baseAction = AuthFSMAction::class,
+                baseState = AuthFSMState::class,
+                initialState = AuthFSMState.Login::class,
+            )
+        )
+        Assertions.assertTrue(true)
+    }
+
+    @Test
+    fun allStatesReachableTest() {
+        val notReachableStates = VisualFSM.getUnreachableStates(
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
+            initialState = AuthFSMState.Login::class,
+        )
+
+        Assertions.assertTrue(
+            notReachableStates.isEmpty(),
+            "FSM have unreachable states: ${notReachableStates.joinToString(", ")}"
+        )
+    }
+
+    @Test
+    fun oneFinalStateTest() {
+        val finalStates = VisualFSM.getFinalStates(
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
+        )
+
+        Assertions.assertTrue(
+            finalStates.size == 1 && finalStates.contains(AuthFSMState.UserAuthorized::class),
+            "FSM have not correct final states: ${finalStates.joinToString(", ")}"
+        )
+    }
 }
 ```
 

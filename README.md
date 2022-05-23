@@ -140,6 +140,11 @@ no `Transition`s or multiple `Transition`s available.
 
 A sample FSM of authorization and registration of a user: [sample](./sample).
 
+A tests sample for FSM of user authorization and registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+
+The DOT visualization graph for graphviz is being generated using the `VisualFSM.generateDigraph(...)` method.
+
+For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your PC) use [webgraphviz](http://www.webgraphviz.com/).
 ### AuthFeature
 
 ```kotlin
@@ -284,6 +289,55 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
     )
 }
 ```
+
+
+### AuthFSMTests.kt
+
+```kotlin
+
+class AuthFSMTests {
+
+    @Test
+    fun generateDigraph() {
+        println(
+            VisualFSM.generateDigraph(
+                baseAction = AuthFSMAction::class,
+                baseState = AuthFSMState::class,
+                initialState = AuthFSMState.Login::class,
+            )
+        )
+        Assertions.assertTrue(true)
+    }
+
+    @Test
+    fun allStatesReachableTest() {
+        val notReachableStates = VisualFSM.getUnreachableStates(
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
+            initialState = AuthFSMState.Login::class,
+        )
+
+        Assertions.assertTrue(
+            notReachableStates.isEmpty(),
+            "FSM have unreachable states: ${notReachableStates.joinToString(", ")}"
+        )
+    }
+
+    @Test
+    fun oneFinalStateTest() {
+        val finalStates = VisualFSM.getFinalStates(
+            baseAction = AuthFSMAction::class,
+            baseState = AuthFSMState::class,
+        )
+
+        Assertions.assertTrue(
+            finalStates.size == 1 && finalStates.contains(AuthFSMState.UserAuthorized::class),
+            "FSM have not correct final states: ${finalStates.joinToString(", ")}"
+        )
+    }
+}
+```
+
 
 ## What is MVI
 
