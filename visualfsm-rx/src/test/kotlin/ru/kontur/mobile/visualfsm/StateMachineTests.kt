@@ -18,7 +18,7 @@ class StateMachineTests {
     @Test
     fun generateDigraphTest() {
         val digraph = VisualFSM.generateDigraph(
-            baseActionClass = TestFSMAction::class,
+            baseAction = TestFSMAction::class,
             baseState = TestFSMState::class,
             initialState = TestFSMState.Initial::class
         )
@@ -39,7 +39,7 @@ class StateMachineTests {
     @Test
     fun allStatesReachableTest() {
         val notReachableStates = VisualFSM.getUnreachableStates(
-            baseActionClass = TestFSMAction::class,
+            baseAction = TestFSMAction::class,
             baseState = TestFSMState::class,
             initialState = TestFSMState.Initial::class
         )
@@ -53,7 +53,7 @@ class StateMachineTests {
     @Test
     fun oneFinalStateTest() {
         val finalStates = VisualFSM.getFinalStates(
-            baseActionClass = TestFSMAction::class,
+            baseAction = TestFSMAction::class,
             baseState = TestFSMState::class,
         )
 
