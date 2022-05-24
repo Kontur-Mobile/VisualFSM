@@ -1,6 +1,8 @@
 package ru.kontur.mobile.visualfsm
 
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
@@ -12,6 +14,11 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     private var launchedAsyncStateDisposable: Disposable? = null
 
     /**
+     * [The scheduler][Scheduler] for task management (start and stop tasks)
+     */
+    protected open val taskManagementScheduler: Scheduler = Schedulers.computation()
+
+    /**
      * Binds received [feature][FeatureRx] to [async worker][AsyncWorkerRx]
      * and starts [observing][FeatureRx.observeState] [states][State]
      *
@@ -20,6 +27,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     internal fun bind(feature: FeatureRx<STATE, ACTION>) {
         this.feature = feature
         subscriptionDisposable = feature.observeState()
+            .observeOn(taskManagementScheduler)
             .map(::onNextState)
             .subscribe(::handleTask, ::onStateSubscriptionError)
     }

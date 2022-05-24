@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.onEach
 abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
     /**
-     * Represents [a coroutine scope][CoroutineScope] for the currently running async task
+     * [The coroutine scope][CoroutineScope] for the currently running async task
      */
     protected open val taskScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     /**
-     * Is [a coroutine scope][CoroutineScope] used to subscribe
-     * to [store's][Store] [flow of states][State]
+     * [The coroutine scope][CoroutineScope] used to subscribe
+     * to [feature's][Feature] [flow of states][State]
      */
     protected open val subscriptionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
