@@ -21,10 +21,16 @@ Base classes, JVM and KMM parts
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Support of RxJava (FeatureRx, AsyncWorkerRx and dependent classes)
+Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
+implementation('ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.0')
+```
+
+Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
+
+```kotlin
+implementation('ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.0')
 ```
 
 Tools for graph creation and analysis

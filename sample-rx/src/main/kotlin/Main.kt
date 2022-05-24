@@ -2,6 +2,7 @@ import authFSM.AuthFSMAsyncWorker
 import authFSM.AuthFSMState
 import authFSM.actions.Authenticate
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 
 fun main() {
     val authFeature = FeatureRx(
