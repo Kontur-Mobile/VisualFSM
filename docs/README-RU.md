@@ -21,10 +21,16 @@
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
 ```
 
-Поддержка RxJava (FeatureRx, AsyncWorkerRx и их зависимости)
+Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation('ru.kontur.mobile.visualfsm:visualfsm-rx:1.0.0')
+implementation('ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.0')
+```
+
+Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
+
+```kotlin
+implementation('ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.0')
 ```
 
 Инструменты для анализа и построения графа

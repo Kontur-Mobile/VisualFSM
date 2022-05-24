@@ -5,8 +5,8 @@ import authFSM.AuthFSMState.AsyncWorkState
 import authFSM.actions.AuthFSMAction
 import authFSM.actions.HandleAuthResult
 import authFSM.actions.HandleRegistrationResult
-import ru.kontur.mobile.visualfsm.AsyncWorkerRx
-import ru.kontur.mobile.visualfsm.AsyncWorkerTaskRx
+import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
+import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerTaskRx
 
 class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWorkerRx<AuthFSMState, AuthFSMAction>() {
     override fun onNextState(state: AuthFSMState): AsyncWorkerTaskRx<AuthFSMState> {

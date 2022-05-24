@@ -12,10 +12,10 @@ repositories {
 
 dependencies {
     implementation project(':visualfsm-core')
-    implementation project(':visualfsm-rx')
+    implementation project(':visualfsm-rxjava3')
     testImplementation project(':visualfsm-tools')
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.4'
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }

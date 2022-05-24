@@ -11,7 +11,6 @@ repositories {
 
 dependencies {
     implementation project(':visualfsm-core')
-    implementation project(':visualfsm-rx')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
