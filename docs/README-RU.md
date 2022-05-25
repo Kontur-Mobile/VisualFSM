@@ -19,7 +19,7 @@
 
 ## Как подключить
 
-Базовые классы, JVM и KMM версия
+Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker) 
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')

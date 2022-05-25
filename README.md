@@ -19,7 +19,7 @@ separate module that would allow it to be connected to testing environment.
 
 ## Setup
 
-Base classes, JVM and KMM parts
+Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
 ```kotlin
 implementation('ru.kontur.mobile.visualfsm:visualfsm-core:1.0.0')
