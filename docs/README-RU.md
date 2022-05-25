@@ -1,4 +1,8 @@
-# VisualFSM
+# <img src="logo.png" alt="VisualFSM" height="192"/>
+
+[![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/com.kaspersky.android-components/kaspresso)
+[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
+[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
 [ENG](../README.md) | RUS
 
@@ -46,7 +50,7 @@ testImplementation('ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.0')
 Визуализация позволяет тратить меньше времени на понимание сложного бизнес процесса и упрощает
 _поиск ошибок_, _добавление нового функционала_ и _рефакторинг_.
 
-<img src="graph.svg" alt="graph" width="800"/>
+<img src="graph.png" alt="graph" width="800"/>
 
 Упрощенный пример графа FSM авторизации и регистрации пользователя
 
