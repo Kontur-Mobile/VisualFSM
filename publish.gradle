@@ -1,13 +1,13 @@
 apply plugin: 'maven-publish'
-//apply plugin: 'signing'
+apply plugin: 'signing'
 
 if (!project.tasks.findByName('sourcesJar')) {
     task sourcesJar(type: Jar) {
         archiveClassifier.set('sources')
         if (pluginManager.hasPlugin('com.android.library')) {
-            from android.sourceSets.main.java.srcDirs
+            from android.sourceSets.main.kotlin.srcDirs
         } else {
-            from sourceSets.main.java.srcDirs
+            from sourceSets.main.kotlin.srcDirs
         }
     }
 }
@@ -20,18 +20,18 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
-                if(file('secure.properties').exists()) {
+                if (rootProject.file('secure.properties').exists()) {
                     def securePropertiesFile = rootProject.file('secure.properties')
                     def secureProperties = new Properties()
                     secureProperties.load(new FileInputStream(securePropertiesFile))
-                    def releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                    def snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                    def releasesUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    def snapshotsUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                     url = version.toString().endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
                     credentials {
                         username = secureProperties.sonatypeUserName
                         password = secureProperties.sonatypeUserPassword
                     }
-                }else {
+                } else {
                     println("File secure.properties is not exist. Only local maven publishing available.")
                 }
             }
@@ -58,13 +58,13 @@ afterEvaluate {
                 root.children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
 
-                    description "VisualFSM - Kotlin Multiplatform library for FSM with visualization and analysis tools."
+                    description "VisualFSM - Kotlin Multiplatform library for FSM with visualization and analysis tools"
                     name project.name
                     url "https://github.com/Kontur-Mobile/visualfsm"
                     licenses {
                         license {
-                            name "The Apache Software License, Version 2.0"
-                            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                            name "MIT License"
+                            url "https://raw.githubusercontent.com/Kontur-Mobile/VisualFSM/main/LICENSE"
                         }
                     }
                     scm {
@@ -83,13 +83,15 @@ afterEvaluate {
         }
     }
 
-//    signing {
-//        if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
-//            publishing.publications.all {
-//                sign it
-//            }
-//        } else {
-//            sign publishing.publications.release
-//        }
-//    }
+    signing {
+        if (rootProject.file('secure.properties').exists()) {
+            if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+                publishing.publications.all {
+                    sign it
+                }
+            } else {
+                sign publishing.publications.release
+            }
+        }
+    }
 }
