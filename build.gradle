@@ -12,6 +12,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.21"
     }
 }
 
@@ -21,4 +22,17 @@ subprojects {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
+}
+
+allprojects {
+
+    // Dokka
+    apply plugin: 'org.jetbrains.dokka'
+    dokkaJavadoc {
+    }
+    task dokkaJar(type: Jar) {
+        classifier = 'javadoc'
+        from dokkaJavadoc
+    }
+
 }
