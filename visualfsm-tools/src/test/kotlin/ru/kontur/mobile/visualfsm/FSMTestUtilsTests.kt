@@ -61,6 +61,17 @@ class FSMTestUtilsTests {
     }
 
     @Test
+    fun getUnreachableStatesTest() {
+        val unreachableStates = VisualFSM.getUnreachableStates(
+            baseAction = DemoFSMAction::class,
+            baseState = DemoFSMState::class,
+            initialState = Initial::class
+        )
+
+        Assertions.assertEquals(listOf<DemoFSMState>(), unreachableStates)
+    }
+
+    @Test
     fun getEdgeListGraphTest() {
         val edgeListWithTransitionName = VisualFSM.getEdgeListGraph(
             baseAction = DemoFSMAction::class,
