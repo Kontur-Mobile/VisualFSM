@@ -1,3 +1,4 @@
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -10,6 +11,11 @@ if (!project.tasks.findByName('sourcesJar')) {
             from sourceSets.main.kotlin.srcDirs
         }
     }
+}
+
+task dokkaJar(type: Jar) {
+    archiveClassifier.set('javadoc')
+    from dokkaHtml
 }
 
 artifacts {

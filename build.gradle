@@ -1,8 +1,20 @@
 ext {
+    /*
+     artifactsBuildVersion - version of VisualFSM build artifacts
+
+     Given a version number MAJOR.MINOR.PATCH, increment the:
+         MAJOR version when you make incompatible API changes,
+         MINOR version when you add functionality in a backwards compatible manner, and
+         PATCH version when you make backwards compatible bug fixes.
+    */
+    artifactsBuildVersion = '1.0.1'
+    artifactsGroup = 'ru.kontur.mobile.visualfsm'
 }
 
 buildscript {
     ext {
+        kotlinVersion = '1.6.21'
+        dokkaVersion = '1.6.21'
     }
 
     repositories {
@@ -11,28 +23,22 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.6.21"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
     }
 }
 
 subprojects {
+    ext {
+        coroutinesVersion = '1.6.1'
+        rxJava2Version = '2.2.21'
+        rxJava3Version = '3.1.4'
+        junitJupiterVersion = '5.8.2'
+    }
+
     repositories {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
-}
-
-allprojects {
-
-    // Dokka
-    apply plugin: 'org.jetbrains.dokka'
-    dokkaJavadoc {
-    }
-    task dokkaJar(type: Jar) {
-        classifier = 'javadoc'
-        from dokkaJavadoc
-    }
-
 }

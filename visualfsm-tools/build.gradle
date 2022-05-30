@@ -2,12 +2,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 
-group = 'ru.kontur.mobile.visualfsm'
-version = '1.0.0'
-
-repositories {
-    mavenCentral()
-}
+group = artifactsGroup
+version = artifactsBuildVersion
 
 dependencies {
     implementation project(':visualfsm-core')
@@ -15,9 +11,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    testImplementation('io.reactivex.rxjava2:rxjava:2.2.21')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
 }
 
 test {
