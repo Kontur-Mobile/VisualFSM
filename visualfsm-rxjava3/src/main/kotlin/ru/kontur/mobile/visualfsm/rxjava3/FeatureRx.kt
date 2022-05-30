@@ -2,6 +2,7 @@ package ru.kontur.mobile.visualfsm.rxjava3
 
 import io.reactivex.rxjava3.core.Observable
 import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.GeneratedActionFactory
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 
@@ -13,11 +14,26 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
-open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
+open class FeatureRx<STATE : State, ACTION : Action<STATE>>
+@Deprecated(message = "") // TODO Add message to annotation
+constructor(
     initialState: STATE,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
 ) {
+
+    @Suppress("DEPRECATION")
+    constructor(
+        initialState: STATE,
+        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        generatedActionFactory: GeneratedActionFactory<ACTION>,
+    ) : this(initialState, asyncWorker, transitionCallbacks) {
+        this.generatedActionFactory = generatedActionFactory
+    }
+
+    private var generatedActionFactory: GeneratedActionFactory<ACTION>? = null
+
     private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
 
     init {
@@ -49,7 +65,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      */
     open fun proceed(action: ACTION) {
         synchronized(this) {
-            return store.proceed(action)
+            return store.proceed(generatedActionFactory?.create(action) ?: action)
         }
     }
 }

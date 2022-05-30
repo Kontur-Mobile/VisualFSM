@@ -1,0 +1,42 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'ru.kontur.mobile.visualfsm'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':visualfsm-core')
+    implementation project(':visualfsm-rxjava2')
+    implementation project(':visualfsm-rxjava3')
+
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.6.21-1.0.5'
+
+    implementation "com.squareup:kotlinpoet:1.11.0"
+    implementation "com.squareup:kotlinpoet-ksp:1.11.0"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.8.2"
+
+    testImplementation "com.github.tschuchortdev:kotlin-compile-testing:1.4.8"
+    testImplementation "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.8"
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-opt-in=kotlin.RequiresOptIn"]
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+apply from: '../publish.gradle'

@@ -10,11 +10,21 @@ import kotlinx.coroutines.flow.Flow
  * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
-open class Feature<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE,
-    asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-    transitionCallbacks: TransitionCallbacks<STATE>? = null,
-) {
+open class Feature<STATE : State, ACTION : Action<STATE>>
+@Deprecated(message = "") // TODO Add message to annotation
+constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null, transitionCallbacks: TransitionCallbacks<STATE>? = null) {
+
+    @Suppress("DEPRECATION")
+    constructor(
+        initialState: STATE,
+        asyncWorker: AsyncWorker<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        generatedActionFactory: GeneratedActionFactory<ACTION>,
+    ) : this(initialState, asyncWorker, transitionCallbacks) {
+        this.generatedActionFactory = generatedActionFactory
+    }
+
+    private var generatedActionFactory: GeneratedActionFactory<ACTION>? = null
 
     private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
 
@@ -46,6 +56,6 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      * @param action [Action] to run
      */
     open fun proceed(action: ACTION) {
-        return store.proceed(action)
+        return store.proceed(generatedActionFactory?.create(action) ?: action)
     }
 }

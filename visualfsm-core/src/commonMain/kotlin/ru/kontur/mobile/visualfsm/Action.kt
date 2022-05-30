@@ -4,14 +4,16 @@ package ru.kontur.mobile.visualfsm
  * Is an input object for the State machine.
  * The [action][Action] chooses [transition][Transition] and performs it
  */
-abstract class Action<STATE : State> {
+open class Action<STATE : State> {
 
     /**
      * Returns every [Transition] declared inside [Action]
      *
      * @return every [Transition] declared inside [Action]
      */
-    abstract fun getTransitions(): List<Transition<out STATE, out STATE>>
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated(message = "") // TODO Add message to annotation
+    open fun getTransitions(): List<Transition<out STATE, out STATE>> = emptyList()
 
     /**
      * Selects and starts a [transition][Transition].
@@ -46,13 +48,13 @@ abstract class Action<STATE : State> {
         return newState
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
         (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
 
     private fun isCorrectTransition(
         transition: Transition<STATE, STATE>,
-        oldState: STATE
+        oldState: STATE,
     ): Boolean =
         (transition.fromState == oldState::class) && transition.predicate(oldState)
 }
