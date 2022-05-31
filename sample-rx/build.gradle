@@ -3,9 +3,6 @@ plugins {
     id 'application'
 }
 
-group = 'ru.kontur.mobile.visualfsm'
-version = '1.0.0'
-
 repositories {
     mavenCentral()
 }
@@ -15,9 +12,9 @@ dependencies {
     implementation project(':visualfsm-rxjava3')
     testImplementation project(':visualfsm-tools')
 
-    implementation 'io.reactivex.rxjava3:rxjava:3.1.4'
+    implementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
 }
 
 test {

@@ -214,7 +214,7 @@ object VisualFSM {
         stateClass: KClass<out STATE>,
     ) {
         stateClass.sealedSubclasses.forEach { sealedSubclass ->
-            if (sealedSubclass.nestedClasses.isEmpty()) {
+            if (sealedSubclass.sealedSubclasses.isEmpty()) {
                 stateNames.add(sealedSubclass)
             } else {
                 populateStateNamesSet(stateNames, sealedSubclass)

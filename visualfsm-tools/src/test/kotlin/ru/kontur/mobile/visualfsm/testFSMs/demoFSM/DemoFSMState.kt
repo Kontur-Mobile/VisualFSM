@@ -9,12 +9,12 @@ sealed class DemoFSMState : State {
 
     sealed class AsyncWorkState : DemoFSMState() {
         sealed class DataOut : AsyncWorkState() {
-            object Finding : AsyncWorkState()
-            object Loading : AsyncWorkState()
+            object Finding : DataOut()
+            object Loading : DataOut()
         }
 
         sealed class DataIn : AsyncWorkState() {
-            object Saving : AsyncWorkState()
+            object Saving : DataIn()
         }
     }
 

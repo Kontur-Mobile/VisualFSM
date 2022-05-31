@@ -2,12 +2,8 @@ plugins {
     id 'org.jetbrains.kotlin.multiplatform'
 }
 
-group = 'ru.kontur.mobile.visualfsm'
-version = '1.0.0'
-
-repositories {
-    mavenCentral()
-}
+group = artifactsGroup
+version = artifactsBuildVersion
 
 kotlin {
     jvm {
@@ -43,7 +39,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
             }
         }
         commonTest {
