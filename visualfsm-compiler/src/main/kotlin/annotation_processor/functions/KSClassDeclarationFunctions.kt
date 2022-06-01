@@ -1,6 +1,7 @@
 package annotation_processor.functions
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -34,6 +35,12 @@ internal object KSClassDeclarationFunctions {
                 if (superClass.asClassName() == it.toClassName()) return@any true
                 it.isSubclassOf(superClass, maxNestingLevel, currentNestingLevel + 1)
             }
+    }
+
+    fun KSClassDeclaration.getAllNestedSealedSubclasses(): Sequence<KSClassDeclaration> {
+        return getSealedSubclasses().flatMap {
+            if (Modifier.SEALED in it.modifiers) it.getAllNestedSealedSubclasses() else sequenceOf(it)
+        }
     }
 
 }

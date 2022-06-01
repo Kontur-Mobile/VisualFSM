@@ -1,8 +1,10 @@
 package annotation_processor
 
+import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
 import com.google.devtools.ksp.closestClassDeclaration
+import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.innerArguments
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -68,16 +70,25 @@ class AnnotationProcessor(
 
         val actionFileSpecFactory = ActionFileSpecFactory()
 
-        baseActionClassDeclaration.getSealedSubclasses().forEach {
-            val actionClassName = "${it.toClassName().simpleName}Impl"
-            val actionFileSpec = when (val actionFileSpecResult = actionFileSpecFactory.create(it, actionClassName)) {
+        baseActionClassDeclaration.getAllNestedSealedSubclasses().forEach { actionClassDeclaration ->
+            if (Modifier.ABSTRACT in actionClassDeclaration.modifiers) {
+                logger.error("An action must not be abstract, because it should be possible to pass an instance of it as a parameter to the proceed function in the Feature. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+                return
+            }
+            val actionClassDeclaredOverriddenFunctions = actionClassDeclaration.getDeclaredFunctions().filter { Modifier.OVERRIDE in it.modifiers }
+            if (actionClassDeclaredOverriddenFunctions.any { it.simpleName.asString() == "getTransitions" }) {
+                logger.error("An action must not override getTransitions method. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+                return
+            }
+            val actionClassName = "${actionClassDeclaration.toClassName().simpleName}Impl"
+            val actionFileSpec = when (val actionFileSpecResult = actionFileSpecFactory.create(actionClassDeclaration, actionClassName)) {
                 is TypeSpecResult.Error -> {
                     logger.error(actionFileSpecResult.message)
                     return
                 }
                 is TypeSpecResult.Success -> actionFileSpecResult.typeSpec
             }
-            writeToFile(actionClassName, it.packageName.asString(), actionFileSpec)
+            writeToFile(actionClassName, actionClassDeclaration.packageName.asString(), actionFileSpec)
         }
 
     }
