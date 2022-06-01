@@ -7,13 +7,14 @@ package ru.kontur.mobile.visualfsm
 open class Action<STATE : State> {
 
     /**
-     * Returns every [Transition] declared inside [Action]
+     * Returns instances of all [transitions][Transition] declared inside this [Action]
      *
-     * @return every [Transition] declared inside [Action]
+     * @return instances of all [transitions][Transition] declared inside this [Action]
      */
     @Suppress("DeprecatedCallableAddReplaceWith")
     @Deprecated(message = "") // TODO Add message to annotation
-    open fun getTransitions(): List<Transition<out STATE, out STATE>> = emptyList()
+    open fun getTransitions(): List<Transition<out STATE, out STATE>> =
+        throw IllegalStateException("This method must be overridden and return instances of all transitions declared inside this Action")
 
     /**
      * Selects and starts a [transition][Transition].

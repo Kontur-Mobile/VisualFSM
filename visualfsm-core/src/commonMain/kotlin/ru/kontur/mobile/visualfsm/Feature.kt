@@ -55,7 +55,7 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      *
      * @param action [Action] to run
      */
-    open fun proceed(action: ACTION) {
+    fun proceed(action: ACTION) {
         return store.proceed(generatedActionFactory?.create(action) ?: action)
     }
 }

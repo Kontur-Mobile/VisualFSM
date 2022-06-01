@@ -63,7 +63,7 @@ constructor(
      *
      * @param action [Action] to run
      */
-    open fun proceed(action: ACTION) {
+    fun proceed(action: ACTION) {
         synchronized(this) {
             return store.proceed(generatedActionFactory?.create(action) ?: action)
         }
