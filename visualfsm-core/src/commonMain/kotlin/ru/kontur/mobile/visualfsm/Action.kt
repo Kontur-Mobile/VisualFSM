@@ -4,7 +4,7 @@ package ru.kontur.mobile.visualfsm
  * Is an input object for the State machine.
  * The [action][Action] chooses [transition][Transition] and performs it
  */
-open class Action<STATE : State> {
+abstract class Action<STATE : State> {
 
     /**
      * Returns instances of all [transitions][Transition] declared inside this [Action]
@@ -13,8 +13,10 @@ open class Action<STATE : State> {
      */
     @Suppress("DeprecatedCallableAddReplaceWith")
     @Deprecated(message = "") // TODO Add message to annotation
-    open fun getTransitions(): List<Transition<out STATE, out STATE>> =
+    open fun getTransitions(): List<Transition<out STATE, out STATE>> {
         throw IllegalStateException("This method must be overridden and return instances of all transitions declared inside this Action")
+    }
+
 
     /**
      * Selects and starts a [transition][Transition].
