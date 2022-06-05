@@ -110,7 +110,7 @@ class AnnotationProcessor(
         val featureSuperTypeGenericTypes = featureSuperType.innerArguments
 
         if (featureSuperTypeGenericTypes.size != 2) {
-            val errorMessage = "Super class of feature must have exactly two generic types (state and action).\n" +
+            val errorMessage = "Super class of feature must have exactly two generic types (state and action). " +
                     "But the super class of \"${featureClassDeclaration.toClassName().canonicalName}\" has ${featureSuperTypeGenericTypes.size}: ${featureSuperTypeGenericTypes.map { it.toTypeName() }}"
             return KSClassDeclarationResult.Error(errorMessage)
         }
