@@ -46,8 +46,8 @@ internal class FeatureErrorAnnotationProcessorTests : AnnotationProcessorTests()
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
-        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.ProceedsGeneratedActions. The \"TestFeature\" does not meet this requirement."))
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.ProceedsGeneratedActions. The \"TestFeature\" does not meet this requirement."))
     }
 
     @Test
@@ -92,8 +92,8 @@ internal class FeatureErrorAnnotationProcessorTests : AnnotationProcessorTests()
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
-        Assertions.assertTrue(result.messages.contains("Super class of feature must have exactly two generic types (state and action). But the super class of \"TestFeature\" has 0: []"))
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        Assertions.assertTrue(result.messages.contains("Super class of feature must have exactly two generic types (state and action). But the super class of \"TestFeature\" has 0: []"))
     }
 
 }
