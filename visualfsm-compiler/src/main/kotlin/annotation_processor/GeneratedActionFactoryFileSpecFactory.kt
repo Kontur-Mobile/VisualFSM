@@ -1,5 +1,6 @@
 package annotation_processor
 
+import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.FunSpec
@@ -41,12 +42,13 @@ internal class GeneratedActionFactoryFileSpecFactory {
             val actionSubclassConstructor = actionSubclassDeclaration.primaryConstructor
             actionSubclassConstructor
                 ?: return TypeSpecResult.Error("Error when trying get \"${actionSubclassDeclaration.toClassName().canonicalName}\" primary constructor")
+            val actionSubclassPropertiesNames = actionSubclassDeclaration.getDeclaredProperties().map { it.simpleName }
             actionSubclassConstructor.parameters.forEachIndexed { index, parameter ->
-                if (!parameter.isVal && !parameter.isVar) {
-                    return TypeSpecResult.Error("All action constructor parameters must be declared as properties (have the var or val keyword). The \"${parameter.name}\" parameter in the \"${actionSubclassDeclaration.toClassName().canonicalName}\" constructor does not meet this requirement.")
+                if (parameter.name !in actionSubclassPropertiesNames) {
+                    return TypeSpecResult.Error("All action constructor parameters must be declared as properties (have the var or val keyword). The \"${parameter.name?.asString()}\" parameter in the \"${actionSubclassDeclaration.toClassName().canonicalName}\" constructor does not meet this requirement.")
                 }
                 if (setOf(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.INTERNAL).any { it in parameter.type.modifiers }) {
-                    return TypeSpecResult.Error("All action constructor parameters must have \"public\" visibility. The \"${parameter.name}\" parameter in the \"${actionSubclassDeclaration.toClassName().canonicalName}\" constructor does not meet this requirement.")
+                    return TypeSpecResult.Error("All action constructor parameters must have \"public\" visibility. The \"${parameter.name?.asString()}\" parameter in the \"${actionSubclassDeclaration.toClassName().canonicalName}\" constructor does not meet this requirement.")
                 }
                 createFunctionCodeBuilder.append("action.${parameter.name!!.asString()}")
                 if (index < actionSubclassConstructor.parameters.size - 1) {

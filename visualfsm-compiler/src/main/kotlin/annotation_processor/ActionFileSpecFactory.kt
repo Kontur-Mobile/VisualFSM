@@ -25,7 +25,7 @@ internal class ActionFileSpecFactory {
 
         val classBuilder = TypeSpec.classBuilder(className)
 
-        if (Modifier.OPEN in actionClassDeclaration.modifiers) {
+        if (Modifier.OPEN !in actionClassDeclaration.modifiers) {
             return TypeSpecResult.Error("Action must be open. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
         }
 
