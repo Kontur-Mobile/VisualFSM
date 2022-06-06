@@ -25,8 +25,8 @@ internal class ActionFileSpecFactory {
 
         val classBuilder = TypeSpec.classBuilder(className)
 
-        if (setOf(Modifier.OPEN, Modifier.ABSTRACT).none { it in actionClassDeclaration.modifiers }) {
-            return TypeSpecResult.Error("Action must be abstract or open. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+        if (Modifier.OPEN in actionClassDeclaration.modifiers) {
+            return TypeSpecResult.Error("Action must be open. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
         }
 
         classBuilder.superclass(actionClassDeclaration.asType(listOf()).toTypeName())
