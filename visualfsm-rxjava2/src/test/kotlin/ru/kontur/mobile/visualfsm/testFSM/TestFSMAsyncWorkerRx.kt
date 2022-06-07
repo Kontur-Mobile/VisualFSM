@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm.testFSM
 import io.reactivex.Single
 import ru.kontur.mobile.visualfsm.rxjava2.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava2.AsyncWorkerTaskRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.*
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.Async
 import ru.kontur.mobile.visualfsm.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import java.util.concurrent.TimeUnit
@@ -17,9 +17,9 @@ class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
                 }
                     .delay(state.milliseconds.toLong(), TimeUnit.MILLISECONDS)
                     .subscribe({
-                        proceed(state, Finish(true))
+                        proceed(Finish(true))
                     }, {
-                        proceed(state, Finish(false))
+                        proceed(Finish(false))
                     })
             }
             else -> AsyncWorkerTaskRx.Cancel()
