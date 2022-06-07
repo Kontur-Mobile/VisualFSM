@@ -17,9 +17,9 @@ class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
                 }
                     .delay(state.milliseconds.toLong(), TimeUnit.MILLISECONDS)
                     .subscribe({
-                        proceed(Finish(true))
+                        proceed(state, Finish(true))
                     }, {
-                        proceed(Finish(false))
+                        proceed(state, Finish(false))
                     })
             }
             else -> AsyncWorkerTaskRx.Cancel()

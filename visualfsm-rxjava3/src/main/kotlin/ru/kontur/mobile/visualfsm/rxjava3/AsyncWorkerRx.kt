@@ -68,8 +68,22 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
+     * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
+    fun proceed(fromState: STATE, action: ACTION) {
+        // If the current state does not match the state from which the task started, the result of its task is no longer expected
+        if (fromState == feature?.getCurrentState()) {
+            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        }
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     *
+     * @param action launched [Action]
+     */
+    @Deprecated(message = "Use the new proceed(fromState, action) method", level = DeprecationLevel.ERROR)
     fun proceed(action: ACTION) {
         feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
     }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerWithBlock
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
@@ -31,6 +32,7 @@ class StateMachineTests {
                     "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
+                    "\"Async\" -> \"Async\" [label=\" StartOther\"]\n" +
                     "}\n" +
                     "\n", digraph
         )
@@ -176,5 +178,62 @@ class StateMachineTests {
                 TestFSMState.Complete("async2")
             )
         )
+    }
+
+
+    @Test
+    fun cancelByStartOtherAsyncTest() = runTest(UnconfinedTestDispatcher()) {
+        val feature =
+            Feature(TestFSMState.Initial, TestFSMAsyncWorkerWithBlock(), object : TransitionCallbacks<TestFSMState> {
+                override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
+                }
+
+                override fun onTransitionSelected(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    currentState: TestFSMState
+                ) {
+                }
+
+                override fun onNewStateReduced(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    oldState: TestFSMState,
+                    newState: TestFSMState
+                ) {
+                }
+
+                override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onNoTransitionError $action $currentState")
+                }
+
+                override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onMultipleTransitionError $action $currentState")
+                }
+            })
+
+        val states = mutableListOf<TestFSMState>()
+
+        val job = async {
+            feature.observeState().take(5).collect {
+                states.add(it)
+            }
+        }
+
+        assertEquals(TestFSMState.Initial, feature.getCurrentState())
+
+        feature.proceed(Start("async1", 20))
+        Thread.sleep(10)
+        feature.proceed(Start("async2", 20))
+        Thread.sleep(10)
+        feature.proceed(Start("async3", 20))
+        Thread.sleep(10)
+        feature.proceed(Start("async4", 20))
+        Thread.sleep(10)
+        feature.proceed(Start("async5", 20))
+
+        assertEquals(TestFSMState.Async("async5", 20), feature.getCurrentState())
+
+        job.await()
     }
 }

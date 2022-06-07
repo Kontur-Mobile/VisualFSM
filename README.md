@@ -1,3 +1,4 @@
+
 # <img src="docs/logo.png" alt="VisualFSM" height="192"/>
 
 [![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/ru.kontur.mobile.visualfsm/visualfsm-core)
@@ -232,13 +233,13 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
             is AsyncWorkState.Authenticating -> {
                 AsyncWorkerTask.ExecuteAndCancelExist(state) {
                     val result = authInteractor.check(state.mail, state.password)
-                    proceed(HandleAuthResult(result))
+                    proceed(state, HandleAuthResult(result))
                 }
             }
             is AsyncWorkState.Registering -> {
                 AsyncWorkerTask.ExecuteIfNotExist(state) {
                     val result = authInteractor.register(state.mail, state.password)
-                    proceed(HandleRegistrationResult(result))
+                    proceed(state, HandleRegistrationResult(result))
                 }
             }
             else -> AsyncWorkerTask.Cancel()

@@ -7,11 +7,12 @@ import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.*
 import ru.kontur.mobile.visualfsm.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 
-class TestFSMAsyncWorker : AsyncWorker<TestFSMState, TestFSMAction>() {
+class TestFSMAsyncWorkerWithBlock : AsyncWorker<TestFSMState, TestFSMAction>() {
     override fun onNextState(state: TestFSMState): AsyncWorkerTask<TestFSMState> {
         return when (state) {
             is Async -> AsyncWorkerTask.ExecuteAndCancelExist(state) {
-                delay(state.milliseconds.toLong())
+                delay(0)
+                Thread.sleep(state.milliseconds.toLong())
                 if ("error" == state.label) {
                     proceed(state, Finish(false))
                 } else {
