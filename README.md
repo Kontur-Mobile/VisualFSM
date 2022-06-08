@@ -1,4 +1,3 @@
-
 # <img src="docs/logo.png" alt="VisualFSM" height="192"/>
 
 [![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/ru.kontur.mobile.visualfsm/visualfsm-core)
