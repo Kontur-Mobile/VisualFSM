@@ -6,6 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
 
+
 /**
  * Manages the start and stop of state-based asynchronous tasks
  */
@@ -70,8 +71,30 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      *
      * @param action launched [Action]
      */
-    fun proceed(action: ACTION) {
-        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+    fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     *
+     * @param action launched [Action]
+     */
+    fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     *
+     * @param fromState the state from which the asynchronous task was started [State]
+     * @param action launched [Action]
+     */
+    private fun proceed(fromState: STATE, action: ACTION) {
+        // If the current state does not match the state from which the task started, the result of its task is no longer expected
+        if (fromState == feature?.getCurrentState()) {
+            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        }
     }
 
     /**
@@ -81,11 +104,11 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
         when (task) {
             is AsyncWorkerTaskRx.Cancel -> dispose()
             is AsyncWorkerTaskRx.ExecuteAndCancelExist -> {
-                disposeAndLaunch(task.state, task.func)
+                disposeAndLaunch(task.state) { task.func(task) }
             }
             is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
-                    disposeAndLaunch(task.state, task.func)
+                    disposeAndLaunch(task.state) { task.func(task) }
                 }
             }
         }
@@ -96,8 +119,8 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      */
     @Synchronized
     private fun disposeAndLaunch(stateToLaunch: STATE, func: () -> Disposable) {
-        launchedAsyncState = stateToLaunch
         launchedAsyncStateDisposable?.dispose()
+        launchedAsyncState = stateToLaunch
         launchedAsyncStateDisposable = func()
     }
 

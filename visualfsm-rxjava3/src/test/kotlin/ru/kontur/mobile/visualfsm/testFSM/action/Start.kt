@@ -9,5 +9,9 @@ class Start(val label: String, val milliseconds: Int) : TestFSMAction() {
         override fun transform(state: TestFSMState.Initial) = TestFSMState.Async(label, milliseconds)
     }
 
-    override fun getTransitions() = listOf(Start())
+    inner class StartOther : Transition<TestFSMState.Async, TestFSMState.Async>(TestFSMState.Async::class, TestFSMState.Async::class) {
+        override fun transform(state: TestFSMState.Async) = TestFSMState.Async(label, milliseconds)
+    }
+
+    override fun getTransitions() = listOf(Start(), StartOther())
 }

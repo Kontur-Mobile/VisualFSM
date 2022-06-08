@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm.testFSM
 import io.reactivex.rxjava3.core.Single
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerTaskRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.*
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.Async
 import ru.kontur.mobile.visualfsm.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import java.util.concurrent.TimeUnit
