@@ -115,38 +115,22 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
         when (task) {
             is AsyncWorkerTask.Cancel -> cancel()
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
-                task.cancelAndLaunch(task.state, task.func)
+                cancelAndLaunch(task.state) { task.func(task) }
             }
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
-                    task.cancelAndLaunch(task.state, task.func)
+                    cancelAndLaunch(task.state) { task.func(task) }
                 }
             }
         }
-    }
-
-    private fun AsyncWorkerTask.ExecuteIfNotExist<STATE>.cancelAndLaunch(
-        stateToLaunch: STATE,
-        func: suspend AsyncWorkerTask.ExecuteIfNotExist<STATE>.() -> Unit,
-    ) {
-        val function = suspend { func(this) }
-        cancelAndLaunch(stateToLaunch, function)
-    }
-
-    private fun AsyncWorkerTask.ExecuteAndCancelExist<STATE>.cancelAndLaunch(
-        stateToLaunch: STATE,
-        func: suspend AsyncWorkerTask.ExecuteAndCancelExist<STATE>.() -> Unit,
-    ) {
-        val function = suspend { func(this) }
-        cancelAndLaunch(stateToLaunch, function)
     }
 
     /**
      * Cancel current task and launch new
      */
     private fun cancelAndLaunch(stateToLaunch: STATE, func: suspend () -> Unit) {
-        launchedAsyncState = stateToLaunch
         launchedAsyncStateJob?.cancel()
+        launchedAsyncState = stateToLaunch
         launchedAsyncStateJob = taskScope.launch { func() }
     }
 

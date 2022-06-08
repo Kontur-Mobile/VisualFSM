@@ -101,12 +101,12 @@ class StateMachineTests {
         job.await()
 
         assertEquals(
-            states,
             listOf(
                 TestFSMState.Initial,
                 TestFSMState.Async("async1", 1),
                 TestFSMState.Complete("async1")
-            )
+            ),
+            states
         )
     }
 
@@ -130,12 +130,12 @@ class StateMachineTests {
         job.await()
 
         assertEquals(
-            states,
             listOf(
                 TestFSMState.Initial,
                 TestFSMState.Async("error", 1),
                 TestFSMState.Error
-            )
+            ),
+            states
         )
     }
 
@@ -169,14 +169,14 @@ class StateMachineTests {
         job.await()
 
         assertEquals(
-            states,
             listOf(
                 TestFSMState.Initial,
                 TestFSMState.Async("async1", 100),
                 TestFSMState.Initial,
                 TestFSMState.Async("async2", 150),
                 TestFSMState.Complete("async2")
-            )
+            ),
+            states
         )
     }
 
@@ -215,7 +215,7 @@ class StateMachineTests {
         val states = mutableListOf<TestFSMState>()
 
         val job = async {
-            feature.observeState().take(5).collect {
+            feature.observeState().take(7).collect {
                 states.add(it)
             }
         }
@@ -235,5 +235,18 @@ class StateMachineTests {
         assertEquals(TestFSMState.Async("async5", 20), feature.getCurrentState())
 
         job.await()
+
+        assertEquals(
+            listOf(
+                TestFSMState.Initial,
+                TestFSMState.Async("async1", 20),
+                TestFSMState.Async("async2", 20),
+                TestFSMState.Async("async3", 20),
+                TestFSMState.Async("async4", 20),
+                TestFSMState.Async("async5", 20),
+                TestFSMState.Complete("async5")
+            ),
+            states
+        )
     }
 }

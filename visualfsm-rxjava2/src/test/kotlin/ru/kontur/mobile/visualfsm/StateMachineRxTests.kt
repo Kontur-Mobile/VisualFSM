@@ -200,6 +200,7 @@ class StateMachineRxTests {
         assertEquals(TestFSMState.Async("async5", 20), feature.getCurrentState())
 
         testObserver.awaitCount(7)
+
         testObserver.assertValues(
             TestFSMState.Initial,
             TestFSMState.Async("async1", 20),
@@ -209,6 +210,7 @@ class StateMachineRxTests {
             TestFSMState.Async("async5", 20),
             TestFSMState.Complete("async5")
         )
+
         testObserver.dispose()
     }
 }

@@ -103,40 +103,23 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
         when (task) {
             is AsyncWorkerTaskRx.Cancel -> dispose()
             is AsyncWorkerTaskRx.ExecuteAndCancelExist -> {
-                task.disposeAndLaunch(task.state, task.func)
+                disposeAndLaunch(task.state) { task.func(task) }
             }
             is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
-                    task.disposeAndLaunch(task.state, task.func)
+                    disposeAndLaunch(task.state) { task.func(task) }
                 }
             }
         }
     }
-
-    private fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.disposeAndLaunch(
-        stateToLaunch: STATE,
-        func: AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.() -> Disposable,
-    ) {
-        val function = { func(this) }
-        disposeAndLaunch(stateToLaunch, function)
-    }
-
-    private fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.disposeAndLaunch(
-        stateToLaunch: STATE,
-        func: AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.() -> Disposable,
-    ) {
-        val function = { func(this) }
-        disposeAndLaunch(stateToLaunch, function)
-    }
-
 
     /**
      * Dispose current task and launch new
      */
     @Synchronized
     private fun disposeAndLaunch(stateToLaunch: STATE, func: () -> Disposable) {
-        launchedAsyncState = stateToLaunch
         launchedAsyncStateDisposable?.dispose()
+        launchedAsyncState = stateToLaunch
         launchedAsyncStateDisposable = func()
     }
 

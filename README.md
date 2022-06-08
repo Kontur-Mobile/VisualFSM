@@ -233,13 +233,13 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
             is AsyncWorkState.Authenticating -> {
                 AsyncWorkerTask.ExecuteAndCancelExist(state) {
                     val result = authInteractor.check(state.mail, state.password)
-                    proceed(state, HandleAuthResult(result))
+                    proceed(HandleAuthResult(result))
                 }
             }
             is AsyncWorkState.Registering -> {
                 AsyncWorkerTask.ExecuteIfNotExist(state) {
                     val result = authInteractor.register(state.mail, state.password)
-                    proceed(state, HandleRegistrationResult(result))
+                    proceed(HandleRegistrationResult(result))
                 }
             }
             else -> AsyncWorkerTask.Cancel()
