@@ -80,14 +80,10 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][Feature]
      *
-     * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
-    fun proceed(fromState: STATE, action: ACTION) {
-        // If the current state does not match the state from which the task started, the result of its task is no longer expected
-        if (fromState == feature?.getCurrentState()) {
-            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
-        }
+    fun AsyncWorkerTask.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
     }
 
     /**
@@ -95,9 +91,21 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      *
      * @param action launched [Action]
      */
-    @Deprecated(message = "Use the new proceed(fromState, action) method", level = DeprecationLevel.ERROR)
-    fun proceed(action: ACTION) {
-        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+    fun AsyncWorkerTask.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][Feature]
+     *
+     * @param fromState the state from which the asynchronous task was started [State]
+     * @param action launched [Action]
+     */
+    private fun proceed(fromState: STATE, action: ACTION) {
+        // If the current state does not match the state from which the task started, the result of its task is no longer expected
+        if (fromState == feature?.getCurrentState()) {
+            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        }
     }
 
     /**
@@ -107,14 +115,30 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
         when (task) {
             is AsyncWorkerTask.Cancel -> cancel()
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
-                cancelAndLaunch(task.state, task.func)
+                task.cancelAndLaunch(task.state, task.func)
             }
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
-                    cancelAndLaunch(task.state, task.func)
+                    task.cancelAndLaunch(task.state, task.func)
                 }
             }
         }
+    }
+
+    private fun AsyncWorkerTask.ExecuteIfNotExist<STATE>.cancelAndLaunch(
+        stateToLaunch: STATE,
+        func: suspend AsyncWorkerTask.ExecuteIfNotExist<STATE>.() -> Unit,
+    ) {
+        val function = suspend { func(this) }
+        cancelAndLaunch(stateToLaunch, function)
+    }
+
+    private fun AsyncWorkerTask.ExecuteAndCancelExist<STATE>.cancelAndLaunch(
+        stateToLaunch: STATE,
+        func: suspend AsyncWorkerTask.ExecuteAndCancelExist<STATE>.() -> Unit,
+    ) {
+        val function = suspend { func(this) }
+        cancelAndLaunch(stateToLaunch, function)
     }
 
     /**

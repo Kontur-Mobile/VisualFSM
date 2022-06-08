@@ -22,7 +22,7 @@ sealed class AsyncWorkerTaskRx<STATE : State> {
      */
     data class ExecuteIfNotExist<STATE : State>(
         val state: STATE,
-        val func: () -> Disposable
+        val func: ExecuteIfNotExist<STATE>.() -> Disposable,
     ) : AsyncWorkerTaskRx<STATE>()
 
     /**
@@ -34,6 +34,6 @@ sealed class AsyncWorkerTaskRx<STATE : State> {
      */
     data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
-        val func: () -> Disposable
+        val func: ExecuteAndCancelExist<STATE>.() -> Disposable,
     ) : AsyncWorkerTaskRx<STATE>()
 }

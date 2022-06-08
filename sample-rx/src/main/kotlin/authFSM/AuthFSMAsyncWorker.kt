@@ -15,9 +15,9 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
                 AsyncWorkerTaskRx.ExecuteAndCancelExist(state) {
                     authInteractor.check(state.mail, state.password)
                         .subscribe({
-                            proceed(state, HandleAuthResult(it))
+                            proceed(HandleAuthResult(it))
                         }, {
-                            proceed(state, HandleAuthResult(AuthResult.NO_INTERNET))
+                            proceed(HandleAuthResult(AuthResult.NO_INTERNET))
                         })
                 }
             }
@@ -25,9 +25,9 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
                 AsyncWorkerTaskRx.ExecuteIfNotExist(state) {
                     authInteractor.register(state.mail, state.password)
                         .subscribe({
-                            proceed(state, HandleRegistrationResult(it))
+                            proceed(HandleRegistrationResult(it))
                         }, {
-                            proceed(state, HandleRegistrationResult(RegistrationResult.NO_INTERNET))
+                            proceed(HandleRegistrationResult(RegistrationResult.NO_INTERNET))
                         })
                 }
             }

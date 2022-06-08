@@ -68,14 +68,10 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
-     * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
-    fun proceed(fromState: STATE, action: ACTION) {
-        // If the current state does not match the state from which the task started, the result of its task is no longer expected
-        if (fromState == feature?.getCurrentState()) {
-            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
-        }
+    fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
     }
 
     /**
@@ -83,9 +79,21 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      *
      * @param action launched [Action]
      */
-    @Deprecated(message = "Use the new proceed(fromState, action) method", level = DeprecationLevel.ERROR)
-    fun proceed(action: ACTION) {
-        feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+    fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     *
+     * @param fromState the state from which the asynchronous task was started [State]
+     * @param action launched [Action]
+     */
+    private fun proceed(fromState: STATE, action: ACTION) {
+        // If the current state does not match the state from which the task started, the result of its task is no longer expected
+        if (fromState == feature?.getCurrentState()) {
+            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        }
     }
 
     /**
@@ -95,15 +103,32 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
         when (task) {
             is AsyncWorkerTaskRx.Cancel -> dispose()
             is AsyncWorkerTaskRx.ExecuteAndCancelExist -> {
-                disposeAndLaunch(task.state, task.func)
+                task.disposeAndLaunch(task.state, task.func)
             }
             is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
-                    disposeAndLaunch(task.state, task.func)
+                    task.disposeAndLaunch(task.state, task.func)
                 }
             }
         }
     }
+
+    private fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.disposeAndLaunch(
+        stateToLaunch: STATE,
+        func: AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.() -> Disposable,
+    ) {
+        val function = { func(this) }
+        disposeAndLaunch(stateToLaunch, function)
+    }
+
+    private fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.disposeAndLaunch(
+        stateToLaunch: STATE,
+        func: AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.() -> Disposable,
+    ) {
+        val function = { func(this) }
+        disposeAndLaunch(stateToLaunch, function)
+    }
+
 
     /**
      * Dispose current task and launch new

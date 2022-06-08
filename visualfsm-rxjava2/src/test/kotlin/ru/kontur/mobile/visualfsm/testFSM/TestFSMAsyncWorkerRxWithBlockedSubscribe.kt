@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm.testFSM
 import io.reactivex.Single
 import ru.kontur.mobile.visualfsm.rxjava2.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava2.AsyncWorkerTaskRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.*
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.Async
 import ru.kontur.mobile.visualfsm.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 
@@ -16,10 +16,10 @@ class TestFSMAsyncWorkerRxWithBlockedSubscribe : AsyncWorkerRx<TestFSMState, Tes
                 }
                     .subscribe({
                         Thread.sleep(state.milliseconds.toLong())
-                        proceed(state, Finish(true))
+                        proceed(Finish(true))
                     }, {
                         Thread.sleep(state.milliseconds.toLong())
-                        proceed(state, Finish(false))
+                        proceed(Finish(false))
                     })
             }
             else -> AsyncWorkerTaskRx.Cancel()

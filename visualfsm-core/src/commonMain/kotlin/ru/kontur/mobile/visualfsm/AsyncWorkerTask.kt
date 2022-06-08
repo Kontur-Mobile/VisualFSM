@@ -20,7 +20,7 @@ sealed class AsyncWorkerTask<STATE : State> {
      */
     data class ExecuteIfNotExist<STATE : State>(
         val state: STATE,
-        val func: suspend () -> Unit
+        val func: suspend ExecuteIfNotExist<STATE>.() -> Unit,
     ) : AsyncWorkerTask<STATE>()
 
     /**
@@ -32,6 +32,6 @@ sealed class AsyncWorkerTask<STATE : State> {
      */
     data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
-        val func: suspend () -> Unit
+        val func: suspend ExecuteAndCancelExist<STATE>.() -> Unit,
     ) : AsyncWorkerTask<STATE>()
 }
