@@ -6,6 +6,13 @@ package ru.kontur.mobile.visualfsm
  */
 abstract class Action<STATE : State> {
 
+    private var transitions: List<Transition<out STATE, out STATE>>? = null
+
+    /** This method is needed to use it in the generated code. Do not use it. */
+    fun setTransitions(transitions: List<Transition<out STATE, out STATE>>) {
+        this.transitions = transitions
+    }
+
     /**
      * Returns instances of all [transitions][Transition] declared inside this [Action]
      *
@@ -14,7 +21,8 @@ abstract class Action<STATE : State> {
     @Suppress("DeprecatedCallableAddReplaceWith")
     @Deprecated(message = "") // TODO Add message to annotation
     open fun getTransitions(): List<Transition<out STATE, out STATE>> {
-        throw IllegalStateException("This method must be overridden and return instances of all transitions declared inside this Action")
+        return transitions
+            ?: throw IllegalStateException("This method must be overridden and return instances of all transitions declared inside this Action")
     }
 
 

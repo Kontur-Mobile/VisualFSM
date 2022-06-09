@@ -19,12 +19,12 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
-        generatedActionFactory: GeneratedActionFactory<ACTION>,
+        transitionFactory: TransitionFactory<STATE, ACTION>,
     ) : this(initialState, asyncWorker, transitionCallbacks) {
-        this.generatedActionFactory = generatedActionFactory
+        this.transitionFactory = transitionFactory
     }
 
-    private var generatedActionFactory: GeneratedActionFactory<ACTION>? = null
+    private var transitionFactory: TransitionFactory<STATE, ACTION>? = null
 
     private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
 
@@ -56,6 +56,12 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      * @param action [Action] to run
      */
     fun proceed(action: ACTION) {
-        return store.proceed(generatedActionFactory?.create(action) ?: action)
+        val transitionFactory = this.transitionFactory
+        val actionToProceed = if (transitionFactory != null) {
+            action.apply { setTransitions(transitionFactory.create(action)) }
+        } else {
+            action
+        }
+        return store.proceed(actionToProceed)
     }
 }
