@@ -45,7 +45,6 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
      *
      * @param action [Action] that was launched
      */
-    @Synchronized
     internal fun proceed(action: ACTION) {
         val newState = reduce(action, currentState)
         val changed = newState != currentState

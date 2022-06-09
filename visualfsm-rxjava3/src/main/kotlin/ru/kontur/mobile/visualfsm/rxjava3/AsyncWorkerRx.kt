@@ -10,6 +10,7 @@ import ru.kontur.mobile.visualfsm.State
  * Manages the start and stop of state-based asynchronous tasks
  */
 abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
+    @Volatile
     private var feature: FeatureRx<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
     private var subscriptionDisposable: Disposable? = null
@@ -90,9 +91,12 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     private fun proceed(fromState: STATE, action: ACTION) {
-        // If the current state does not match the state from which the task started, the result of its task is no longer expected
-        if (fromState == feature?.getCurrentState()) {
-            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        val feature = feature ?: throw IllegalStateException("Feature is unbound")
+        synchronized(feature) {
+            // If the current state does not match the state from which the task started, the result of its task is no longer expected
+            if (fromState == feature.getCurrentState()) {
+                feature.proceed(action)
+            }
         }
     }
 

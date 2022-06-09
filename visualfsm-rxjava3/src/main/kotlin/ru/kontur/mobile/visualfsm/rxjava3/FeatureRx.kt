@@ -48,6 +48,8 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      * @param action [Action] to run
      */
     open fun proceed(action: ACTION) {
-        return store.proceed(action)
+        synchronized(this) {
+            return store.proceed(action)
+        }
     }
 }

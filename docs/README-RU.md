@@ -22,25 +22,25 @@
 Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker) 
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.0.2")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.0.3")
 ```
 
 Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.2")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.3")
 ```
 
 Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.2")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.3")
 ```
 
 Инструменты для анализа и построения графа
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.2")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.3")
 ```
 
 ## Плюсы VisualFSM
