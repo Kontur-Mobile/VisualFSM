@@ -1,13 +1,15 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerWithBlock
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeature
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
@@ -72,7 +74,7 @@ class StateMachineTests {
 
     @Test
     fun startAsyncTest() {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
+        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -83,7 +85,7 @@ class StateMachineTests {
 
     @Test
     fun endAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
+        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
         val states = mutableListOf<TestFSMState>()
 
         val job = async {
@@ -112,7 +114,7 @@ class StateMachineTests {
 
     @Test
     fun errorAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
+        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
         val states = mutableListOf<TestFSMState>()
 
         val job = async {
@@ -141,7 +143,7 @@ class StateMachineTests {
 
     @Test
     fun cancelAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = Feature(TestFSMState.Initial, TestFSMAsyncWorker())
+        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
         val states = mutableListOf<TestFSMState>()
 
         val job = async {
@@ -184,14 +186,14 @@ class StateMachineTests {
     @Test
     fun cancelByStartOtherAsyncTest() = runTest(UnconfinedTestDispatcher()) {
         val feature =
-            Feature(TestFSMState.Initial, TestFSMAsyncWorkerWithBlock(), object : TransitionCallbacks<TestFSMState> {
+            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorkerWithBlock(), object : TransitionCallbacks<TestFSMState> {
                 override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
                 }
 
                 override fun onTransitionSelected(
                     action: Action<TestFSMState>,
                     transition: Transition<TestFSMState, TestFSMState>,
-                    currentState: TestFSMState
+                    currentState: TestFSMState,
                 ) {
                 }
 

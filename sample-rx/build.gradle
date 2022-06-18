@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'application'
+    id 'com.google.devtools.ksp' version("1.6.21-1.0.6")
 }
 
 repositories {
@@ -10,11 +11,20 @@ repositories {
 dependencies {
     implementation project(':visualfsm-core')
     implementation project(':visualfsm-rxjava3')
-    testImplementation project(':visualfsm-tools')
+    implementation project(':visualfsm-tools')
+
+    ksp project(':visualfsm-compiler')
 
     implementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+}
+
+kotlin {
+    sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
 }
 
 test {

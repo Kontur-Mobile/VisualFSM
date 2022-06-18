@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id 'com.google.devtools.ksp' version("1.6.21-1.0.6")
 }
 
 group = artifactsGroup
@@ -16,6 +17,14 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation project(':visualfsm-tools')
+    kspTest project(":visualfsm-compiler")
+}
+
+kotlin {
+    sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
 }
 
 test {

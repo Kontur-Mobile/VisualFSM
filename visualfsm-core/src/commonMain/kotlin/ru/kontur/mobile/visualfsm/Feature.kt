@@ -57,11 +57,10 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      */
     fun proceed(action: ACTION) {
         val transitionFactory = this.transitionFactory
-        val actionToProceed = if (transitionFactory != null) {
-            action.apply { setTransitions(transitionFactory.create(action)) }
-        } else {
-            action
-        }
-        return store.proceed(actionToProceed)
+        return store.proceed(
+            action.apply {
+                if (transitionFactory != null) setTransitions(transitionFactory.create(action))
+            }
+        )
     }
 }

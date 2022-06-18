@@ -1,10 +1,8 @@
 package annotation_processor
 
-import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
 import com.google.devtools.ksp.closestClassDeclaration
-import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.innerArguments
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -12,13 +10,13 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Feature
-import ru.kontur.mobile.visualfsm.ProceedsGeneratedActions
+import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 
 class AnnotationProcessor(
@@ -28,79 +26,64 @@ class AnnotationProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val annotatedWithFeatureClassDeclarations = resolver
-            .getSymbolsWithAnnotation(ProceedsGeneratedActions::class.qualifiedName!!)
+            .getSymbolsWithAnnotation(UsesGeneratedTransactionFactory::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
 
         if (!annotatedWithFeatureClassDeclarations.iterator().hasNext()) return emptyList()
 
-        annotatedWithFeatureClassDeclarations.forEach {
-            handleAnnotatedWithFeatureClassDeclaration(it)
+        try {
+            annotatedWithFeatureClassDeclarations.forEach {
+                handleAnnotatedWithFeatureClassDeclaration(it)
+            }
+        } catch (t: Throwable) {
+            logger.error(t.message ?: "Unknown error:\n${t.stackTraceToString()}")
         }
 
         return emptyList()
     }
 
-    @OptIn(KotlinPoetKspPreview::class)
     private fun handleAnnotatedWithFeatureClassDeclaration(featureClassDeclaration: KSClassDeclaration) {
 
-        val baseActionClassDeclaration = when (val baseActionClassDeclarationResult = getBaseActionClassDeclaration(featureClassDeclaration)) {
-            is KSClassDeclarationResult.Error -> {
-                logger.error(baseActionClassDeclarationResult.message)
-                return
-            }
-            is KSClassDeclarationResult.Success -> baseActionClassDeclarationResult.classDeclaration
+        if (featureClasses.none { featureClassDeclaration.isSubclassOf(it) }) {
+            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${UsesGeneratedTransactionFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            return
         }
 
-        val generatedActionFactoryClassName = "Generated${baseActionClassDeclaration.toClassName().simpleName}Factory"
+        val getBaseStateAndBaseActionClassDeclarationResult = getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration)
 
-        val generatedActionFactoryFileSpecResult = GeneratedActionFactoryFileSpecFactory().create(
-            baseActionClassDeclaration,
-            generatedActionFactoryClassName,
+        val (baseStateClassDeclaration, baseActionClassDeclaration) = when (getBaseStateAndBaseActionClassDeclarationResult) {
+            is GetBaseStateAndBaseActionClassDeclarationResult.Error -> {
+                logger.error(getBaseStateAndBaseActionClassDeclarationResult.message)
+                return
+            }
+            is GetBaseStateAndBaseActionClassDeclarationResult.Success -> getBaseStateAndBaseActionClassDeclarationResult.result
+        }
+
+        if (Modifier.SEALED !in baseActionClassDeclaration.modifiers) {
+            logger.error("Base Action class must be sealed. The \"${baseActionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            return
+        }
+
+        val generatedTransitionFactoryClassName = "Generated${baseStateClassDeclaration.toClassName().simpleName}TransactionFactory"
+
+        val generatedTransactionFactoryFileSpecResult = TransactionFactoryFileSpecFactory().create(
+            baseActionClassDeclaration = baseActionClassDeclaration,
+            baseStateClassDeclaration = baseStateClassDeclaration,
+            className = generatedTransitionFactoryClassName,
         )
 
-        val generatedActionFactoryFileSpec = when (generatedActionFactoryFileSpecResult) {
+        val generatedTransactionFactoryFileSpec = when (generatedTransactionFactoryFileSpecResult) {
             is TypeSpecResult.Error -> {
-                logger.error(generatedActionFactoryFileSpecResult.message)
+                logger.error(generatedTransactionFactoryFileSpecResult.message)
                 return
             }
-            is TypeSpecResult.Success -> generatedActionFactoryFileSpecResult.typeSpec
+            is TypeSpecResult.Success -> generatedTransactionFactoryFileSpecResult.typeSpec
         }
 
-        writeToFile(generatedActionFactoryClassName, baseActionClassDeclaration.packageName.asString(), generatedActionFactoryFileSpec)
-
-        val actionFileSpecFactory = ActionFileSpecFactory()
-
-        baseActionClassDeclaration.getAllNestedSealedSubclasses().forEach { actionClassDeclaration ->
-            if (Modifier.ABSTRACT in actionClassDeclaration.modifiers) {
-                logger.error("An action must not be abstract, because it should be possible to pass an instance of it as a parameter to the proceed function in the Feature. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
-                return
-            }
-            val actionClassDeclaredOverriddenFunctions = actionClassDeclaration.getDeclaredFunctions().filter { Modifier.OVERRIDE in it.modifiers }
-            if (actionClassDeclaredOverriddenFunctions.any { it.simpleName.asString() == "getTransitions" }) {
-                logger.error("An action must not override getTransitions method. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
-                return
-            }
-            val actionClassName = "${actionClassDeclaration.toClassName().simpleName}Impl"
-            val actionFileSpec = when (val actionFileSpecResult = actionFileSpecFactory.create(actionClassDeclaration, actionClassName)) {
-                is TypeSpecResult.Error -> {
-                    logger.error(actionFileSpecResult.message)
-                    return
-                }
-                is TypeSpecResult.Success -> actionFileSpecResult.typeSpec
-            }
-            writeToFile(actionClassName, actionClassDeclaration.packageName.asString(), actionFileSpec)
-        }
-
+        writeToFile(generatedTransitionFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
     }
 
-    @OptIn(KotlinPoetKspPreview::class)
-    private fun getBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): KSClassDeclarationResult {
-
-        val featureClasses = setOf(Feature::class, FeatureRx::class, ru.kontur.mobile.visualfsm.rxjava2.FeatureRx::class)
-
-        if (featureClasses.none { featureClassDeclaration.isSubclassOf(it) }) {
-            return KSClassDeclarationResult.Error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${ProceedsGeneratedActions::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
-        }
+    private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): GetBaseStateAndBaseActionClassDeclarationResult {
 
         val featureSuperType = featureClassDeclaration.superTypes.map { it.resolve() }.first { superType ->
             val superClassDeclaration = superType.declaration.closestClassDeclaration()
@@ -112,33 +95,36 @@ class AnnotationProcessor(
         if (featureSuperTypeGenericTypes.size != 2) {
             val errorMessage = "Super class of feature must have exactly two generic types (state and action). " +
                     "But the super class of \"${featureClassDeclaration.toClassName().canonicalName}\" has ${featureSuperTypeGenericTypes.size}: ${featureSuperTypeGenericTypes.map { it.toTypeName() }}"
-            return KSClassDeclarationResult.Error(errorMessage)
+            return GetBaseStateAndBaseActionClassDeclarationResult.Error(errorMessage)
         }
 
-        val actionType = featureSuperTypeGenericTypes
-            .firstOrNull {
-                val actionClassDeclaration = it.type?.resolve()?.declaration?.closestClassDeclaration()
-                actionClassDeclaration != null && actionClassDeclaration.isClassOrSubclassOf(Action::class)
-            }
-
-        actionType ?: return KSClassDeclarationResult.Error("Error when trying to get base action type")
-
-        val baseActionClassDeclaration = actionType.type?.resolve()?.declaration?.closestClassDeclaration()
-
-        baseActionClassDeclaration ?: return KSClassDeclarationResult.Error("Error when trying to get base action class declaration")
-
-        if (Modifier.SEALED !in baseActionClassDeclaration.modifiers) {
-            return KSClassDeclarationResult.Error("Base Action class must be sealed. The \"${baseActionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+        val featureSuperTypeClassDeclarations = featureSuperTypeGenericTypes.mapNotNull {
+            it.type?.resolve()?.declaration?.closestClassDeclaration()
         }
 
-        return KSClassDeclarationResult.Success(baseActionClassDeclaration)
+        val baseStateClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(State::class) }
+            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Error when trying to get base state type")
+
+        val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(Action::class) }
+            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Error when trying to get base state type")
+
+        return GetBaseStateAndBaseActionClassDeclarationResult.Success(baseStateClassDeclaration to baseActionClassDeclaration)
     }
 
-    @OptIn(KotlinPoetKspPreview::class)
     private fun writeToFile(className: String, packageName: String, fileSpec: TypeSpec) {
         val fileBuilder = FileSpec.builder(packageName, className)
         val file = fileBuilder.addType(fileSpec).build()
         file.writeTo(codeGenerator, Dependencies(false))
+    }
+
+    private sealed class GetBaseStateAndBaseActionClassDeclarationResult {
+        data class Error(val message: String) : GetBaseStateAndBaseActionClassDeclarationResult()
+        data class Success(val result: Pair<KSClassDeclaration, KSClassDeclaration>) :
+            GetBaseStateAndBaseActionClassDeclarationResult()
+    }
+
+    companion object {
+        private val featureClasses = setOf(Feature::class, FeatureRx::class, ru.kontur.mobile.visualfsm.rxjava2.FeatureRx::class)
     }
 
 }

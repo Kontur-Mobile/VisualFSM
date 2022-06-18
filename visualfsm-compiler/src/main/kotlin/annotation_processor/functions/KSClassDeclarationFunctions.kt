@@ -3,7 +3,6 @@ package annotation_processor.functions
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
 import kotlin.reflect.KClass
 
@@ -11,7 +10,6 @@ internal object KSClassDeclarationFunctions {
 
     private const val MAX_SUPER_CLASS_SEARCH_NESTING_LEVEL = 5
 
-    @OptIn(KotlinPoetKspPreview::class)
     internal fun KSClassDeclaration.isClassOrSubclassOf(kClass: KClass<out Any>): Boolean {
         if (kClass.asClassName() == this.toClassName()) return true
         return superTypes
@@ -22,7 +20,6 @@ internal object KSClassDeclarationFunctions {
             }
     }
 
-    @OptIn(KotlinPoetKspPreview::class)
     internal fun KSClassDeclaration.isSubclassOf(
         superClass: KClass<out Any>,
         maxNestingLevel: Int = MAX_SUPER_CLASS_SEARCH_NESTING_LEVEL,

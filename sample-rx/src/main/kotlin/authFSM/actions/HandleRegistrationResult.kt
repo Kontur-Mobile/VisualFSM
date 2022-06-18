@@ -6,11 +6,7 @@ import ru.kontur.mobile.visualfsm.Transition
 
 class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction() {
 
-    inner class Success :
-        Transition<AsyncWorkState.Registering, Login>(
-            AsyncWorkState.Registering::class,
-            Login::class
-        ) {
+    inner class Success : Transition<AsyncWorkState.Registering, Login>() {
         override fun predicate(state: AsyncWorkState.Registering): Boolean {
             return result == RegistrationResult.SUCCESS
         }
@@ -20,11 +16,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class BadCredential :
-        Transition<AsyncWorkState.Registering, Registration>(
-            AsyncWorkState.Registering::class,
-            Registration::class
-        ) {
+    inner class BadCredential : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering): Boolean {
             return result == RegistrationResult.BAD_CREDENTIAL
         }
@@ -34,11 +26,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class ConnectionFailed :
-        Transition<AsyncWorkState.Registering, Registration>(
-            AsyncWorkState.Registering::class,
-            Registration::class
-        ) {
+    inner class ConnectionFailed : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering): Boolean {
             return result == RegistrationResult.NO_INTERNET
         }
@@ -47,10 +35,4 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
             return Registration(state.mail, state.password, state.password, "No internet")
         }
     }
-
-    override fun getTransitions() = listOf(
-        Success(),
-        BadCredential(),
-        ConnectionFailed(),
-    )
 }

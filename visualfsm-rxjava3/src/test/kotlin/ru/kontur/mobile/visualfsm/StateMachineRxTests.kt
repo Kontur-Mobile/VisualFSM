@@ -3,13 +3,13 @@ package ru.kontur.mobile.visualfsm
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRxWithBlockedSubscribe
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRx
+import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRxWithBlockedSubscribe
+import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
 class StateMachineRxTests {
@@ -70,7 +70,7 @@ class StateMachineRxTests {
 
     @Test
     fun startAsyncTest() {
-        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
@@ -81,7 +81,7 @@ class StateMachineRxTests {
 
     @Test
     fun endAsyncTest() {
-        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
@@ -103,7 +103,7 @@ class StateMachineRxTests {
 
     @Test
     fun errorAsyncTest() {
-        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
@@ -123,7 +123,7 @@ class StateMachineRxTests {
 
     @Test
     fun cancelAsyncTest() {
-        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
@@ -156,14 +156,14 @@ class StateMachineRxTests {
 
     @Test
     fun cancelByStartOtherAsyncTest() {
-        val feature = FeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRxWithBlockedSubscribe(), object: TransitionCallbacks<TestFSMState>{
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRxWithBlockedSubscribe(), object : TransitionCallbacks<TestFSMState> {
             override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
             }
 
             override fun onTransitionSelected(
                 action: Action<TestFSMState>,
                 transition: Transition<TestFSMState, TestFSMState>,
-                currentState: TestFSMState
+                currentState: TestFSMState,
             ) {
             }
 
