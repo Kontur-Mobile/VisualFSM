@@ -103,10 +103,10 @@ class AnnotationProcessor(
         }
 
         val baseStateClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(State::class) }
-            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Error when trying to get base state type")
+            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
 
         val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(Action::class) }
-            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Error when trying to get base state type")
+            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
 
         return GetBaseStateAndBaseActionClassDeclarationResult.Success(baseStateClassDeclaration to baseActionClassDeclaration)
     }
