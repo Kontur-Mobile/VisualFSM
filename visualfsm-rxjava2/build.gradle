@@ -1,6 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version("1.6.21-1.0.6")
+    id 'com.google.devtools.ksp' version("$kspVersion")
 }
 
 group = artifactsGroup

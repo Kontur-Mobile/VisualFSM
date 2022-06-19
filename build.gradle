@@ -7,7 +7,7 @@ ext {
          MINOR version when you add functionality in a backwards compatible manner, and
          PATCH version when you make backwards compatible bug fixes.
     */
-    artifactsBuildVersion = '1.0.3'
+    artifactsBuildVersion = '1.1.0'
     artifactsGroup = 'ru.kontur.mobile.visualfsm'
 }
 
@@ -30,10 +30,13 @@ buildscript {
 
 subprojects {
     ext {
-        coroutinesVersion = '1.6.1'
+        coroutinesVersion = '1.6.2'
         rxJava2Version = '2.2.21'
-        rxJava3Version = '3.1.4'
+        rxJava3Version = '3.1.5'
         junitJupiterVersion = '5.8.2'
+        kspVersion = '1.6.21-1.0.6'
+        kotlinPoetVersion = '1.12.0'
+        kotlinCompileTestingVersion = '1.4.9'
     }
 
     repositories {
