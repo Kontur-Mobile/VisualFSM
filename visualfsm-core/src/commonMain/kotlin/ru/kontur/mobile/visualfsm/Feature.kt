@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>
-@Deprecated(message = "") // TODO Add message to annotation
+@Deprecated(
+    message = "Deprecated because it not support code generation. Using code generation is the recommended approach. Please see the readme file (https://github.com/Kontur-Mobile/VisualFSM#readme) for information on set up code generation",
+    replaceWith = ReplaceWith("Constructor with transitionFactory parameter.")
+)
 constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null, transitionCallbacks: TransitionCallbacks<STATE>? = null) {
 
     @Suppress("DEPRECATION")

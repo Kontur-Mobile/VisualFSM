@@ -15,7 +15,10 @@ import ru.kontur.mobile.visualfsm.TransitionFactory
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>
-@Deprecated(message = "") // TODO Add message to annotation
+@Deprecated(
+    message = "Deprecated because it not support code generation. Using code generation is the recommended approach. Please see the readme file (https://github.com/Kontur-Mobile/VisualFSM#readme) for information on set up code generation",
+    replaceWith = ReplaceWith("Constructor with transitionFactory parameter.")
+)
 constructor(
     initialState: STATE,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,

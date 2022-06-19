@@ -13,7 +13,10 @@ abstract class Transition<FROM : State, TO : State>() {
      * @param fromState a [state][State] that FSM had on [transition][Transition] start
      * @param toState a [state][State] FSM would have after the [transition][Transition] completes
      */
-    @Deprecated(message = "") // TODO Add message to annotation
+    @Deprecated(
+        message = "No need to pass fromState and toState if code generation is applied. Using code generation is the recommended approach. Please see the readme file (https://github.com/Kontur-Mobile/VisualFSM#readme) for information on set up code generation",
+        replaceWith = ReplaceWith("Constructor without parameters")
+    )
     constructor(fromState: KClass<FROM>, toState: KClass<TO>) : this() {
         this.fromState = fromState
         this.toState = toState
