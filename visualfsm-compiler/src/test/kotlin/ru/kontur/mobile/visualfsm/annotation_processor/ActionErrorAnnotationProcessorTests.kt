@@ -7,7 +7,7 @@ import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() {
+internal class ActionErrorAnnotationProcessorTests {
 
     @Test
     fun testBaseActionMustBeSealed() {
@@ -15,7 +15,7 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedActionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -24,7 +24,7 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                 
                 class TestAction: Action<TestState>()
                 
-                open class TestAction1(val parameter1: String): TestAction() {
+                class TestAction1(val parameter1: String): TestAction() {
                 
                     inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
@@ -36,16 +36,16 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                 
                 }
                 
-                @ProceedsGeneratedActions
+                @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    generatedActionFactory = GeneratedActionFactoryProvider.provide()
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = visualFSMSources + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testActionSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -54,12 +54,12 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
     }
 
     @Test
-    fun testBaseActionMustHaveSealedSubclasses() {
+    fun testBaseActionMustHaveSubclasses() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedActionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -68,7 +68,7 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                 
                 sealed class TestAction: Action<TestState>()
                 
-                open class TestAction1(val parameter1: String) {
+                class TestAction1(val parameter1: String) {
                 
                     inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
@@ -80,30 +80,30 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                 
                 }
                 
-                @ProceedsGeneratedActions
+                @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    generatedActionFactory = GeneratedActionFactoryProvider.provide()
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = visualFSMSources + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testActionSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Base action class must have sealed subclasses"))
+        Assertions.assertTrue(result.messages.contains("Base action class must have subclasses. The \"TestState\" does not meet this requirement."))
     }
 
     @Test
-    fun testAllActionConstructorParametersMustBeDeclaredAsProperties() {
+    fun testActionMustContainsTransitionsAsInnerClasses() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedActionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -112,7 +112,41 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                 
                 sealed class TestAction: Action<TestState>()
                 
-                open class TestAction1(val parameter1: String, parameter2: String, var parameter3: String): TestAction() {
+                class TestAction1(val parameter1: String): TestAction() {}
+                
+                @UsesGeneratedTransactionFactory
+                class TestFeature: Feature<TestState, TestAction>(
+                    initialState = TestState.TestState1(),
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                )
+                """
+        )
+
+        val compilation = KotlinCompilation().apply {
+            sources = TestUtil.getVisualFSMSources() + testActionSource
+            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
+        }
+        val result = compilation.compile()
+        Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
+        Assertions.assertTrue(result.messages.contains("Action must contains transitions as inner classes. The \"TestAction1\" does not meet this requirement."))
+    }
+
+    @Test
+    fun testActionMustNotOverrideGetTransitionsFunction() {
+        val testActionSource = SourceFile.kotlin(
+            name = "Test.kt",
+            contents = """
+                import ru.kontur.mobile.visualfsm.*
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                
+                sealed class TestState: State {
+                    class TestState1: TestState()
+                    class TestState2: TestState()
+                }
+                
+                sealed class TestAction: Action<TestState>()
+                
+                class TestAction1(val parameter1: String): TestAction() {
                 
                     inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
@@ -122,23 +156,27 @@ internal class ActionErrorAnnotationProcessorTests : AnnotationProcessorTests() 
                         override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
                     }
                 
+                    @Suppress("OverridingDeprecatedMember")
+                    override fun getTransitions(): List<Transition<out TestState, out TestState>> {
+                        return listOf(Transition1(), Transition2())
+                    }
                 }
                 
-                @ProceedsGeneratedActions
+                @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    generatedActionFactory = GeneratedActionFactoryProvider.provide()
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = visualFSMSources + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testActionSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("All action constructor parameters must be declared as properties (have the var or val keyword). The \"parameter2\" parameter in the \"TestAction1\" constructor does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Action must not override getTransitions function. The \"TestAction1\" does not meet this requirement."))
     }
 
 }

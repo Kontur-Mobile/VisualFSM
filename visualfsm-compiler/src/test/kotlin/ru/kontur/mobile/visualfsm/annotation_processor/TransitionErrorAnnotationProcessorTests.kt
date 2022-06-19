@@ -7,10 +7,10 @@ import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class FeatureErrorAnnotationProcessorTests {
+internal class TransitionErrorAnnotationProcessorTests {
 
     @Test
-    fun testClassWithUsesGeneratedTransactionFactoryAnnotationNotInheritedFromFeature() {
+    fun testAllTransitionsMustHaveInnerModifier() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
@@ -30,14 +30,17 @@ internal class FeatureErrorAnnotationProcessorTests {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
                     }
                 
-                    inner class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
+                    class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
                         override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
                     }
                 
                 }
                 
                 @UsesGeneratedTransactionFactory
-                class TestFeature
+                class TestFeature: Feature<TestState, TestAction>(
+                    initialState = TestState.TestState1(),
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                )
                 """
         )
 
@@ -47,11 +50,11 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory. The \"TestFeature\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Transition must have \"inner\" modifier. The \"TestAction1.Transition2\" does not meet this requirement."))
     }
 
     @Test
-    fun testFeatureMustHaveSuperClassWithTwoGenericParams() {
+    fun testAllTransitionsMustNotHaveAbstractModifier() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
@@ -71,26 +74,16 @@ internal class FeatureErrorAnnotationProcessorTests {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
                     }
                 
-                    inner class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
+                    abstract inner class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
                         override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
                     }
                 
                 }
                 
-                abstract class FeatureAbstract(
-                    initialState: TestState,
-                    asyncWorker: AsyncWorker<TestState, TestAction>? = null,
-                    transitionCallbacks: TransitionCallbacks<TestState>? = null
-                ): Feature<TestState, TestAction>(
-                    initialState = TestState.TestState1(),
-                    asyncWorker = asyncWorker,
-                    transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
-                )
-                
                 @UsesGeneratedTransactionFactory
-                class TestFeature: FeatureAbstract(
+                class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
@@ -101,11 +94,11 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Super class of feature must have exactly two generic types (state and action). But the super class of \"TestFeature\" has 0: []"))
+        Assertions.assertTrue(result.messages.contains("Transition must not have \"abstract\" modifier. The \"TestAction1.Transition2\" does not meet this requirement."))
     }
 
     @Test
-    fun testFeatureMustHaveSuperClassWithBaseStateGenericParameter() {
+    fun testAllTransitionsMustNotHaveConstructorParameters() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
@@ -125,26 +118,16 @@ internal class FeatureErrorAnnotationProcessorTests {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
                     }
                 
-                    inner class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
+                    inner class Transition2(val param: String): Transition<TestState.TestState2, TestState.TestState1>() {
                         override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
                     }
                 
                 }
                 
-                abstract class FeatureAbstract<ACTION: Action<*>, T>(
-                    initialState: TestState,
-                    asyncWorker: AsyncWorker<TestState, TestAction>? = null,
-                    transitionCallbacks: TransitionCallbacks<TestState>? = null
-                ): Feature<TestState, TestAction>(
-                    initialState = TestState.TestState1(),
-                    asyncWorker = asyncWorker,
-                    transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
-                )
-                
                 @UsesGeneratedTransactionFactory
-                class TestFeature: FeatureAbstract<TestAction, Any>(
+                class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
@@ -155,11 +138,11 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Super class of feature must have base state as one of two generic types. The \"TestFeature\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Transition must not have constructor parameters. The \"TestAction1.Transition2\" does not meet this requirement."))
     }
 
     @Test
-    fun testFeatureMustHaveSuperClassWithBaseActionGenericParameter() {
+    fun testAllTransitionsMustNotHaveTwoGenericParameters() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
@@ -173,32 +156,24 @@ internal class FeatureErrorAnnotationProcessorTests {
                 
                 sealed class TestAction: Action<TestState>()
                 
-                class TestAction1(val parameter1: String): TestAction() {
+                abstract class TransitionWithOneGenericParameter<STATE: State>: Transition<STATE, STATE>()
                 
+                class TestAction1(val parameter1: String): TestAction() {
+                    
                     inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
                     }
                 
-                    inner class Transition2: Transition<TestState.TestState2, TestState.TestState1>() {
-                        override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
+                    inner class Transition2: TransitionWithOneGenericParameter<TestState.TestState1>() {
+                        override fun transform(state: TestState.TestState1): TestState.TestState1 = TestState.TestState1()
                     }
                 
                 }
                 
-                abstract class FeatureAbstract<STATE: State, T>(
-                    initialState: TestState,
-                    asyncWorker: AsyncWorker<TestState, TestAction>? = null,
-                    transitionCallbacks: TransitionCallbacks<TestState>? = null
-                ): Feature<TestState, TestAction>(
-                    initialState = TestState.TestState1(),
-                    asyncWorker = asyncWorker,
-                    transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
-                )
-                
                 @UsesGeneratedTransactionFactory
-                class TestFeature: FeatureAbstract<TestState, Any>(
+                class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
+                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
                 )
                 """
         )
@@ -209,7 +184,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Super class of feature must have base action as one of two generic types. The \"TestFeature\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Super class of transition must have exactly two generic types (fromState and toState). But the super class of \"TestAction1.Transition2\" have 1: [TestState.TestState1]"))
     }
 
 }
