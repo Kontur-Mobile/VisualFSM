@@ -2,8 +2,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 
-group = 'ru.kontur.mobile.visualfsm'
-version = '1.0-SNAPSHOT'
+group = artifactsGroup
+version = artifactsBuildVersion
 
 repositories {
     mavenCentral()
