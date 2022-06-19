@@ -5,9 +5,7 @@ import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 
 class Cancel : TestFSMAction() {
 
-    inner class Cancel : Transition<TestFSMState.Async, TestFSMState.Initial>(TestFSMState.Async::class, TestFSMState.Initial::class) {
+    inner class Cancel : Transition<TestFSMState.Async, TestFSMState.Initial>() {
         override fun transform(state: TestFSMState.Async) = TestFSMState.Initial
     }
-
-    override fun getTransitions() = listOf(Cancel())
 }

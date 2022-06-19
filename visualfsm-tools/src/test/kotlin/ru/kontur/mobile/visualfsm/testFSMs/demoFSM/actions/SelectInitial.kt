@@ -5,45 +5,27 @@ import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
 
 class SelectInitial : DemoFSMAction() {
 
-    inner class StartLoadData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Loading>(
-        DemoFSMState.Initial::class,
-        DemoFSMState.AsyncWorkState.DataOut.Loading::class
-    ) {
+    inner class StartLoadData : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Loading>() {
         override fun transform(state: DemoFSMState.Initial): DemoFSMState.AsyncWorkState.DataOut.Loading {
             return DemoFSMState.AsyncWorkState.DataOut.Loading
         }
     }
 
-    inner class StartFindData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Finding>(
-        DemoFSMState.Initial::class,
-        DemoFSMState.AsyncWorkState.DataOut.Finding::class
-    ) {
+    inner class StartFindData : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataOut.Finding>() {
         override fun transform(state: DemoFSMState.Initial): DemoFSMState.AsyncWorkState.DataOut.Finding {
             return DemoFSMState.AsyncWorkState.DataOut.Finding
         }
     }
 
-    inner class StartSaveData() : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataIn.Saving>(
-        DemoFSMState.Initial::class,
-        DemoFSMState.AsyncWorkState.DataIn.Saving::class
-    ) {
+    inner class StartSaveData : Transition<DemoFSMState.Initial, DemoFSMState.AsyncWorkState.DataIn.Saving>() {
         override fun transform(state: DemoFSMState.Initial): DemoFSMState.AsyncWorkState.DataIn.Saving {
             return DemoFSMState.AsyncWorkState.DataIn.Saving
         }
     }
 
-    inner class NoData() : Transition<DemoFSMState.Initial, DemoFSMState.FinalInitialState>(
-        DemoFSMState.Initial::class,
-        DemoFSMState.FinalInitialState::class
-    ) {
+    inner class NoData : Transition<DemoFSMState.Initial, DemoFSMState.FinalInitialState>() {
         override fun transform(state: DemoFSMState.Initial): DemoFSMState.FinalInitialState {
             return DemoFSMState.FinalInitialState
         }
     }
-
-    override fun getTransitions() = listOf(
-        StartLoadData(),
-        StartFindData(),
-        StartSaveData()
-    )
 }

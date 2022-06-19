@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id 'com.google.devtools.ksp' version("1.6.21-1.0.6")
 }
 
 group = artifactsGroup
@@ -14,6 +15,14 @@ dependencies {
     testImplementation platform("org.junit:junit-bom:$junitJupiterVersion")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation project(':visualfsm-tools')
+    kspTest project(":visualfsm-compiler")
+}
+
+kotlin {
+    sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
 }
 
 test {
