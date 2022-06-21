@@ -220,7 +220,7 @@ no `Transition`s or multiple `Transition`s available.
 
 ### TransactionFactory of VisualFSM
 
-`TransactionFactory` returns a list of `Transition`'s for the `Action` instance. It is not recommended to create
+`TransactionFactory` returns a list of `Transition`s for the `Action` instance. It is not recommended to create
 inheritors of `TransactionFactory` yourself. Use code generation for this.
 
 ## Sample of usage
