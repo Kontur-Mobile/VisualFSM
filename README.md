@@ -22,26 +22,97 @@ separate module that would allow it to be connected to testing environment.
 Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
 ```
 
 Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
 ```
 
 Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
 ```
 
-Tools for graph creation and analysis
+Tools for:
+
+* Graph creation and analysis
+* Providing generated classes (`GeneratedTransactionFactoryProvider`)
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.3")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 ```
+
+## Setup code generation
+
+### Kotlin App Setup
+
+```groovy
+// Use KSP plugin
+plugins {
+    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
+}
+
+// Add generated code to source code directories
+kotlin {
+    sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
+}
+
+dependencies {
+    // Use AnnotationProcessor
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
+    // Use tools to be able to use the GeneratedTransactionFactoryProvider
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+}
+```
+
+### Android App Setup
+
+```groovy
+// Use KSP plugin
+plugins {
+    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
+}
+
+// Add generated code to source code directories
+android {
+    buildTypes {
+        release {
+            sourceSets {
+                main {
+                    java {
+                        srcDir "${buildDir.absolutePath}/generated/ksp/release/kotlin"
+                    }
+                }
+            }
+        }
+        debug {
+            sourceSets {
+                main {
+                    java {
+                        srcDir "${buildDir.absolutePath}/generated/ksp/debug/kotlin"
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    // Use AnnotationProcessor
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
+    // Use tools to be able to use the GeneratedTransactionFactoryProvider
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+}
+```
+
+How to annotate classes and interact with generated code see [example below](#AuthFeature.kt).
 
 ## VisualFSM Pros
 
@@ -68,7 +139,8 @@ An AsyncWorker allows you to simplify the processing of states with asynchronous
 
 ## Structure of VisualFSM
 
-The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
+The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`
+, `TransactionFactory`.
 
 ### State of VisualFSM
 
@@ -146,23 +218,34 @@ _logging_, _debugging_, _metrics_, etc. on five available events: when `Action` 
 when `Transition` is selected, a new `State` had been reduced, and two error events —
 no `Transition`s or multiple `Transition`s available.
 
+### TransactionFactory of VisualFSM
+
+`TransactionFactory` returns a list of `Transition`'s for the `Action` instance. It is not recommended to create
+inheritors of `TransactionFactory` yourself. Use code generation for this.
+
 ## Sample of usage
 
 A sample FSM of authorization and registration of a user: [sample](./sample).
 
-A tests sample for FSM of user authorization and registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+A tests sample for FSM of user authorization and
+registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
 
 The DOT visualization graph for graphviz is being generated using the `VisualFSM.generateDigraph(...)` method.
 
-For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your PC) use [webgraphviz](http://www.webgraphviz.com/).
-### AuthFeature
+For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your
+PC) use [webgraphviz](http://www.webgraphviz.com/).
+
+<h3 id="AuthFeature.kt">AuthFeature.kt</h3>
 
 ```kotlin
     // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
+    @UsesGeneratedTransactionFactory // Use this annotation for generation TransactionFactory
     class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
         initialState = initialState,
-        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()), 
-        transitionCallbacks = TransitionCallbacksImpl() // Tip - use DI
+        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+        transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
+        // Or GeneratedAuthFSMStateTransactionFactory() (will be available after code generation)
+        transitionFactory = GeneratedTransactionFactoryProvider.provide() // Get an instance of the generated TransactionFactory
     )
 
     val authFeature = AuthFeature(
@@ -256,10 +339,7 @@ two `Transition`s, the necessary `Transition` is chosen after `predicate` functi
 ```kotlin
 class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction() {
 
-    inner class Success : AuthFSMTransition<AsyncWorkState.Registering, Login>(
-        AsyncWorkState.Registering::class,
-        Login::class
-    ) {
+    inner class Success : Transition<AsyncWorkState.Registering, Login>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.SUCCESS
 
@@ -268,10 +348,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class BadCredential : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class BadCredential : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.BAD_CREDENTIAL
 
@@ -280,10 +357,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class ConnectionFailed : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class ConnectionFailed : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.NO_INTERNET
 
@@ -291,12 +365,6 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
             return Registration(state.mail, state.password, state.password, "No internet")
         }
     }
-
-    override val transitions = listOf(
-        Success(),
-        BadCredential(),
-        ConnectionFailed(),
-    )
 }
 ```
 
