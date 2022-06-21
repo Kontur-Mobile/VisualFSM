@@ -5,12 +5,12 @@ import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.TransitionFactory
 import kotlin.reflect.full.primaryConstructor
 
-/** Tool class for getting instances of generated TransactionFactory implementations */
+/** Tool class for getting instances of generated [TransitionFactory] implementations */
 class GeneratedTransactionFactoryProvider {
 
     /**
-     * Provide an instance of the generated TransactionFactory for the given typed state and action parameters.
-     * @return an instance of the generated TransactionFactory
+     * Provide an instance of the generated [TransitionFactory] for the given typed [state][State] and [action][Action] parameters.
+     * @return an instance of the generated [TransitionFactory]
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <reified STATE : State, ACTION : Action<STATE>> provide(): TransitionFactory<STATE, ACTION> {
