@@ -244,7 +244,7 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
     // Или GeneratedAuthFSMStateTransactionFactory() (будет доступен после генерации кода)
-    transitionFactory = GeneratedTransactionFactoryProvider.provide() // Получаем экземпляр сгенерованной TransactionFactory
+    transitionFactory = GeneratedTransactionFactoryProvider().provide() // Получаем экземпляр сгенерованной TransactionFactory
 )
 
 val authFeature = AuthFeature(

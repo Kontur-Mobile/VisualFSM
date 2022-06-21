@@ -245,7 +245,7 @@ PC) use [webgraphviz](http://www.webgraphviz.com/).
         asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
         transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
         // Or GeneratedAuthFSMStateTransactionFactory() (will be available after code generation)
-        transitionFactory = GeneratedTransactionFactoryProvider.provide() // Get an instance of the generated TransactionFactory
+        transitionFactory = GeneratedTransactionFactoryProvider().provide() // Get an instance of the generated TransactionFactory
     )
 
     val authFeature = AuthFeature(

@@ -16,5 +16,5 @@ class TestFSMFeatureRx(
     initialState = initialState,
     asyncWorker = asyncWorker,
     transitionCallbacks = transitionCallbacks,
-    transitionFactory = GeneratedTransactionFactoryProvider.provide(),
+    transitionFactory = GeneratedTransactionFactoryProvider().provide(),
 )

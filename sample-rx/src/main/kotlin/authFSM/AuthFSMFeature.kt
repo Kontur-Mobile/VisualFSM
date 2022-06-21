@@ -43,5 +43,5 @@ class AuthFSMFeature : FeatureRx<AuthFSMState, AuthFSMAction>(
             println("onMultipleTransitionError\naction=$action\ncurrentState=$currentState")
         }
     },
-    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+    transitionFactory = GeneratedTransactionFactoryProvider().provide()
 )
