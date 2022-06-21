@@ -30,12 +30,6 @@ dependencies {
     testImplementation "com.github.tschuchortdev:kotlin-compile-testing-ksp:$kotlinCompileTestingVersion"
 }
 
-compileKotlin {
-    kotlinOptions {
-        freeCompilerArgs = ["-opt-in=kotlin.RequiresOptIn"]
-    }
-}
-
 test {
     useJUnitPlatform()
 }
