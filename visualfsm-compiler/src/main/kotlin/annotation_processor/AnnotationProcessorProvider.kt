@@ -12,5 +12,4 @@ class AnnotationProcessorProvider : SymbolProcessorProvider {
             codeGenerator = environment.codeGenerator
         )
     }
-
 }

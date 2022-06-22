@@ -25,7 +25,7 @@ class TransactionFactoryFileSpecFactory {
         baseActionClassDeclaration: KSClassDeclaration,
         baseStateClassDeclaration: KSClassDeclaration,
         className: String,
-    ): TypeSpecResult {
+    ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(className)
 
         classBuilder.addSuperinterface(
@@ -38,13 +38,13 @@ class TransactionFactoryFileSpecFactory {
         val actionSealedSubclasses = baseActionClassDeclaration.getAllNestedSealedSubclasses()
 
         if (!actionSealedSubclasses.iterator().hasNext()) {
-            return TypeSpecResult.Error("Base action class must have subclasses. The \"${baseStateClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            error("Base action class must have subclasses. The \"${baseStateClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
         }
 
         actionSealedSubclasses.forEach { actionSealedSubclass ->
             actionSealedSubclass.getDeclaredFunctions().forEach {
                 if (it.modifiers.contains(Modifier.OVERRIDE) && it.simpleName.asString() == "getTransitions") {
-                    return TypeSpecResult.Error("Action must not override getTransitions function. The \"${actionSealedSubclass.toClassName().canonicalName}\" does not meet this requirement.")
+                    error("Action must not override getTransitions function. The \"${actionSealedSubclass.toClassName().canonicalName}\" does not meet this requirement.")
                 }
             }
         }
@@ -53,11 +53,7 @@ class TransactionFactoryFileSpecFactory {
 
         createFunctionCodeBuilder.append("return·when·(action)·{\n")
         actionSealedSubclasses.forEach { actionSubclassDeclaration ->
-            val transactionImplementations =
-                when (val getTransitionImplementationsResult = getTransitionImplementationsForAction(actionSubclassDeclaration)) {
-                    is TransitionImplementationsResult.Error -> return TypeSpecResult.Error(getTransitionImplementationsResult.message)
-                    is TransitionImplementationsResult.Success -> getTransitionImplementationsResult.result
-                }
+            val transactionImplementations = getTransitionImplementationsForAction(actionSubclassDeclaration)
             createFunctionCodeBuilder.append("····is·${actionSubclassDeclaration.toClassName()}·->·listOf(\n")
             transactionImplementations.forEach {
                 createFunctionCodeBuilder.append("${it},\n")
@@ -74,28 +70,28 @@ class TransactionFactoryFileSpecFactory {
                 .build()
         )
 
-        return TypeSpecResult.Success(classBuilder.build())
+        return classBuilder.build()
     }
 
-    private fun getTransitionImplementationsForAction(actionClassDeclaration: KSClassDeclaration): TransitionImplementationsResult {
+    private fun getTransitionImplementationsForAction(actionClassDeclaration: KSClassDeclaration): List<String> {
 
         val transitionClasses = actionClassDeclaration.declarations.filterIsInstance<KSClassDeclaration>().filter {
             it.classKind == ClassKind.CLASS && it.isSubclassOf(Transition::class)
         }
 
         if (!transitionClasses.iterator().hasNext()) {
-            return TransitionImplementationsResult.Error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
         }
 
         transitionClasses.forEach { transitionClass ->
             if (!transitionClass.modifiers.contains(Modifier.INNER)) {
-                return TransitionImplementationsResult.Error("Transition must have \"inner\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must have \"inner\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
             }
             if (Modifier.ABSTRACT in transitionClass.modifiers) {
-                return TransitionImplementationsResult.Error("Transition must not have \"abstract\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must not have \"abstract\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
             }
             if (transitionClass.primaryConstructor!!.parameters.isNotEmpty()) {
-                return TransitionImplementationsResult.Error("Transition must not have constructor parameters. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must not have constructor parameters. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
             }
         }
 
@@ -108,7 +104,7 @@ class TransactionFactoryFileSpecFactory {
             if (transitionSuperTypeGenericTypes.size != 2) {
                 val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
                         "But the super class of \"${transitionClass.toClassName().canonicalName}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
-                return TransitionImplementationsResult.Error(errorMessage)
+                error(errorMessage)
             }
             transitionSuperTypeGenericTypes
         }
@@ -123,11 +119,6 @@ class TransactionFactoryFileSpecFactory {
             implementationBuilder.toString()
         }
 
-        return TransitionImplementationsResult.Success(transitionImplementations)
-    }
-
-    private sealed class TransitionImplementationsResult {
-        data class Error(val message: String) : TransitionImplementationsResult()
-        data class Success(val result: List<String>) : TransitionImplementationsResult()
+        return transitionImplementations
     }
 }

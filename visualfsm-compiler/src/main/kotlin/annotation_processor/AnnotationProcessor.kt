@@ -49,15 +49,7 @@ class AnnotationProcessor(
             return
         }
 
-        val getBaseStateAndBaseActionClassDeclarationResult = getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration)
-
-        val (baseStateClassDeclaration, baseActionClassDeclaration) = when (getBaseStateAndBaseActionClassDeclarationResult) {
-            is GetBaseStateAndBaseActionClassDeclarationResult.Error -> {
-                logger.error(getBaseStateAndBaseActionClassDeclarationResult.message)
-                return
-            }
-            is GetBaseStateAndBaseActionClassDeclarationResult.Success -> getBaseStateAndBaseActionClassDeclarationResult.result
-        }
+        val (baseStateClassDeclaration, baseActionClassDeclaration) = getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration)
 
         if (Modifier.SEALED !in baseActionClassDeclaration.modifiers) {
             logger.error("Base Action class must be sealed. The \"${baseActionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
@@ -66,24 +58,16 @@ class AnnotationProcessor(
 
         val generatedTransitionFactoryClassName = "Generated${baseStateClassDeclaration.toClassName().simpleName}TransactionFactory"
 
-        val generatedTransactionFactoryFileSpecResult = TransactionFactoryFileSpecFactory().create(
+        val generatedTransactionFactoryFileSpec = TransactionFactoryFileSpecFactory().create(
             baseActionClassDeclaration = baseActionClassDeclaration,
             baseStateClassDeclaration = baseStateClassDeclaration,
             className = generatedTransitionFactoryClassName,
         )
 
-        val generatedTransactionFactoryFileSpec = when (generatedTransactionFactoryFileSpecResult) {
-            is TypeSpecResult.Error -> {
-                logger.error(generatedTransactionFactoryFileSpecResult.message)
-                return
-            }
-            is TypeSpecResult.Success -> generatedTransactionFactoryFileSpecResult.typeSpec
-        }
-
         writeToFile(generatedTransitionFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
     }
 
-    private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): GetBaseStateAndBaseActionClassDeclarationResult {
+    private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {
 
         val featureSuperType = featureClassDeclaration.superTypes.map { it.resolve() }.first { superType ->
             val superClassDeclaration = superType.declaration.closestClassDeclaration()
@@ -95,7 +79,7 @@ class AnnotationProcessor(
         if (featureSuperTypeGenericTypes.size != 2) {
             val errorMessage = "Super class of feature must have exactly two generic types (state and action). " +
                     "But the super class of \"${featureClassDeclaration.toClassName().canonicalName}\" has ${featureSuperTypeGenericTypes.size}: ${featureSuperTypeGenericTypes.map { it.toTypeName() }}"
-            return GetBaseStateAndBaseActionClassDeclarationResult.Error(errorMessage)
+            error(errorMessage)
         }
 
         val featureSuperTypeClassDeclarations = featureSuperTypeGenericTypes.mapNotNull {
@@ -103,12 +87,12 @@ class AnnotationProcessor(
         }
 
         val baseStateClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(State::class) }
-            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            ?: error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
 
         val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(Action::class) }
-            ?: return GetBaseStateAndBaseActionClassDeclarationResult.Error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            ?: error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
 
-        return GetBaseStateAndBaseActionClassDeclarationResult.Success(baseStateClassDeclaration to baseActionClassDeclaration)
+        return baseStateClassDeclaration to baseActionClassDeclaration
     }
 
     private fun writeToFile(className: String, packageName: String, fileSpec: TypeSpec) {
@@ -117,14 +101,7 @@ class AnnotationProcessor(
         file.writeTo(codeGenerator, Dependencies(false))
     }
 
-    private sealed class GetBaseStateAndBaseActionClassDeclarationResult {
-        data class Error(val message: String) : GetBaseStateAndBaseActionClassDeclarationResult()
-        data class Success(val result: Pair<KSClassDeclaration, KSClassDeclaration>) :
-            GetBaseStateAndBaseActionClassDeclarationResult()
-    }
-
     companion object {
         private val featureClasses = setOf(Feature::class, FeatureRx::class, ru.kontur.mobile.visualfsm.rxjava2.FeatureRx::class)
     }
-
 }

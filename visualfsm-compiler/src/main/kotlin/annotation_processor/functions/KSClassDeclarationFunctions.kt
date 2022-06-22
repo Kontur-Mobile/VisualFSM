@@ -39,5 +39,4 @@ internal object KSClassDeclarationFunctions {
             if (Modifier.SEALED in it.modifiers) it.getAllNestedSealedSubclasses() else sequenceOf(it)
         }
     }
-
 }
