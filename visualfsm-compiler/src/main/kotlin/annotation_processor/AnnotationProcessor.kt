@@ -64,7 +64,7 @@ class AnnotationProcessor(
             className = generatedTransitionFactoryClassName,
         )
 
-        writeToFile(generatedTransitionFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
+        writeToFile(generatedTransitionFactoryClassName, baseStateClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
     }
 
     private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {
