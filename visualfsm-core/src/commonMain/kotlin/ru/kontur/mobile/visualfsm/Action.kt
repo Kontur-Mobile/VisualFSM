@@ -18,13 +18,10 @@ abstract class Action<STATE : State> {
      *
      * @return instances of all [transitions][Transition] declared inside this [Action]
      */
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated(message = "") // TODO Add message to annotation
+    @Deprecated(message = "Override this method is deprecated. Pass transitionFactory parameter in Feature constructor instead.")
     open fun getTransitions(): List<Transition<out STATE, out STATE>> {
-        return transitions
-            ?: throw IllegalStateException("This method must be overridden and return instances of all transitions declared inside this Action")
+        return transitions ?: error("transitionFactory parameter not passed to Feature constructor")
     }
-
 
     /**
      * Selects and starts a [transition][Transition].
