@@ -14,7 +14,7 @@ class GeneratedTransactionFactoryProvider {
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <reified STATE : State, ACTION : Action<STATE>> provide(): TransitionFactory<STATE, ACTION> {
-        val packageName = STATE::class.qualifiedName?.split(".")?.takeIf { it.size > 1 }?.dropLast(1)?.joinToString(".")
+        val packageName = STATE::class.qualifiedName?.substringBeforeLast(".", "")
         val implName = "Generated${STATE::class.simpleName!!}TransactionFactory"
         val implQualifiedName = if (packageName.isNullOrBlank()) implName else "${packageName}.${implName}"
         val kClass = Class.forName(implQualifiedName).kotlin
