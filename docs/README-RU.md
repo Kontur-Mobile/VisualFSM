@@ -74,34 +74,12 @@ dependencies {
 
 ### Для Андроид приложения
 
+#### В build.gradle модуля, в котором будут использованы аннотации
+
 ```groovy
 // Подключаем KSP плагин
 plugins {
     id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-// Добавляем сгенерированный код в каталоги исходного кода
-android {
-    buildTypes {
-        release {
-            sourceSets {
-                main {
-                    java {
-                        srcDir "${buildDir.absolutePath}/generated/ksp/release/kotlin"
-                    }
-                }
-            }
-        }
-        debug {
-            sourceSets {
-                main {
-                    java {
-                        srcDir "${buildDir.absolutePath}/generated/ksp/debug/kotlin"
-                    }
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -109,6 +87,19 @@ dependencies {
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
     // Поключаем инструменты для возможности использования GeneratedTransactionFactoryProvider
     implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+}
+```
+
+#### В build.gradle app модуля
+
+```groovy
+// Добавляем сгенерированный код в каталоги исходного кода
+android {
+    applicationVariants.all { variant ->
+        variant.sourceSets.java.each {
+            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
+        }
+    }
 }
 ```
 

@@ -74,34 +74,12 @@ dependencies {
 
 ### Android App Setup
 
+#### In the build.gradle of the module where the annotations will be used
+
 ```groovy
 // Use KSP plugin
 plugins {
     id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-// Add generated code to source code directories
-android {
-    buildTypes {
-        release {
-            sourceSets {
-                main {
-                    java {
-                        srcDir "${buildDir.absolutePath}/generated/ksp/release/kotlin"
-                    }
-                }
-            }
-        }
-        debug {
-            sourceSets {
-                main {
-                    java {
-                        srcDir "${buildDir.absolutePath}/generated/ksp/debug/kotlin"
-                    }
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -109,6 +87,19 @@ dependencies {
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
     // Use tools to be able to use the GeneratedTransactionFactoryProvider
     implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+}
+```
+
+#### In build.gradle of the app module
+
+```groovy
+// Add generated code to source code directories
+android {
+    applicationVariants.all { variant ->
+        variant.sourceSets.java.each {
+            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
+        }
+    }
 }
 ```
 
