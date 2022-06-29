@@ -32,10 +32,24 @@ constructor(
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionFactory: TransitionFactory<STATE, ACTION>,
     ) : this(initialState, asyncWorker, transitionCallbacks) {
-        this.transitionFactory = transitionFactory
+        this.getTransitionFactory = { transitionFactory }
     }
 
-    private var transitionFactory: TransitionFactory<STATE, ACTION>? = null
+    @Suppress("DEPRECATION")
+    constructor(
+        initialState: STATE,
+        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        getTransitionFactory: FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>,
+    ) : this(initialState, asyncWorker, transitionCallbacks) {
+        this.getTransitionFactory = getTransitionFactory
+    }
+
+    private var getTransitionFactory: (FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>)? = null
+
+    private val transitionFactory: TransitionFactory<STATE, ACTION>? by lazy {
+        getTransitionFactory?.invoke(this)
+    }
 
     private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
 
@@ -74,4 +88,6 @@ constructor(
             }
         )
     }
+
+    companion object
 }

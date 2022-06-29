@@ -24,10 +24,24 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionFactory: TransitionFactory<STATE, ACTION>,
     ) : this(initialState, asyncWorker, transitionCallbacks) {
-        this.transitionFactory = transitionFactory
+        this.getTransitionFactory = { transitionFactory }
     }
 
-    private var transitionFactory: TransitionFactory<STATE, ACTION>? = null
+    @Suppress("DEPRECATION")
+    constructor(
+        initialState: STATE,
+        asyncWorker: AsyncWorker<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        getTransitionFactory: Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>,
+    ) : this(initialState, asyncWorker, transitionCallbacks) {
+        this.getTransitionFactory = getTransitionFactory
+    }
+
+    private var getTransitionFactory: (Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>)? = null
+
+    private val transitionFactory: TransitionFactory<STATE, ACTION>? by lazy {
+        getTransitionFactory?.invoke(this)
+    }
 
     private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
 

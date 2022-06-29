@@ -56,7 +56,7 @@ class AnnotationProcessor(
             return
         }
 
-        val generatedTransitionFactoryClassName = "Generated${baseStateClassDeclaration.toClassName().simpleName}TransactionFactory"
+        val generatedTransitionFactoryClassName = "Generated${featureClassDeclaration.toClassName().simpleName}TransactionFactory"
 
         val generatedTransactionFactoryFileSpec = TransactionFactoryFileSpecFactory().create(
             baseActionClassDeclaration = baseActionClassDeclaration,
@@ -64,7 +64,7 @@ class AnnotationProcessor(
             className = generatedTransitionFactoryClassName,
         )
 
-        writeToFile(generatedTransitionFactoryClassName, baseStateClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
+        writeToFile(generatedTransitionFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransactionFactoryFileSpec)
     }
 
     private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {
