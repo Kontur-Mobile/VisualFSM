@@ -3,7 +3,7 @@ package authFSM
 import AuthInteractor
 import authFSM.actions.AuthFSMAction
 import ru.kontur.mobile.visualfsm.*
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
 
 @UsesGeneratedTransactionFactory
 class AuthFSMFeature : Feature<AuthFSMState, AuthFSMAction>(
@@ -39,5 +39,5 @@ class AuthFSMFeature : Feature<AuthFSMState, AuthFSMAction>(
             println("onMultipleTransitionError\naction=$action\ncurrentState=$currentState")
         }
     },
-    transitionFactory = GeneratedTransactionFactoryProvider().provide()
+    transitionFactoryFunction = provideTransactionFactoryFunction(),
 )

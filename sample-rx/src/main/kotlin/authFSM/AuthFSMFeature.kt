@@ -7,7 +7,7 @@ import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 import ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
 
 @UsesGeneratedTransactionFactory
 class AuthFSMFeature : FeatureRx<AuthFSMState, AuthFSMAction>(
@@ -43,5 +43,5 @@ class AuthFSMFeature : FeatureRx<AuthFSMState, AuthFSMAction>(
             println("onMultipleTransitionError\naction=$action\ncurrentState=$currentState")
         }
     },
-    transitionFactory = GeneratedTransactionFactoryProvider().provide()
+    transitionFactoryFunction = provideTransactionFactoryFunction(),
 )

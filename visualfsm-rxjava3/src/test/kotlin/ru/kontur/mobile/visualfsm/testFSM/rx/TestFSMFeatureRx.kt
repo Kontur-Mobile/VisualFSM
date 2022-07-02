@@ -6,7 +6,7 @@ import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider.provideTransactionFactory
+import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
 
 @UsesGeneratedTransactionFactory
 class TestFSMFeatureRx(
@@ -17,5 +17,5 @@ class TestFSMFeatureRx(
     initialState = initialState,
     asyncWorker = asyncWorker,
     transitionCallbacks = transitionCallbacks,
-    getTransitionFactory = { provideTransactionFactory() },
+    transitionFactoryFunction = provideTransactionFactoryFunction(),
 )
