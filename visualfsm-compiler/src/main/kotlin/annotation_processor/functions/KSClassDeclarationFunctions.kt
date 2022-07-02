@@ -8,8 +8,6 @@ import kotlin.reflect.KClass
 
 internal object KSClassDeclarationFunctions {
 
-    private const val MAX_SUPER_CLASS_SEARCH_NESTING_LEVEL = 5
-
     internal fun KSClassDeclaration.isClassOrSubclassOf(kClass: KClass<out Any>): Boolean {
         if (kClass.asClassName() == this.toClassName()) return true
         return superTypes
@@ -20,21 +18,16 @@ internal object KSClassDeclarationFunctions {
             }
     }
 
-    internal fun KSClassDeclaration.isSubclassOf(
-        superClass: KClass<out Any>,
-        maxNestingLevel: Int = MAX_SUPER_CLASS_SEARCH_NESTING_LEVEL,
-        currentNestingLevel: Int = 0,
-    ): Boolean {
-        if (currentNestingLevel > maxNestingLevel) return false
+    internal fun KSClassDeclaration.isSubclassOf(superClass: KClass<out Any>): Boolean {
         return superTypes
             .mapNotNull { it.resolve().declaration as? KSClassDeclaration }
             .any {
                 if (superClass.asClassName() == it.toClassName()) return@any true
-                it.isSubclassOf(superClass, maxNestingLevel, currentNestingLevel + 1)
+                it.isSubclassOf(superClass)
             }
     }
 
-    fun KSClassDeclaration.getAllNestedSealedSubclasses(): Sequence<KSClassDeclaration> {
+    internal fun KSClassDeclaration.getAllNestedSealedSubclasses(): Sequence<KSClassDeclaration> {
         return getSealedSubclasses().flatMap {
             if (Modifier.SEALED in it.modifiers) it.getAllNestedSealedSubclasses() else sequenceOf(it)
         }
