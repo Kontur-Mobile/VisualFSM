@@ -10,14 +10,14 @@ import kotlin.reflect.full.primaryConstructor
 
 
 /** An instrument object to receive a function that returns an instance of the generated [TransitionFactory] implementation. */
-object GeneratedTransactionFactoryFunctionProvider {
+object GeneratedTransitionFactoryProvider {
 
     /**
      * Provide a function that returns an instance of the generated [TransitionFactory] for the given [feature][Feature].
      * @return an instance of the generated [TransitionFactory]
      */
     @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> Feature.Companion.provideTransactionFactoryFunction(): Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
+    fun <STATE : State, ACTION : Action<STATE>> Feature.Companion.provideTransitionFactory(): Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
         return { getGeneratedTransitionFactory(this::class) }
     }
 
@@ -26,7 +26,7 @@ object GeneratedTransactionFactoryFunctionProvider {
      * @return an instance of the generated [TransitionFactory]
      */
     @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> FeatureRx.Companion.provideTransactionFactoryFunction(): FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
+    fun <STATE : State, ACTION : Action<STATE>> FeatureRx.Companion.provideTransitionFactory(): FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
         return { getGeneratedTransitionFactory(this::class) }
     }
 
@@ -35,7 +35,7 @@ object GeneratedTransactionFactoryFunctionProvider {
      * @return an instance of the generated [TransitionFactory]
      */
     @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> ru.kontur.mobile.visualfsm.rxjava2.FeatureRx.Companion.provideTransactionFactoryFunction(): ru.kontur.mobile.visualfsm.rxjava2.FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
+    fun <STATE : State, ACTION : Action<STATE>> ru.kontur.mobile.visualfsm.rxjava2.FeatureRx.Companion.provideTransitionFactory(): ru.kontur.mobile.visualfsm.rxjava2.FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
         return { getGeneratedTransitionFactory(this::class) }
     }
 

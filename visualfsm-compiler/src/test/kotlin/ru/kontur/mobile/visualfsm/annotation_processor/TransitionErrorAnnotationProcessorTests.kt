@@ -36,10 +36,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -80,10 +80,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -124,10 +124,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -170,10 +170,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )

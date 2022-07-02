@@ -37,16 +37,16 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
-     * @param transitionFactoryFunction a function that returns a [TransitionFactory] instance to create the transition list for the action
+     * @param transitionFactory a function that returns a [TransitionFactory] instance to create the transition list for the action
      */
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
-        transitionFactoryFunction: Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>,
+        transitionFactory: Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION>,
     ) : this(initialState, asyncWorker, transitionCallbacks) {
-        this.transitionFactory = transitionFactoryFunction(this)
+        this.transitionFactory = transitionFactory(this)
     }
 
     private var transitionFactory: TransitionFactory<STATE, ACTION>? = null

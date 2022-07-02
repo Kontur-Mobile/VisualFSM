@@ -18,19 +18,29 @@ abstract class Transition<FROM : State, TO : State>() {
         replaceWith = ReplaceWith("Constructor without parameters")
     )
     constructor(fromState: KClass<FROM>, toState: KClass<TO>) : this() {
-        this.fromState = fromState
-        this.toState = toState
+        this._fromState = fromState
+        this._toState = toState
     }
+
+    /** This property is needed to use it in the generated code. Do not use it. */
+    @Suppress("PropertyName")
+    var _fromState: KClass<FROM>? = null
+
+    /** This property is needed to use it in the generated code. Do not use it. */
+    @Suppress("PropertyName")
+    var _toState: KClass<TO>? = null
 
     /**
      * A [state][State] that FSM had on [transition][Transition] start
      */
-    lateinit var fromState: KClass<FROM>
+    val fromState: KClass<FROM>
+        get() = _fromState ?: error("TODO()")
 
     /**
      * A [state][State] FSM would have after the [transition][Transition] completes
      */
-    lateinit var toState: KClass<TO>
+    val toState: KClass<TO>
+        get() = _toState ?: error("TODO()")
 
     /**
      * Defines requirements for the [transition][Transition] to perform

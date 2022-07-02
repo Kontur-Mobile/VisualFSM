@@ -14,7 +14,7 @@ object TestUtil {
         getSource(Transition::class),
         getSource(State::class),
         getSource(Feature::class),
-        getSource(UsesGeneratedTransactionFactory::class),
+        getSource(GenerateTransitionFactory::class),
     )
 
     fun KotlinCompilation.Result.getKspGeneratedSources(): List<File> {

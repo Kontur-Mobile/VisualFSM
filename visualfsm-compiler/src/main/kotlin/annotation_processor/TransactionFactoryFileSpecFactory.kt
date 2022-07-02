@@ -113,8 +113,8 @@ class TransactionFactoryFileSpecFactory {
             val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
             val implementationBuilder = StringBuilder()
             implementationBuilder.append("········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
-            implementationBuilder.append("············fromState·=·${fromStateType.toTypeName()}::class\n")
-            implementationBuilder.append("············toState·=·${toStateType.toTypeName()}::class\n")
+            implementationBuilder.append("············_fromState·=·${fromStateType.toTypeName()}::class\n")
+            implementationBuilder.append("············_toState·=·${toStateType.toTypeName()}::class\n")
             implementationBuilder.append("········}")
             implementationBuilder.toString()
         }

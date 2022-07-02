@@ -15,8 +15,8 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Feature
+import ru.kontur.mobile.visualfsm.GenerateTransitionFactory
 import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 
 class AnnotationProcessor(
@@ -26,7 +26,7 @@ class AnnotationProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val annotatedWithFeatureClassDeclarations = resolver
-            .getSymbolsWithAnnotation(UsesGeneratedTransactionFactory::class.qualifiedName!!)
+            .getSymbolsWithAnnotation(GenerateTransitionFactory::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
 
         if (!annotatedWithFeatureClassDeclarations.iterator().hasNext()) return emptyList()
@@ -45,7 +45,7 @@ class AnnotationProcessor(
     private fun handleAnnotatedWithFeatureClassDeclaration(featureClassDeclaration: KSClassDeclaration) {
 
         if (featureClasses.none { featureClassDeclaration.isSubclassOf(it) }) {
-            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${UsesGeneratedTransactionFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${GenerateTransitionFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
             return
         }
 

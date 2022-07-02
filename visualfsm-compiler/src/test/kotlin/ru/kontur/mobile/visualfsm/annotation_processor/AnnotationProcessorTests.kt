@@ -36,10 +36,10 @@ internal class AnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -60,12 +60,12 @@ internal class AnnotationProcessorTests {
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "      is TestAction1 -> listOf(\n" +
                     "          action.Transition1().apply {\n" +
-                    "              fromState = TestState.TestState1::class\n" +
-                    "              toState = TestState.TestState2::class\n" +
+                    "              _fromState = TestState.TestState1::class\n" +
+                    "              _toState = TestState.TestState2::class\n" +
                     "          },\n" +
                     "          action.Transition2().apply {\n" +
-                    "              fromState = TestState.TestState2::class\n" +
-                    "              toState = TestState.TestState1::class\n" +
+                    "              _fromState = TestState.TestState2::class\n" +
+                    "              _toState = TestState.TestState1::class\n" +
                     "          },\n" +
                     "      )\n" +
                     "      else -> error(\"All sealed subclasses of TestAction must be handled in when\")\n" +

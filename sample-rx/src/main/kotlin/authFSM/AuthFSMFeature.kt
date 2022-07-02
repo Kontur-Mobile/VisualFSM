@@ -3,13 +3,13 @@ package authFSM
 import AuthInteractor
 import authFSM.actions.AuthFSMAction
 import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.GenerateTransitionFactory
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
-import ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryProvider.provideTransitionFactory
 
-@UsesGeneratedTransactionFactory
+@GenerateTransitionFactory
 class AuthFSMFeature : FeatureRx<AuthFSMState, AuthFSMAction>(
     initialState = AuthFSMState.Login("", ""),
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
@@ -43,5 +43,5 @@ class AuthFSMFeature : FeatureRx<AuthFSMState, AuthFSMAction>(
             println("onMultipleTransitionError\naction=$action\ncurrentState=$currentState")
         }
     },
-    transitionFactoryFunction = provideTransactionFactoryFunction(),
+    transitionFactory = provideTransitionFactory(),
 )

@@ -36,10 +36,10 @@ internal class ActionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -80,10 +80,10 @@ internal class ActionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -114,10 +114,10 @@ internal class ActionErrorAnnotationProcessorTests {
                 
                 class TestAction1(val parameter1: String): TestAction() {}
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )
@@ -162,10 +162,10 @@ internal class ActionErrorAnnotationProcessorTests {
                     }
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 """
         )

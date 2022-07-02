@@ -36,7 +36,7 @@ internal class FeatureErrorAnnotationProcessorTests {
                 
                 }
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature
                 """
         )
@@ -47,7 +47,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.UsesGeneratedTransactionFactory. The \"TestFeature\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.GenerateTransitionFactory. The \"TestFeature\" does not meet this requirement."))
     }
 
     @Test
@@ -85,10 +85,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: FeatureAbstract(
                     initialState = TestState.TestState1(),
                 )
@@ -139,10 +139,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: FeatureAbstract<TestAction, Any>(
                     initialState = TestState.TestState1(),
                 )
@@ -193,10 +193,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactoryFunction = provideTransactionFactoryFunction(),
+                    transitionFactory = provideTransitionFactory(),
                 )
                 
-                @UsesGeneratedTransactionFactory
+                @GenerateTransitionFactory
                 class TestFeature: FeatureAbstract<TestState, Any>(
                     initialState = TestState.TestState1(),
                 )
