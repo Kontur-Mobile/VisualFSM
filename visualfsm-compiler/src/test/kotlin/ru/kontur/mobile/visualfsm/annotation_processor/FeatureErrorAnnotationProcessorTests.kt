@@ -15,7 +15,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -56,7 +56,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -85,7 +85,7 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 
                 @UsesGeneratedTransactionFactory
@@ -110,7 +110,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -139,7 +139,7 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 
                 @UsesGeneratedTransactionFactory
@@ -164,7 +164,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -193,7 +193,7 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 
                 @UsesGeneratedTransactionFactory

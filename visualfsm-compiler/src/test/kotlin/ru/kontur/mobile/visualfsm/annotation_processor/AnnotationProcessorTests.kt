@@ -15,7 +15,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -39,7 +39,7 @@ internal class AnnotationProcessorTests {
                 @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 """
         )
@@ -51,12 +51,12 @@ internal class AnnotationProcessorTests {
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspGeneratedSources()
-        val generatedTestStateTransactionFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestStateTransactionFactory.kt") }
+        val generatedTestStateTransactionFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransactionFactory.kt") }
         println(generatedTestStateTransactionFactory.readText())
         Assertions.assertEquals(
             "import ru.kontur.mobile.visualfsm.TransitionFactory\n" +
                     "\n" +
-                    "public class GeneratedTestStateTransactionFactory : TransitionFactory<TestState, TestAction> {\n" +
+                    "public class GeneratedTestFeatureTransactionFactory : TransitionFactory<TestState, TestAction> {\n" +
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "      is TestAction1 -> listOf(\n" +
                     "          action.Transition1().apply {\n" +

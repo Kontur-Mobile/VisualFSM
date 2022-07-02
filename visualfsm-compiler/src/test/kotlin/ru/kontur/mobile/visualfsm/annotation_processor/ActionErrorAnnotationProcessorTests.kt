@@ -15,7 +15,7 @@ internal class ActionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -39,7 +39,7 @@ internal class ActionErrorAnnotationProcessorTests {
                 @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 """
         )
@@ -59,7 +59,7 @@ internal class ActionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -83,7 +83,7 @@ internal class ActionErrorAnnotationProcessorTests {
                 @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 """
         )
@@ -103,7 +103,7 @@ internal class ActionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -117,7 +117,7 @@ internal class ActionErrorAnnotationProcessorTests {
                 @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 """
         )
@@ -137,7 +137,7 @@ internal class ActionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryProvider
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -165,7 +165,7 @@ internal class ActionErrorAnnotationProcessorTests {
                 @UsesGeneratedTransactionFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = GeneratedTransactionFactoryProvider.provide()
+                    transitionFactoryFunction = provideTransactionFactoryFunction(),
                 )
                 """
         )
