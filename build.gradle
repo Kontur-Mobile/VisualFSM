@@ -30,7 +30,7 @@ buildscript {
 
 subprojects {
     ext {
-        coroutinesVersion = '1.6.2'
+        coroutinesVersion = '1.6.3'
         rxJava2Version = '2.2.21'
         rxJava3Version = '3.1.5'
         junitJupiterVersion = '5.8.2'
