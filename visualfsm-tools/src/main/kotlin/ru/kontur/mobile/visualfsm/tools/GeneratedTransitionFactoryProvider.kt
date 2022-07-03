@@ -48,14 +48,9 @@ object GeneratedTransitionFactoryProvider {
             Class.forName(implQualifiedName).kotlin
         } catch (e: ClassNotFoundException) {
             error(
-                "Not found generated TransitionFactory for ${featureClass.qualifiedName}.\n" +
-                        "It seems code generation not configured or configured incorrectly.\n" +
-                        "For enable code generation:\n" +
-                        "  1. Use annotation processor and tools dependencies in module gradle script\n." +
-                        "  2. Add generated code to source code directories.\n" +
-                        "  3. Annotate the Feature class with the GenerateTransitionFactory annotation.\n" +
-                        "  4. Pass the transitionFactory parameter to the Feature constructor.\n" +
-                        "Please see the readme file (https://github.com/g0rd1/VisualFSM/blob/g0rd1/code-generation/docs/eng/Quickstart-ENG.md) for detailed information on set up code generation."
+                "\nNot found generated TransitionFactory for ${featureClass.qualifiedName}.\n" +
+                        "Code generation not configured or configured incorrectly.\n" +
+                        "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
             )
         }
         return kClass.primaryConstructor!!.call() as TransitionFactory<STATE, ACTION>
