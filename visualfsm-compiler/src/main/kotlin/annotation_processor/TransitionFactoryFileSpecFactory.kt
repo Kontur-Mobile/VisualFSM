@@ -19,7 +19,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionFactory
 
-class TransactionFactoryFileSpecFactory {
+class TransitionFactoryFileSpecFactory {
 
     internal fun create(
         baseActionClassDeclaration: KSClassDeclaration,

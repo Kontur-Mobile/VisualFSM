@@ -15,7 +15,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -51,12 +51,12 @@ internal class AnnotationProcessorTests {
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspGeneratedSources()
-        val generatedTestStateTransactionFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransactionFactory.kt") }
-        println(generatedTestStateTransactionFactory.readText())
+        val generatedTestStateTransitionFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionFactory.kt") }
+        println(generatedTestStateTransitionFactory.readText())
         Assertions.assertEquals(
             "import ru.kontur.mobile.visualfsm.TransitionFactory\n" +
                     "\n" +
-                    "public class GeneratedTestFeatureTransactionFactory : TransitionFactory<TestState, TestAction> {\n" +
+                    "public class GeneratedTestFeatureTransitionFactory : TransitionFactory<TestState, TestAction> {\n" +
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "      is TestAction1 -> listOf(\n" +
                     "          action.Transition1().apply {\n" +
@@ -72,7 +72,7 @@ internal class AnnotationProcessorTests {
                     "  }\n" +
                     "\n" +
                     "}\n",
-            generatedTestStateTransactionFactory.readText()
+            generatedTestStateTransitionFactory.readText()
         )
     }
 }

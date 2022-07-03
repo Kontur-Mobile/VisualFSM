@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test
 internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
-    fun testClassWithUsesGeneratedTransactionFactoryAnnotationNotInheritedFromFeature() {
+    fun testClassWithUsesGeneratedTransitionFactoryAnnotationNotInheritedFromFeature() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -56,7 +56,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -110,7 +110,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -164,7 +164,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransactionFactoryFunctionProvider.provideTransactionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()

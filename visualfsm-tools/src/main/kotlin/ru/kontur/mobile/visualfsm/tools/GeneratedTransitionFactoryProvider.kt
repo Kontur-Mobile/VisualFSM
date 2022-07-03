@@ -42,7 +42,7 @@ object GeneratedTransitionFactoryProvider {
     @Suppress("UNCHECKED_CAST")
     private fun <STATE : State, ACTION : Action<STATE>> getGeneratedTransitionFactory(featureClass: KClass<out Any>): TransitionFactory<STATE, ACTION> {
         val packageName = featureClass.qualifiedName?.substringBeforeLast(".", "")
-        val implName = "Generated${featureClass.simpleName!!}TransactionFactory"
+        val implName = "Generated${featureClass.simpleName!!}TransitionFactory"
         val implQualifiedName = if (packageName.isNullOrBlank()) implName else "${packageName}.${implName}"
         val kClass = Class.forName(implQualifiedName).kotlin
         return kClass.primaryConstructor!!.call() as TransitionFactory<STATE, ACTION>
