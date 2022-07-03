@@ -35,7 +35,7 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 
 #### _Для Котлин приложения_
 
-##### В build.gradle модуля, в котором будут использованы аннотации
+##### В gradle файле модуля, в котором будут использованы аннотации
 
 <details>
   <summary>Groovy</summary>
@@ -94,7 +94,7 @@ dependencies {
 
 #### _Для Андроид приложения_
 
-##### В build.gradle модуля, в котором будут использованы аннотации
+##### В gradle файле модуля, в котором будут использованы аннотации
 
 <details>
   <summary>Groovy</summary>
@@ -133,7 +133,7 @@ dependencies {
 
 </details>
 
-##### _В build.gradle app модуля_
+##### В gradle файле app модуля
 
 <details>
   <summary>Groovy</summary>
