@@ -14,7 +14,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
 @Deprecated(
     message = "Deprecated, because it not support code generation.\n" +
             "For enable code generation:\n" +
-            "  1. Use annotation processor and tools dependencies in gradle files." +
+            "  1. Use annotation processor and tools dependencies in module gradle script\n." +
             "  2. Add generated code to source code directories.\n" +
             "  3. Annotate the Feature class with the GenerateTransitionFactory annotation.\n" +
             "  4. Pass the transitionFactory parameter to the Feature constructor.\n" +

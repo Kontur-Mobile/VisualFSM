@@ -16,7 +16,7 @@ abstract class Transition<FROM : State, TO : State>() {
     @Deprecated(
         message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionFactory).\n" +
                 "For enable code generation:\n" +
-                "  1. Use annotation processor and tools dependencies in gradle files." +
+                "  1. Use annotation processor and tools dependencies in module gradle script\n." +
                 "  2. Add generated code to source code directories.\n" +
                 "  3. Annotate the Feature class with the GenerateTransitionFactory annotation.\n" +
                 "  4. Pass the transitionFactory parameter to the Feature constructor.\n" +
@@ -43,7 +43,7 @@ abstract class Transition<FROM : State, TO : State>() {
         get() = _fromState ?: error(
             "Code generation not configured or configured incorrectly.\n" +
                     "For enable code generation:\n" +
-                    "  1. Use annotation processor and tools dependencies in gradle files." +
+                    "  1. Use annotation processor and tools dependencies in module gradle script\n." +
                     "  2. Add generated code to source code directories.\n" +
                     "  3. Annotate the Feature class with the GenerateTransitionFactory annotation.\n" +
                     "  4. Pass the transitionFactory parameter to the Feature constructor.\n" +
@@ -57,7 +57,7 @@ abstract class Transition<FROM : State, TO : State>() {
         get() = _toState ?: error(
             "Code generation not configured or configured incorrectly.\n" +
                     "For enable code generation:\n" +
-                    "  1. Use annotation processor and tools dependencies in gradle files." +
+                    "  1. Use annotation processor and tools dependencies in module gradle script\n." +
                     "  2. Add generated code to source code directories.\n" +
                     "  3. Annotate the Feature class with the GenerateTransitionFactory annotation.\n" +
                     "  4. Pass the transitionFactory parameter to the Feature constructor.\n" +
