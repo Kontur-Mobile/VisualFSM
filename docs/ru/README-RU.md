@@ -1,10 +1,10 @@
-# <img src="logo.png" alt="VisualFSM" height="192"/>
+# <img src="../logo.png" alt="VisualFSM" height="192"/>
 
 [![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/ru.kontur.mobile.visualfsm/visualfsm-core)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
-[ENG](../README.md) | RUS
+[ENG](../../README.md) | RUS
 
 `VisualFSM` – это Kotlin-библиотека для реализации **MVI-архитектуры**
 (`Model-View-Intent`)[[1]](#что-такое-mvi) и набор инструментов для визуализации и анализа диаграммы
@@ -17,93 +17,9 @@
 Анализ исходного кода и построение графа выполняется с помощью рефлексии и реализован отдельным
 модулем, что позволяет подключить его только к тестовой среде.
 
-## Как подключить
+## Первичная настройка библиотеки
 
-Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker) 
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
-```
-
-Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
-```
-
-Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
-```
-
-Инструменты для:
-
-* Анализа и построения графа.
-* Получения сгенерированных классов (`GeneratedTransactionFactoryProvider`)
-
-```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
-```
-
-## Как подключить кодогенерацию
-
-### Для Котлин приложения
-
-```groovy
-// Подключаем KSP плагин
-plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-// Добавляем сгенерированный код в каталоги исходного кода
-kotlin {
-    sourceSets {
-        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
-        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
-    }
-}
-
-dependencies {
-    // Подключаем AnnotationProcessor
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Поключаем инструменты для возможности использования GeneratedTransactionFactoryProvider
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
-}
-```
-
-### Для Андроид приложения
-
-#### В build.gradle модуля, в котором будут использованы аннотации
-
-```groovy
-// Подключаем KSP плагин
-plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-dependencies {
-    // Подключаем AnnotationProcessor
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Поключаем инструменты для возможности использования GeneratedTransactionFactoryProvider
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
-}
-```
-
-#### В build.gradle app модуля
-
-```groovy
-// Добавляем сгенерированный код в каталоги исходного кода
-android {
-    applicationVariants.all { variant ->
-        variant.sourceSets.java.each {
-            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
-        }
-    }
-}
-```
-
-Как аннотировать классы и взаимодейтвовать с сгенерированным кодом смотри в [примере ниже](#AuthFeature.kt).
+Смотрите [здесь](Quickstart-RU.md)
 
 ## Плюсы VisualFSM
 
@@ -112,7 +28,7 @@ android {
 Визуализация позволяет тратить меньше времени на понимание сложного бизнес процесса и упрощает
 _поиск ошибок_, _добавление нового функционала_ и _рефакторинг_.
 
-<img src="graph.png" alt="graph" width="800"/>
+<img src="../graph.png" alt="graph" width="800"/>
 
 Упрощенный пример графа FSM авторизации и регистрации пользователя
 
@@ -124,13 +40,13 @@ _поиск ошибок_, _добавление нового функциона
 ### Управление асинхронными операциями
 
 Асинхронная работа может быть представлена отдельными состояниями – благодаря этому мы имеем единый
-набор состояний, которые выстраиваются в направленный граф. 
-Объект AsyncWorker позволяет упростить обработку состояний в которых выполняется асинхронная работа. 
+набор состояний, которые выстраиваются в направленный граф.
+Объект AsyncWorker позволяет упростить обработку состояний в которых выполняется асинхронная работа.
 
 ## Структура VisualFSM
 
 Основные сущности, которые используются, – `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`
-, `TransitionCallbacks`, `TransactionFactory`.
+, `TransitionCallbacks`.
 
 ### State в VisualFSM
 
@@ -176,7 +92,7 @@ _поиск ошибок_, _добавление нового функциона
 рекомендуется объединять в родительский `AsyncWorkState`, так эти состояния будет зрительно проще
 выявлять на диаграмме состояний.
 
-Для подписки на `State` необходимо переопределить метод `onNextState`, в котором на каждое 
+Для подписки на `State` необходимо переопределить метод `onNextState`, в котором на каждое
 входящее состояние сконструировать подходящий AsyncWorkerTask для обработки в AsyncWorker.
 По окончании каждой операции успешно или с ошибкой, необходимо вызвать proceed метод и передать
 `Action` обработки результата.
@@ -194,8 +110,7 @@ _поиск ошибок_, _добавление нового функциона
 
 * AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
 
-
-<img src="asyncworker.png" alt="graph" width="600"/>
+<img src="../asyncworker.png" alt="graph" width="600"/>
 
 ### Feature в VisualFSM
 
@@ -208,17 +123,12 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 когда `Action` запускается, когда `Transition` выбран, новый `State` был создан, и двух ошибок —
 когда нет доступных `Transition` или когда доступно несколько `Transition`.
 
-### TransactionFactory в VisualFSM
-
-`TransactionFactory` возвращает список `Transition` для экземпляра `Action`. Не рекомендуется создавать
-наследников `TransactionFactory` самостоятельно. Используйте для этого кодогенерацию.
-
 ## Пример использования
 
-Пример реализации FSM авторизации и регистрации пользователя: [sample](../sample).
+Пример реализации FSM авторизации и регистрации пользователя: [sample](../../sample).
 
 Пример тестов для FSM авторизации и
-регистрации: [AuthFSMTests.kt](../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+регистрации: [AuthFSMTests.kt](../../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
 
 Построение графа в формате DOT для graphviz выполняется с помощью метода `VisualFSM.generateDigraph(...)`
 
@@ -228,14 +138,14 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 <h3 id="AuthFeature.kt">AuthFeature.kt</h3>
 
 ```kotlin
-    // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
-@UsesGeneratedTransactionFactory // Используйте эту аннотацию для генерации TransactionFactory
+// Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
+@GenerateTransitionFactory // Используйте эту аннотацию для генерации TransitionFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
-    // Или GeneratedAuthFSMStateTransactionFactory() (будет доступен после генерации кода)
-    transitionFactory = GeneratedTransactionFactoryProvider().provide() // Получаем экземпляр сгенерованной TransactionFactory
+    // Или GeneratedAuthFeatureTransitionFactory() (будет доступен после генерации кода)
+    transitionFactory = provideTransitionFactory() // Получаем экземпляр сгенерованной TransitionFactory
 )
 
 val authFeature = AuthFeature(
@@ -246,10 +156,10 @@ val authFeature = AuthFeature(
 authFeature.observeState().collect { state -> }
 
 // Подписка на состояния в FeatureRx
-    authFeature.observeState().subscribe {state -> } 
+authFeature.observeState().subscribe { state -> }
 
-    // Выполнение Action
-    authFeature.proceed(Authenticate("", ""))
+// Выполнение Action
+authFeature.proceed(Authenticate("", ""))
 ```
 
 ### AuthFSMState.kt

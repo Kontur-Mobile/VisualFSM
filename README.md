@@ -4,7 +4,7 @@
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
-ENG | [RUS](docs/README-RU.md)
+ENG | [RUS](docs/ru/README-RU.md)
 
 `VisualFSM` is a Kotlin library that implements an **MVI architecture**
 (`Model-View-Intent`)[[1]](#what-is-mvi) and a set of tools for visualization and analysis of
@@ -17,93 +17,9 @@ automatically added to the graph of States and Transitions.
 Source code analysis and the graph built are being performed with reflection and declared as a
 separate module that would allow it to be connected to testing environment.
 
-## Setup
+## Quickstart
 
-Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
-```
-
-Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
-```
-
-Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
-```
-
-Tools for:
-
-* Graph creation and analysis
-* Providing generated classes (`GeneratedTransactionFactoryProvider`)
-
-```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
-```
-
-## Setup code generation
-
-### Kotlin App Setup
-
-```groovy
-// Use KSP plugin
-plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-// Add generated code to source code directories
-kotlin {
-    sourceSets {
-        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
-        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
-    }
-}
-
-dependencies {
-    // Use AnnotationProcessor
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Use tools to be able to use the GeneratedTransactionFactoryProvider
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
-}
-```
-
-### Android App Setup
-
-#### In the build.gradle of the module where the annotations will be used
-
-```groovy
-// Use KSP plugin
-plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-dependencies {
-    // Use AnnotationProcessor
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Use tools to be able to use the GeneratedTransactionFactoryProvider
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
-}
-```
-
-#### In build.gradle of the app module
-
-```groovy
-// Add generated code to source code directories
-android {
-    applicationVariants.all { variant ->
-        variant.sourceSets.java.each {
-            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
-        }
-    }
-}
-```
-
-How to annotate classes and interact with generated code see [example below](#AuthFeature.kt).
+See in [Quickstart](docs/eng/Quickstart-ENG.md)
 
 ## VisualFSM Pros
 
@@ -130,8 +46,7 @@ An AsyncWorker allows you to simplify the processing of states with asynchronous
 
 ## Structure of VisualFSM
 
-The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`
-, `TransactionFactory`.
+The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
 
 ### State of VisualFSM
 
@@ -209,11 +124,6 @@ _logging_, _debugging_, _metrics_, etc. on five available events: when `Action` 
 when `Transition` is selected, a new `State` had been reduced, and two error events —
 no `Transition`s or multiple `Transition`s available.
 
-### TransactionFactory of VisualFSM
-
-`TransactionFactory` returns a list of `Transition`s for the `Action` instance. It is not recommended to create
-inheritors of `TransactionFactory` yourself. Use code generation for this.
-
 ## Sample of usage
 
 A sample FSM of authorization and registration of a user: [sample](./sample).
@@ -230,13 +140,13 @@ PC) use [webgraphviz](http://www.webgraphviz.com/).
 
 ```kotlin
     // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
-    @UsesGeneratedTransactionFactory // Use this annotation for generation TransactionFactory
+    @GenerateTransitionFactory // Use this annotation for generation TransitionFactory
     class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
         initialState = initialState,
         asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
         transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
-        // Or GeneratedAuthFSMStateTransactionFactory() (will be available after code generation)
-        transitionFactory = GeneratedTransactionFactoryProvider().provide() // Get an instance of the generated TransactionFactory
+        // Or GeneratedAuthFeatureTransitionFactory() (will be available after code generation)
+        transitionFactory = provideTransitionFactory() // Get an instance of the generated TransitionFactory
     )
 
     val authFeature = AuthFeature(
