@@ -1,6 +1,6 @@
 # Quickstart
 
-## How to setup main classes
+## How to set up main classes
 
 Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
@@ -29,9 +29,9 @@ Tools for:
 testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 ```
 
-## How to setup and enable code generation
+## How to set up and enable code generation
 
-### How to setup code generation
+### How to set up code generation
 
 #### _Kotlin App Setup_
 
@@ -171,7 +171,7 @@ android.applicationVariants.all {
 ### How to enable code generation
 
 1. Annotate the Feature class with the GenerateTransitionFactory annotation
-2. Pass to TransitionFactory constructor parameters
+2. Pass the transitionFactory parameter to the Feature constructor
     1. For jvm project use the provideTransitionFactory function
     2. For a non-jvm project, pass an instance of the generated class.
        The name of the generated class is formed as "Generated\*Feature\*TransitionFactory",

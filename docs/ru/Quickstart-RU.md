@@ -171,7 +171,7 @@ android.applicationVariants.all {
 ### Как настроить кодогенерацию
 
 1. Пометить Feature класс аннотацией GenerateTransitionFactory
-2. Передать в параметры конструктора TransitionFactory
+2. Передать в конструктор Feature параметр transitionFactory
     1. Для jvm проекта использовать функцию provideTransitionFactory
     2. Для не jvm проекта передавать экземпляр сгенерированного класса.
        Имя сгенерированного класса формируется как "Generated\*Feature\*TransitionFactory",
