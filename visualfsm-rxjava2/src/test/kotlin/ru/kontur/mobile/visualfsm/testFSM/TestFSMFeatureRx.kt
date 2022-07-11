@@ -2,10 +2,10 @@ package ru.kontur.mobile.visualfsm.testFSM
 
 import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
+import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
 import ru.kontur.mobile.visualfsm.rxjava2.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava2.FeatureRx
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
 
 @GenerateTransitionsFactory
 class TestFSMFeatureRx(

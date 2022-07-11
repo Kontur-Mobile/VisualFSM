@@ -3,7 +3,7 @@ package authFSM
 import AuthInteractor
 import authFSM.actions.AuthFSMAction
 import ru.kontur.mobile.visualfsm.*
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
+import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
 
 @GenerateTransitionsFactory
 class AuthFSMFeature : Feature<AuthFSMState, AuthFSMAction>(

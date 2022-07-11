@@ -10,12 +10,13 @@ repositories {
 
 dependencies {
     implementation project(':visualfsm-core')
-    implementation project(':visualfsm-tools')
 
     ksp project(':visualfsm-compiler')
+    implementation project(':visualfsm-providers')
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation project(':visualfsm-tools')
 }
 
 kotlin {

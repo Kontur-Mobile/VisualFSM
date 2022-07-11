@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.tools
+package ru.kontur.mobile.visualfsm.providers
 
 import ru.kontur.mobile.visualfsm.*
 import kotlin.reflect.KClass

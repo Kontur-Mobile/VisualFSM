@@ -22,8 +22,7 @@ implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
 
 Tools for:
 
-* Graph creation and analysis
-* Providing generated classes
+Graph creation and analysis
 
 ```kotlin
 testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
@@ -57,8 +56,8 @@ kotlin {
 dependencies {
     // Use AnnotationProcessor
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Use tools for convenient provide of the generated code. For jvm projects only.
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    // Use to easily get the generated code. For jvm projects only.
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
 }
 ```
 
@@ -85,8 +84,8 @@ kotlin {
 dependencies {
     // Use AnnotationProcessor
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
-    // Use tools for convenient provide of the generated code. For jvm projects only.
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    // Use to easily get the generated code. For jvm projects only.
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
 }
 ```
 
@@ -108,8 +107,8 @@ plugins {
 dependencies {
     // Use AnnotationProcessor
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Use tools for convenient provide of the generated code
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    // Use to easily get the generated code
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
 }
 ```
 
@@ -126,8 +125,8 @@ plugins {
 dependencies {
     // Use AnnotationProcessor
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
-    // Use tools for convenient provide of the generated code
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    // Use to easily get the generated code
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
 }
 ```
 

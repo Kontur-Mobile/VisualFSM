@@ -22,8 +22,7 @@ implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
 
 Инструменты для:
 
-* Анализа и построения графа.
-* Получения сгенерированных классов
+Анализа и построения графа.
 
 ```kotlin
 testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
@@ -57,8 +56,8 @@ kotlin {
 dependencies {
     // Подключаем AnnotationProcessor
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Поключаем инструменты для удобного получения сгенерированного кода. Только для jvm проектов.
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    // Поключаем для удобного получения сгенерированного кода. Только для jvm проектов.
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
 }
 ```
 
@@ -85,8 +84,8 @@ kotlin {
 dependencies {
     // Подключаем AnnotationProcessor
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
-    // Поключаем инструменты для удобного получения сгенерированного кода. Только для jvm проектов.
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    // Поключаем для удобного получения сгенерированного кода. Только для jvm проектов.
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
 }
 ```
 
@@ -108,8 +107,8 @@ plugins {
 dependencies {
     // Подключаем AnnotationProcessor
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Поключаем инструменты для удобного получения сгенерированного кода.
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    // Поключаем для удобного получения сгенерированного кода.
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
 }
 ```
 
@@ -126,8 +125,8 @@ plugins {
 dependencies {
     // Подключаем AnnotationProcessor
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
-    // Поключаем инструменты для удобного получения сгенерированного кода.
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    // Поключаем для удобного получения сгенерированного кода.
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
 }
 ```
 

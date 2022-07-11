@@ -12,12 +12,14 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
 
+    kspTest project(":visualfsm-compiler")
+    implementation project(':visualfsm-providers')
+
     testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation project(':visualfsm-tools')
-    kspTest project(":visualfsm-compiler")
 }
 
 kotlin {

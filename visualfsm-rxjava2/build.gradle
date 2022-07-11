@@ -9,13 +9,15 @@ version = artifactsBuildVersion
 dependencies {
     implementation project(':visualfsm-core')
 
+    kspTest project(":visualfsm-compiler")
+    implementation project(':visualfsm-providers')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "io.reactivex.rxjava2:rxjava:$rxJava2Version"
 
     testImplementation platform("org.junit:junit-bom:$junitJupiterVersion")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation project(':visualfsm-tools')
-    kspTest project(":visualfsm-compiler")
 }
 
 kotlin {

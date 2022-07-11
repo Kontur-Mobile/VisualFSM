@@ -13,7 +13,6 @@ dependencies {
     implementation project(':visualfsm-core')
     implementation project(':visualfsm-rxjava2')
     implementation project(':visualfsm-rxjava3')
-    testImplementation project(':visualfsm-tools')
 
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 

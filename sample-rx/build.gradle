@@ -11,13 +11,14 @@ repositories {
 dependencies {
     implementation project(':visualfsm-core')
     implementation project(':visualfsm-rxjava3')
-    implementation project(':visualfsm-tools')
 
     ksp project(':visualfsm-compiler')
+    implementation project(':visualfsm-providers')
 
     implementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation project(':visualfsm-tools')
 }
 
 kotlin {
