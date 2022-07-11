@@ -68,7 +68,6 @@ internal class AnnotationProcessorTests {
                     "              _toState = TestState.TestState1::class\n" +
                     "          },\n" +
                     "      )\n" +
-                    "      else -> error(\"All sealed subclasses of TestAction must be handled in when\")\n" +
                     "  }\n" +
                     "\n" +
                     "}\n",

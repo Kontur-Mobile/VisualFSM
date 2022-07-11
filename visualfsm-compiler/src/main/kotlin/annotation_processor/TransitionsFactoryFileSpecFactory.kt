@@ -60,7 +60,6 @@ class TransitionsFactoryFileSpecFactory {
             }
             createFunctionCodeBuilder.append("····)\n")
         }
-        createFunctionCodeBuilder.append("····else·->·error(\"All·sealed·subclasses·of·${baseActionClassDeclaration.toClassName().canonicalName}·must·be·handled·in·when\")\n")
         createFunctionCodeBuilder.append("}\n")
         classBuilder.addFunction(
             FunSpec.builder("create")
