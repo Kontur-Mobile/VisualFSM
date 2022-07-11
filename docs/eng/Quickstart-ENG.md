@@ -214,6 +214,7 @@ dependencies {
     2. For a non-jvm project, pass an instance of the generated class.
        The name of the generated class is formed as "Generated\*Feature\*TransitionsFactory",
        where \*Feature\* is the name of the annotated Feature class.
+       Please note that until the first run of code generation, the class will not be visible in the IDE
 
 <details>
   <summary>Example for jvm project</summary>
