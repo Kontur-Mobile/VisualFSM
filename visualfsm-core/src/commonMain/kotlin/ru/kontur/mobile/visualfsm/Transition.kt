@@ -16,7 +16,7 @@ abstract class Transition<FROM : State, TO : State>() {
     @Deprecated(
         message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionsFactory).\n" +
                 "Code generation not configured or configured incorrectly.\n" +
-                "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
         replaceWith = ReplaceWith("Constructor without parameters")
     )
     constructor(fromState: KClass<FROM>, toState: KClass<TO>) : this() {
@@ -38,7 +38,7 @@ abstract class Transition<FROM : State, TO : State>() {
     val fromState: KClass<FROM>
         get() = _fromState ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
+                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
         )
 
     /**
@@ -47,7 +47,7 @@ abstract class Transition<FROM : State, TO : State>() {
     val toState: KClass<TO>
         get() = _toState ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
+                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
         )
 
     /**

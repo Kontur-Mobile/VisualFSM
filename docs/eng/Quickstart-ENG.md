@@ -1,3 +1,5 @@
+ENG | [RUS](../ru/Quickstart-RU.md)
+
 # Quickstart
 
 ## How to set up main classes
@@ -32,9 +34,9 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 
 ### How to set up code generation
 
-#### _Kotlin App Setup_
+#### _Android App Setup_
 
-##### In the gradle script of the module where the annotations will be used
+##### In the gradle.build file of the module where the annotations will be used
 
 <details>
   <summary>Groovy</summary>
@@ -42,7 +44,120 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 ```groovy
 // Use KSP plugin
 plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
+    id "com.google.devtools.ksp" version "$kspVersion"
+}
+
+dependencies {
+    // Use AnnotationProcessor
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
+    // Use to easily get the generated code
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
+}
+```
+
+</details>
+<details>
+  <summary>Kotlin</summary>
+
+```kotlin
+// Use KSP plugin
+plugins {
+    id("com.google.devtools.ksp") version "1.6.10-1.0.6"
+}
+
+dependencies {
+    // Use AnnotationProcessor
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+    // Use to easily get the generated code
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+}
+```
+
+</details>
+
+##### In the gradle.build file of the app module
+
+<details>
+  <summary>Groovy</summary>
+
+```groovy
+// Add generated code to source code directories
+android {
+    ...
+    applicationVariants.all { variant ->
+        variant.sourceSets.java.each {
+            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
+        }
+    }
+}
+```
+
+</details>
+<details>
+  <summary>Kotlin</summary>
+
+```kotlin
+// Add generated code to source code directories
+android {
+    ...
+    applicationVariants.all {
+        kotlin {
+            sourceSets {
+                getByName(name) {
+                    kotlin.srcDir("build/generated/ksp/$name/kotlin")
+                }
+            }
+        }
+    }
+}
+```
+
+</details>
+
+#### _KMM project setup_
+
+##### In the gradle.build file of the module where the annotations will be used
+
+<details>
+  <summary>Kotlin</summary>
+
+```kotlin
+plugins {
+    kotlin("multiplatform")
+    id("com.android.library")
+    // Use KSP plugin
+    id("com.google.devtools.ksp") version (kspVersion)
+}
+
+sourceSets {
+    val commonMain by getting {
+        dependencies {
+            implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+            // Add generated code to source code directories
+            kotlin.srcDir("${buildDir.absolutePath}/generated/ksp/")
+        }
+    }
+}
+
+dependencies {
+    // Use to easily get the generated code
+    add("kspAndroid", "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+}
+```
+
+</details>
+
+#### _Setup for other Kotlin applications_
+
+##### In the gradle.build file of the module where the annotations will be used
+
+<details>
+  <summary>Groovy</summary>
+
+```groovy
+// Use KSP plugin
+plugins {
+    id "com.google.devtools.ksp" version "$kspVersion"
 }
 
 // Add generated code to source code directories
@@ -86,82 +201,6 @@ dependencies {
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
     // Use to easily get the generated code. For jvm projects only.
     implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
-}
-```
-
-</details>
-
-#### _Android App Setup_
-
-##### In the gradle script of the module where the annotations will be used
-
-<details>
-  <summary>Groovy</summary>
-
-```groovy
-// Use KSP plugin
-plugins {
-    id "com.google.devtools.ksp" version "1.6.21-1.0.6"
-}
-
-dependencies {
-    // Use AnnotationProcessor
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    // Use to easily get the generated code
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
-}
-```
-
-</details>
-<details>
-  <summary>Kotlin</summary>
-
-```kotlin
-// Use KSP plugin
-plugins {
-    id("com.google.devtools.ksp") version "1.6.10-1.0.6"
-}
-
-dependencies {
-    // Use AnnotationProcessor
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
-    // Use to easily get the generated code
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
-}
-```
-
-</details>
-
-##### In gradle script of the app module
-
-<details>
-  <summary>Groovy</summary>
-
-```groovy
-// Add generated code to source code directories
-android {
-    applicationVariants.all { variant ->
-        variant.sourceSets.java.each {
-            it.srcDirs += "build/generated/ksp/${variant.name}/kotlin"
-        }
-    }
-}
-```
-
-</details>
-<details>
-  <summary>Kotlin</summary>
-
-```kotlin
-// Add generated code to source code directories
-android.applicationVariants.all {
-    kotlin {
-        sourceSets {
-            getByName(name) {
-                kotlin.srcDir("build/generated/ksp/$name/kotlin")
-            }
-        }
-    }
 }
 ```
 

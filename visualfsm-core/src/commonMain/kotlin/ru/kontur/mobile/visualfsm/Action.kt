@@ -21,12 +21,12 @@ abstract class Action<STATE : State> {
     @Deprecated(
         message = "Deprecated, because now the list of transitions is formed in the generated code (of TransitionsFactory).\n" +
                 "Code generation not configured or configured incorrectly.\n" +
-                "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
     )
     open fun getTransitions(): List<Transition<out STATE, out STATE>> {
         return transitions ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
+                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
         )
     }
 

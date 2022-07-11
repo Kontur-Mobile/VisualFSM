@@ -15,7 +15,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
 @Deprecated(
     message = "Deprecated, because it not support code generation.\n" +
             "Code generation not configured or configured incorrectly.\n" +
-            "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
+            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
     replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
 )
 constructor(
