@@ -50,7 +50,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Transition must have \"inner\" modifier. The \"TestAction1.Transition2\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Transition must have \"inner\" modifier. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
     }
 
     @Test
@@ -94,7 +94,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Transition must not have \"abstract\" modifier. The \"TestAction1.Transition2\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Transition must not have \"abstract\" modifier. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
     }
 
     @Test
@@ -138,7 +138,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Transition must not have constructor parameters. The \"TestAction1.Transition2\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Transition must not have constructor parameters. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
     }
 
     @Test
@@ -184,7 +184,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Super class of transition must have exactly two generic types (fromState and toState). But the super class of \"TestAction1.Transition2\" have 1: [TestState.TestState1]"))
+        Assertions.assertTrue(result.messages.contains("Super class of transition must have exactly two generic types (fromState and toState). But the super class of \"TestAction1.Transition2(Test.kt:19)\" have 1: [TestState.TestState1]"))
     }
 
 }

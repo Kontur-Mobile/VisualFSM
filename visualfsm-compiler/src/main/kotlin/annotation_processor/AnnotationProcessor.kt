@@ -1,5 +1,6 @@
 package annotation_processor
 
+import annotation_processor.functions.KSClassDeclarationFunctions.getCanonicalClassNameAndLink
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
 import com.google.devtools.ksp.closestClassDeclaration
@@ -45,14 +46,14 @@ class AnnotationProcessor(
     private fun handleAnnotatedWithFeatureClassDeclaration(featureClassDeclaration: KSClassDeclaration) {
 
         if (featureClasses.none { featureClassDeclaration.isSubclassOf(it) }) {
-            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${GenerateTransitionsFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${GenerateTransitionsFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
             return
         }
 
         val (baseStateClassDeclaration, baseActionClassDeclaration) = getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration)
 
         if (Modifier.SEALED !in baseActionClassDeclaration.modifiers) {
-            logger.error("Base Action class must be sealed. The \"${baseActionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            logger.error("Base Action class must be sealed. The \"${baseActionClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
             return
         }
 
@@ -78,7 +79,7 @@ class AnnotationProcessor(
 
         if (featureSuperTypeGenericTypes.size != 2) {
             val errorMessage = "Super class of feature must have exactly two generic types (state and action). " +
-                    "But the super class of \"${featureClassDeclaration.toClassName().canonicalName}\" has ${featureSuperTypeGenericTypes.size}: ${featureSuperTypeGenericTypes.map { it.toTypeName() }}"
+                    "But the super class of \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" has ${featureSuperTypeGenericTypes.size}: ${featureSuperTypeGenericTypes.map { it.toTypeName() }}"
             error(errorMessage)
         }
 
@@ -87,10 +88,10 @@ class AnnotationProcessor(
         }
 
         val baseStateClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(State::class) }
-            ?: error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            ?: error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
 
         val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(Action::class) }
-            ?: error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            ?: error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
 
         return baseStateClassDeclaration to baseActionClassDeclaration
     }

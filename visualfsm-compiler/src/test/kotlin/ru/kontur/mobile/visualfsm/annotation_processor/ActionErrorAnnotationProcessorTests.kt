@@ -50,7 +50,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Base Action class must be sealed. The \"TestAction\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Base Action class must be sealed. The \"TestAction(Test.kt:9)\" does not meet this requirement."))
     }
 
     @Test
@@ -94,7 +94,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Base action class must have subclasses. The \"TestState\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Base action class must have subclasses. The \"TestState(Test.kt:4)\" does not meet this requirement."))
     }
 
     @Test
@@ -128,7 +128,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Action must contains transitions as inner classes. The \"TestAction1\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Action must contains transitions as inner classes. The \"TestAction1(Test.kt:11)\" does not meet this requirement."))
     }
 
     @Test
@@ -176,7 +176,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Action must not override getTransitions function. The \"TestAction1\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Action must not override getTransitions function. The \"TestAction1(Test.kt:11)\" does not meet this requirement."))
     }
 
 }

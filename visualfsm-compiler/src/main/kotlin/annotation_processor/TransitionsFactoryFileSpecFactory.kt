@@ -1,6 +1,7 @@
 package annotation_processor
 
 import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
+import annotation_processor.functions.KSClassDeclarationFunctions.getCanonicalClassNameAndLink
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
 import com.google.devtools.ksp.closestClassDeclaration
@@ -38,13 +39,13 @@ class TransitionsFactoryFileSpecFactory {
         val actionSealedSubclasses = baseActionClassDeclaration.getAllNestedSealedSubclasses()
 
         if (!actionSealedSubclasses.iterator().hasNext()) {
-            error("Base action class must have subclasses. The \"${baseStateClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            error("Base action class must have subclasses. The \"${baseStateClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
         }
 
         actionSealedSubclasses.forEach { actionSealedSubclass ->
             actionSealedSubclass.getDeclaredFunctions().forEach {
                 if (it.modifiers.contains(Modifier.OVERRIDE) && it.simpleName.asString() == "getTransitions") {
-                    error("Action must not override getTransitions function. The \"${actionSealedSubclass.toClassName().canonicalName}\" does not meet this requirement.")
+                    error("Action must not override getTransitions function. The \"${actionSealedSubclass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
                 }
             }
         }
@@ -79,18 +80,18 @@ class TransitionsFactoryFileSpecFactory {
         }
 
         if (!transitionClasses.iterator().hasNext()) {
-            error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
         }
 
         transitionClasses.forEach { transitionClass ->
             if (!transitionClass.modifiers.contains(Modifier.INNER)) {
-                error("Transition must have \"inner\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must have \"inner\" modifier. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
             }
             if (Modifier.ABSTRACT in transitionClass.modifiers) {
-                error("Transition must not have \"abstract\" modifier. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must not have \"abstract\" modifier. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
             }
             if (transitionClass.primaryConstructor!!.parameters.isNotEmpty()) {
-                error("Transition must not have constructor parameters. The \"${transitionClass.toClassName().canonicalName}\" does not meet this requirement.")
+                error("Transition must not have constructor parameters. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
             }
         }
 
@@ -102,7 +103,7 @@ class TransitionsFactoryFileSpecFactory {
             val transitionSuperTypeGenericTypes = transitionSuperType.innerArguments
             if (transitionSuperTypeGenericTypes.size != 2) {
                 val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
-                        "But the super class of \"${transitionClass.toClassName().canonicalName}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
+                        "But the super class of \"${transitionClass.getCanonicalClassNameAndLink()}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
                 error(errorMessage)
             }
             transitionSuperTypeGenericTypes

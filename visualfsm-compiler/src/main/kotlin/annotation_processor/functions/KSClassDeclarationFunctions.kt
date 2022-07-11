@@ -1,6 +1,8 @@
 package annotation_processor.functions
 
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.Location
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -31,5 +33,15 @@ internal object KSClassDeclarationFunctions {
         return getSealedSubclasses().flatMap {
             if (Modifier.SEALED in it.modifiers) it.getAllNestedSealedSubclasses() else sequenceOf(it)
         }
+    }
+
+    fun KSClassDeclaration.getCanonicalClassNameAndLink(): String {
+        return "${toClassName().canonicalName}${getLinkOrEmptyString(location)}"
+    }
+
+    private fun getLinkOrEmptyString(location: Location): String {
+        if (location !is FileLocation) return ""
+        val fileName = location.filePath.substringAfterLast("/")
+        return "($fileName:${location.lineNumber})"
     }
 }
