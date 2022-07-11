@@ -17,9 +17,9 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.TransitionFactory
+import ru.kontur.mobile.visualfsm.TransitionsFactory
 
-class TransitionFactoryFileSpecFactory {
+class TransitionsFactoryFileSpecFactory {
 
     internal fun create(
         baseActionClassDeclaration: KSClassDeclaration,
@@ -29,7 +29,7 @@ class TransitionFactoryFileSpecFactory {
         val classBuilder = TypeSpec.classBuilder(className)
 
         classBuilder.addSuperinterface(
-            TransitionFactory::class.asClassName().parameterizedBy(
+            TransitionsFactory::class.asClassName().parameterizedBy(
                 baseStateClassDeclaration.toClassName(),
                 baseActionClassDeclaration.asStarProjectedType().toTypeName()
             )

@@ -1,7 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
 /** Factory for creating [transitions][Transition] described in [action][Action] */
-interface TransitionFactory<STATE : State, ACTION : Action<STATE>> {
+interface TransitionsFactory<STATE : State, ACTION : Action<STATE>> {
 
     /**
      * Returns a list of [transitions][Transition] described in [action][Action]

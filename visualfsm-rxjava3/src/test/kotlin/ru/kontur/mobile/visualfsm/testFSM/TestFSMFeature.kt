@@ -2,12 +2,12 @@ package ru.kontur.mobile.visualfsm.testFSM
 
 import ru.kontur.mobile.visualfsm.AsyncWorker
 import ru.kontur.mobile.visualfsm.Feature
-import ru.kontur.mobile.visualfsm.GenerateTransitionFactory
+import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
-import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryProvider.provideTransitionFactory
+import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
 
-@GenerateTransitionFactory
+@GenerateTransitionsFactory
 class TestFSMFeature(
     initialState: TestFSMState,
     asyncWorker: AsyncWorker<TestFSMState, TestFSMAction>? = null,
@@ -16,5 +16,5 @@ class TestFSMFeature(
     initialState = initialState,
     asyncWorker = asyncWorker,
     transitionCallbacks = transitionCallbacks,
-    transitionFactory = provideTransitionFactory(),
+    transitionsFactory = provideTransitionsFactory(),
 )

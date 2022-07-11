@@ -170,11 +170,11 @@ android.applicationVariants.all {
 
 ### How to enable code generation
 
-1. Annotate the Feature class with the GenerateTransitionFactory annotation
-2. Pass the transitionFactory parameter to the Feature constructor
-    1. For jvm project use the provideTransitionFactory function
+1. Annotate the Feature class with the GenerateTransitionsFactory annotation
+2. Pass the transitionsFactory parameter to the Feature constructor
+    1. For jvm project use the provideTransitionsFactory function
     2. For a non-jvm project, pass an instance of the generated class.
-       The name of the generated class is formed as "Generated\*Feature\*TransitionFactory",
+       The name of the generated class is formed as "Generated\*Feature\*TransitionsFactory",
        where \*Feature\* is the name of the annotated Feature class.
 
 <details>
@@ -182,10 +182,10 @@ android.applicationVariants.all {
 
 ```kotlin
 // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
-@GenerateTransitionFactory // annotation for enable generation of TransitionFactory
+@GenerateTransitionsFactory // annotation for enable generation of TransitionsFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
-    transitionFactory = provideTransitionFactory() // Get an instance of the generated TransitionFactory
+    transitionsFactory = provideTransitionsFactory() // Get an instance of the generated TransitionsFactory
 )
 ```
 
@@ -195,10 +195,10 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
 
 ```kotlin
 // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
-@GenerateTransitionFactory // annotation for enable generation of TransitionFactory
+@GenerateTransitionsFactory // annotation for enable generation of TransitionsFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
-    transitionFactory = GeneratedAuthFeatureTransitionFactory()
+    transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
 )
 ```
 

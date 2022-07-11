@@ -15,7 +15,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Feature
-import ru.kontur.mobile.visualfsm.GenerateTransitionFactory
+import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 
@@ -26,7 +26,7 @@ class AnnotationProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val annotatedWithFeatureClassDeclarations = resolver
-            .getSymbolsWithAnnotation(GenerateTransitionFactory::class.qualifiedName!!)
+            .getSymbolsWithAnnotation(GenerateTransitionsFactory::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
 
         if (!annotatedWithFeatureClassDeclarations.iterator().hasNext()) return emptyList()
@@ -45,7 +45,7 @@ class AnnotationProcessor(
     private fun handleAnnotatedWithFeatureClassDeclaration(featureClassDeclaration: KSClassDeclaration) {
 
         if (featureClasses.none { featureClassDeclaration.isSubclassOf(it) }) {
-            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${GenerateTransitionFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
+            logger.error("Only class inherited from ${featureClasses.joinToString(" or ")} can be annotated with @${GenerateTransitionsFactory::class.qualifiedName!!}. The \"${featureClassDeclaration.toClassName().canonicalName}\" does not meet this requirement.")
             return
         }
 
@@ -56,15 +56,15 @@ class AnnotationProcessor(
             return
         }
 
-        val generatedTransitionFactoryClassName = "Generated${featureClassDeclaration.toClassName().simpleName}TransitionFactory"
+        val generatedTransitionsFactoryClassName = "Generated${featureClassDeclaration.toClassName().simpleName}TransitionsFactory"
 
-        val generatedTransitionFactoryFileSpec = TransitionFactoryFileSpecFactory().create(
+        val generatedTransitionsFactoryFileSpec = TransitionsFactoryFileSpecFactory().create(
             baseActionClassDeclaration = baseActionClassDeclaration,
             baseStateClassDeclaration = baseStateClassDeclaration,
-            className = generatedTransitionFactoryClassName,
+            className = generatedTransitionsFactoryClassName,
         )
 
-        writeToFile(generatedTransitionFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionFactoryFileSpec)
+        writeToFile(generatedTransitionsFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionsFactoryFileSpec)
     }
 
     private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {

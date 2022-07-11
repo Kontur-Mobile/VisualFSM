@@ -170,11 +170,11 @@ android.applicationVariants.all {
 
 ### Как настроить кодогенерацию
 
-1. Пометить Feature класс аннотацией GenerateTransitionFactory
-2. Передать в конструктор Feature параметр transitionFactory
-    1. Для jvm проекта использовать функцию provideTransitionFactory
+1. Пометить Feature класс аннотацией GenerateTransitionsFactory
+2. Передать в конструктор Feature параметр transitionsFactory
+    1. Для jvm проекта использовать функцию provideTransitionsFactory
     2. Для не jvm проекта передавать экземпляр сгенерированного класса.
-       Имя сгенерированного класса формируется как "Generated\*Feature\*TransitionFactory",
+       Имя сгенерированного класса формируется как "Generated\*Feature\*TransitionsFactory",
        где \*Feature\* это имя Feature класса помеченного аннотацией.
 
 <details>
@@ -182,10 +182,10 @@ android.applicationVariants.all {
 
 ```kotlin
 // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
-@GenerateTransitionFactory // аннотация для генерации TransitionFactory
+@GenerateTransitionsFactory // аннотация для генерации TransitionsFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
-    transitionFactory = provideTransitionFactory() // Получаем экземпляр сгенерованной TransitionFactory
+    transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
 )
 ```
 
@@ -195,10 +195,10 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
 
 ```kotlin
 // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
-@GenerateTransitionFactory // аннотация для генерации TransitionFactory
+@GenerateTransitionsFactory // аннотация для генерации TransitionsFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
-    transitionFactory = GeneratedAuthFeatureTransitionFactory()
+    transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
 )
 ```
 

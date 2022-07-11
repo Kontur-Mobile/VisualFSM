@@ -15,7 +15,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -36,10 +36,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
@@ -59,7 +59,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -80,10 +80,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
@@ -103,7 +103,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -124,10 +124,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
@@ -147,7 +147,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -170,10 +170,10 @@ internal class TransitionErrorAnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )

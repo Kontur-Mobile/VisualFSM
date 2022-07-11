@@ -140,27 +140,27 @@ PC) use [webgraphviz](http://www.webgraphviz.com/).
 
 ```kotlin
     // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
-    @GenerateTransitionFactory // Use this annotation for generation TransitionFactory
-    class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
-        initialState = initialState,
-        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
-        transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
-        // Or GeneratedAuthFeatureTransitionFactory() (will be available after code generation)
-        transitionFactory = provideTransitionFactory() // Get an instance of the generated TransitionFactory
-    )
+@GenerateTransitionsFactory // Use this annotation for generation TransitionsFactory
+class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
+    initialState = initialState,
+    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+    transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
+    // Or GeneratedAuthFeatureTransitionsFactory() (will be available after code generation)
+    transitionsFactory = provideTransitionsFactory() // Get an instance of the generated TransitionsFactory
+)
 
-    val authFeature = AuthFeature(
-        initialState = AuthFSMState.Login("", "")
-    )
+val authFeature = AuthFeature(
+    initialState = AuthFSMState.Login("", "")
+)
 
-    // Observe states on Feature
-    authFeature.observeState().collect {state -> }
+// Observe states on Feature
+authFeature.observeState().collect { state -> }
 
-    // Observe states on FeatureRx
-    authFeature.observeState().subscribe {state -> } 
+// Observe states on FeatureRx
+authFeature.observeState().subscribe { state -> }
 
-    // Proceed Action
-    authFeature.proceed(Authenticate("", ""))
+// Proceed Action
+authFeature.proceed(Authenticate("", ""))
 ```
 
 ### AuthFSMState.kt

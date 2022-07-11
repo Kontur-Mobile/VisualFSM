@@ -139,13 +139,13 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 
 ```kotlin
 // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
-@GenerateTransitionFactory // Используйте эту аннотацию для генерации TransitionFactory
+@GenerateTransitionsFactory // Используйте эту аннотацию для генерации TransitionsFactory
 class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
     initialState = initialState,
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
-    // Или GeneratedAuthFeatureTransitionFactory() (будет доступен после генерации кода)
-    transitionFactory = provideTransitionFactory() // Получаем экземпляр сгенерованной TransitionFactory
+    // Или GeneratedAuthFeatureTransitionsFactory() (будет доступен после генерации кода)
+    transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
 )
 
 val authFeature = AuthFeature(

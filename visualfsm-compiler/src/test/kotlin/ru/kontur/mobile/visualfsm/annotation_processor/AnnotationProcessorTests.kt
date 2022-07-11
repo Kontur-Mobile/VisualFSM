@@ -15,7 +15,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -36,10 +36,10 @@ internal class AnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
@@ -51,12 +51,12 @@ internal class AnnotationProcessorTests {
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspGeneratedSources()
-        val generatedTestStateTransitionFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionFactory.kt") }
-        println(generatedTestStateTransitionFactory.readText())
+        val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
+        println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
-            "import ru.kontur.mobile.visualfsm.TransitionFactory\n" +
+            "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
                     "\n" +
-                    "public class GeneratedTestFeatureTransitionFactory : TransitionFactory<TestState, TestAction> {\n" +
+                    "public class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "      is TestAction1 -> listOf(\n" +
                     "          action.Transition1().apply {\n" +
@@ -72,7 +72,7 @@ internal class AnnotationProcessorTests {
                     "  }\n" +
                     "\n" +
                     "}\n",
-            generatedTestStateTransitionFactory.readText()
+            generatedTestStateTransitionsFactory.readText()
         )
     }
 }

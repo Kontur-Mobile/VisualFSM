@@ -14,7 +14,7 @@ abstract class Transition<FROM : State, TO : State>() {
      * @param toState a [state][State] FSM would have after the [transition][Transition] completes
      */
     @Deprecated(
-        message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionFactory).\n" +
+        message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionsFactory).\n" +
                 "Code generation not configured or configured incorrectly.\n" +
                 "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
         replaceWith = ReplaceWith("Constructor without parameters")

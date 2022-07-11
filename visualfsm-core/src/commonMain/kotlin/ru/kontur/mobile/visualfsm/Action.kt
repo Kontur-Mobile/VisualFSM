@@ -19,7 +19,7 @@ abstract class Action<STATE : State> {
      * @return instances of all [transitions][Transition] declared inside this [Action]
      */
     @Deprecated(
-        message = "Deprecated, because now the list of transitions is formed in the generated code (of TransitionFactory).\n" +
+        message = "Deprecated, because now the list of transitions is formed in the generated code (of TransitionsFactory).\n" +
                 "Code generation not configured or configured incorrectly.\n" +
                 "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
     )

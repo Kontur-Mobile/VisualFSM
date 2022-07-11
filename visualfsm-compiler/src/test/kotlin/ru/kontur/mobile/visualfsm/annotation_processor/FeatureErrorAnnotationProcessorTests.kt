@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test
 internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
-    fun testClassWithUsesGeneratedTransitionFactoryAnnotationNotInheritedFromFeature() {
+    fun testClassWithUsesGeneratedTransitionsFactoryAnnotationNotInheritedFromFeature() {
         val testActionSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -36,7 +36,7 @@ internal class FeatureErrorAnnotationProcessorTests {
                 
                 }
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature
                 """
         )
@@ -47,7 +47,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.GenerateTransitionFactory. The \"TestFeature\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.GenerateTransitionsFactory. The \"TestFeature\" does not meet this requirement."))
     }
 
     @Test
@@ -56,7 +56,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -85,10 +85,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: FeatureAbstract(
                     initialState = TestState.TestState1(),
                 )
@@ -110,7 +110,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -139,10 +139,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: FeatureAbstract<TestAction, Any>(
                     initialState = TestState.TestState1(),
                 )
@@ -164,7 +164,7 @@ internal class FeatureErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionFactoryFunctionProvider.provideTransitionFactoryFunction
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -193,10 +193,10 @@ internal class FeatureErrorAnnotationProcessorTests {
                     initialState = TestState.TestState1(),
                     asyncWorker = asyncWorker,
                     transitionCallbacks = transitionCallbacks,
-                    transitionFactory = provideTransitionFactory(),
+                    transitionsFactory = provideTransitionsFactory(),
                 )
                 
-                @GenerateTransitionFactory
+                @GenerateTransitionsFactory
                 class TestFeature: FeatureAbstract<TestState, Any>(
                     initialState = TestState.TestState1(),
                 )
