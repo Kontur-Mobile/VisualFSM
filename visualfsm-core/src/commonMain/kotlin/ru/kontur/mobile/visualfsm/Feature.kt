@@ -17,7 +17,8 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
             "See the readme file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
     replaceWith = ReplaceWith("Constructor with transitionFactory parameter.")
 )
-constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null, transitionCallbacks: TransitionCallbacks<STATE>? = null) {
+constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null, transitionCallbacks: TransitionCallbacks<STATE>? = null) :
+    BaseFeature<STATE, ACTION>() {
 
     /**
      * @param initialState initial [state][State]
@@ -73,7 +74,7 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      *
      * @return current [state][State]
      */
-    fun getCurrentState(): STATE {
+    override fun getCurrentState(): STATE {
         return store.getCurrentState()
     }
 
@@ -82,7 +83,7 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      *
      * @param action [Action] to run
      */
-    fun proceed(action: ACTION) {
+    override fun proceed(action: ACTION) {
         val transitionFactory = this.transitionFactory
         return store.proceed(
             action.apply {
@@ -90,6 +91,4 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
             }
         )
     }
-
-    companion object
 }

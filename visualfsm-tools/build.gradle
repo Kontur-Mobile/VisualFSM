@@ -7,8 +7,6 @@ version = artifactsBuildVersion
 
 dependencies {
     implementation project(':visualfsm-core')
-    implementation project(':visualfsm-rxjava2')
-    implementation project(':visualfsm-rxjava3')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

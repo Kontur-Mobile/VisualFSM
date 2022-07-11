@@ -1,10 +1,7 @@
 package ru.kontur.mobile.visualfsm.rxjava2
 
 import io.reactivex.Observable
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.TransitionCallbacks
-import ru.kontur.mobile.visualfsm.TransitionFactory
+import ru.kontur.mobile.visualfsm.*
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -25,7 +22,7 @@ constructor(
     initialState: STATE,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
-) {
+) : BaseFeature<STATE, ACTION>() {
 
     /**
      * @param initialState initial [state][State]
@@ -83,7 +80,7 @@ constructor(
      *
      * @return current [state][State]
      */
-    fun getCurrentState(): STATE {
+    override fun getCurrentState(): STATE {
         return store.getCurrentState()
     }
 
@@ -92,7 +89,7 @@ constructor(
      *
      * @param action [Action] to run
      */
-    fun proceed(action: ACTION) {
+    override fun proceed(action: ACTION) {
         val transitionFactory = this.transitionFactory
         return store.proceed(
             action.apply {
@@ -100,6 +97,4 @@ constructor(
             }
         )
     }
-
-    companion object
 }

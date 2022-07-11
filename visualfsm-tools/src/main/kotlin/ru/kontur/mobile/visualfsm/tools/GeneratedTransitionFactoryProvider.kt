@@ -1,10 +1,6 @@
 package ru.kontur.mobile.visualfsm.tools
 
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.Feature
-import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.TransitionFactory
-import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
+import ru.kontur.mobile.visualfsm.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
@@ -17,25 +13,7 @@ object GeneratedTransitionFactoryProvider {
      * @return an instance of the generated [TransitionFactory]
      */
     @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> Feature.Companion.provideTransitionFactory(): Feature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
-        return { getGeneratedTransitionFactory(this::class) }
-    }
-
-    /**
-     * Provide a function that returns an instance of the generated [TransitionFactory] for the given [feature][FeatureRx].
-     * @return an instance of the generated [TransitionFactory]
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> FeatureRx.Companion.provideTransitionFactory(): FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
-        return { getGeneratedTransitionFactory(this::class) }
-    }
-
-    /**
-     * Provide a function that returns an instance of the generated [TransitionFactory] for the given [feature][ru.kontur.mobile.visualfsm.rxjava2.FeatureRx].
-     * @return an instance of the generated [TransitionFactory]
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <STATE : State, ACTION : Action<STATE>> ru.kontur.mobile.visualfsm.rxjava2.FeatureRx.Companion.provideTransitionFactory(): ru.kontur.mobile.visualfsm.rxjava2.FeatureRx<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
+    fun <STATE : State, ACTION : Action<STATE>> BaseFeature.Companion.provideTransitionFactory(): BaseFeature<STATE, ACTION>.() -> TransitionFactory<STATE, ACTION> {
         return { getGeneratedTransitionFactory(this::class) }
     }
 

@@ -17,5 +17,5 @@ class TestFSMFeatureRx(
     initialState = initialState,
     asyncWorker = asyncWorker,
     transitionCallbacks = transitionCallbacks,
-    transitionFactory = provideTransitionFactory(),
+    transitionFactory = provideTransitionFactory()
 )
