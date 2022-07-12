@@ -227,7 +227,8 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     transitionsFactory = provideTransitionsFactory() // Get an instance of the generated TransitionsFactory
 )
 ```
-
+A complete Feature example with configured code generation can be
+viewed [here](../../sample/src/main/kotlin/authFSM/AuthFSMFeature.kt).
 </details>
 <details>
   <summary>Example for a non-jvm project</summary>
@@ -240,5 +241,4 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
 )
 ```
-
 </details>
