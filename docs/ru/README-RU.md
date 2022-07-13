@@ -17,6 +17,44 @@
 Анализ исходного кода и построение графа выполняется с помощью рефлексии и реализован отдельным
 модулем, что позволяет подключить его только к тестовой среде.
 
+## Обзор модулей библиотеки
+
+Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+```
+
+Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+```
+
+Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+```
+
+Кодогенерация
+
+```kotlin
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+```
+
+Классы для удобного получения сгенерированного кода
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+```
+
+Анализ и построение графа
+
+```kotlin
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+```
+
 ## Первичная настройка библиотеки
 
 Смотрите [здесь](Quickstart-RU.md)
@@ -144,8 +182,10 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     initialState = initialState,
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
-    // Или GeneratedAuthFeatureTransitionsFactory() (будет доступен после генерации кода)
     transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
+    // Получение экземпляра сгенерованной TransitionsFactory для не JVM и не Android проектов.
+    // До первого запуска кодогенерации класс не будет виден в IDE.
+    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
 )
 
 val authFeature = AuthFeature(

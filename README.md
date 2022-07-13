@@ -17,6 +17,44 @@ automatically added to the graph of States and Transitions.
 Source code analysis and the graph built are being performed with reflection and declared as a
 separate module that would allow it to be connected to testing environment.
 
+## Overview of library modules
+
+Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+```
+
+Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+```
+
+Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+```
+
+Code generation
+
+```kotlin
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+```
+
+Classes for easy getting generated code
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+```
+
+Graph creation and analysis
+
+```kotlin
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+```
+
 ## Quickstart
 
 See in [Quickstart](docs/eng/Quickstart-ENG.md)
@@ -145,8 +183,10 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     initialState = initialState,
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
-    // Or GeneratedAuthFeatureTransitionsFactory() (will be available after code generation)
-    transitionsFactory = provideTransitionsFactory() // Get an instance of the generated TransitionsFactory
+    transitionsFactory = provideTransitionsFactory(), // Get an instance of the generated TransitionsFactory
+    // Getting an instance of a generated TransitionsFactory for non-JVM and non-Android projects.
+    // Until the first start of code generation, the class will not be visible in the IDE.
+    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory(),
 )
 
 val authFeature = AuthFeature(
