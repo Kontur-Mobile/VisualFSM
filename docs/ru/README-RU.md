@@ -1,10 +1,10 @@
-# <img src="logo.png" alt="VisualFSM" height="192"/>
+# <img src="../logo.png" alt="VisualFSM" height="192"/>
 
 [![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/ru.kontur.mobile.visualfsm/visualfsm-core)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
-[ENG](../README.md) | RUS
+[ENG](../../README.md) | RUS
 
 `VisualFSM` – это Kotlin-библиотека для реализации **MVI-архитектуры**
 (`Model-View-Intent`)[[1]](#что-такое-mvi) и набор инструментов для визуализации и анализа диаграммы
@@ -17,31 +17,47 @@
 Анализ исходного кода и построение графа выполняется с помощью рефлексии и реализован отдельным
 модулем, что позволяет подключить его только к тестовой среде.
 
-## Как подключить
+## Обзор модулей библиотеки
 
-Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker) 
+Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
 ```
 
 Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
 ```
 
 Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
 ```
 
-Инструменты для анализа и построения графа
+Кодогенерация
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.3")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
 ```
+
+Классы для удобного получения сгенерированного кода
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+```
+
+Анализ и построение графа
+
+```kotlin
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+```
+
+## Первичная настройка библиотеки
+
+Смотрите [здесь](Quickstart-RU.md)
 
 ## Плюсы VisualFSM
 
@@ -50,7 +66,7 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.3")
 Визуализация позволяет тратить меньше времени на понимание сложного бизнес процесса и упрощает
 _поиск ошибок_, _добавление нового функционала_ и _рефакторинг_.
 
-<img src="graph.png" alt="graph" width="800"/>
+<img src="../graph.png" alt="graph" width="800"/>
 
 Упрощенный пример графа FSM авторизации и регистрации пользователя
 
@@ -62,12 +78,13 @@ _поиск ошибок_, _добавление нового функциона
 ### Управление асинхронными операциями
 
 Асинхронная работа может быть представлена отдельными состояниями – благодаря этому мы имеем единый
-набор состояний, которые выстраиваются в направленный граф. 
-Объект AsyncWorker позволяет упростить обработку состояний в которых выполняется асинхронная работа. 
+набор состояний, которые выстраиваются в ориентированный граф.
+Объект AsyncWorker позволяет упростить обработку состояний в которых выполняется асинхронная работа.
 
 ## Структура VisualFSM
 
-Основные сущности, которые используются, – `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
+Основные сущности, которые используются, – `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`
+, `TransitionCallbacks`.
 
 ### State в VisualFSM
 
@@ -113,7 +130,7 @@ _поиск ошибок_, _добавление нового функциона
 рекомендуется объединять в родительский `AsyncWorkState`, так эти состояния будет зрительно проще
 выявлять на диаграмме состояний.
 
-Для подписки на `State` необходимо переопределить метод `onNextState`, в котором на каждое 
+Для подписки на `State` необходимо переопределить метод `onNextState`, в котором на каждое
 входящее состояние сконструировать подходящий AsyncWorkerTask для обработки в AsyncWorker.
 По окончании каждой операции успешно или с ошибкой, необходимо вызвать proceed метод и передать
 `Action` обработки результата.
@@ -131,8 +148,7 @@ _поиск ошибок_, _добавление нового функциона
 
 * AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
 
-
-<img src="asyncworker.png" alt="graph" width="600"/>
+<img src="../asyncworker.png" alt="graph" width="600"/>
 
 ### Feature в VisualFSM
 
@@ -147,37 +163,43 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 
 ## Пример использования
 
-Пример реализации FSM авторизации и регистрации пользователя: [sample](../sample).
+Пример реализации FSM авторизации и регистрации пользователя: [sample](../../sample).
 
-Пример тестов для FSM авторизации и регистрации: [AuthFSMTests.kt](../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+Пример тестов для FSM авторизации и
+регистрации: [AuthFSMTests.kt](../../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
 
 Построение графа в формате DOT для graphviz выполняется с помощью метода `VisualFSM.generateDigraph(...)`
 
-Для визуализации на CI используйте утилиту [graphviz](https://graphviz.org/doc/info/command.html), для визуализации на компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/). 
+Для визуализации на CI используйте утилиту [graphviz](https://graphviz.org/doc/info/command.html), для визуализации на
+компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/).
 
-
-### AuthFeature
+<h3 id="AuthFeature.kt">AuthFeature.kt</h3>
 
 ```kotlin
-    // Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
-    class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
-        initialState = initialState,
-        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
-        transitionCallbacks = TransitionCallbacksImpl() // Совет - используйте DI
-    )
-    
-    val authFeature = AuthFeature(
-        initialState = AuthFSMState.Login("", "")
-    )
+// Используйте Feature для Kotlin Coroutines или FeatureRx для RxJava
+@GenerateTransitionsFactory // Используйте эту аннотацию для генерации TransitionsFactory
+class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
+    initialState = initialState,
+    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+    transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
+    transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
+    // Получение экземпляра сгенерованной TransitionsFactory для не JVM и не Android проектов.
+    // До первого запуска кодогенерации класс не будет виден в IDE.
+    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
+)
 
-    // Подписка на состояния в Feature
-    authFeature.observeState().collect {state -> }
+val authFeature = AuthFeature(
+    initialState = AuthFSMState.Login("", "")
+)
 
-    // Подписка на состояния в FeatureRx
-    authFeature.observeState().subscribe {state -> } 
+// Подписка на состояния в Feature
+authFeature.observeState().collect { state -> }
 
-    // Выполнение Action
-    authFeature.proceed(Authenticate("", ""))
+// Подписка на состояния в FeatureRx
+authFeature.observeState().subscribe { state -> }
+
+// Выполнение Action
+authFeature.proceed(Authenticate("", ""))
 ```
 
 ### AuthFSMState.kt
@@ -257,10 +279,7 @@ class AuthFSMAsyncWorker(private val authInteractor: AuthInteractor) : AsyncWork
 ```kotlin
 class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction() {
 
-    inner class Success : AuthFSMTransition<AsyncWorkState.Registering, Login>(
-        AsyncWorkState.Registering::class,
-        Login::class
-    ) {
+    inner class Success : Transition<AsyncWorkState.Registering, Login>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.SUCCESS
 
@@ -269,10 +288,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class BadCredential : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class BadCredential : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.BAD_CREDENTIAL
 
@@ -281,10 +297,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class ConnectionFailed : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class ConnectionFailed : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.NO_INTERNET
 
@@ -292,12 +305,6 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
             return Registration(state.mail, state.password, state.password, "No internet")
         }
     }
-
-    override val transitions = listOf(
-        Success(),
-        BadCredential(),
-        ConnectionFailed(),
-    )
 }
 ```
 

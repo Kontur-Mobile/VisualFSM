@@ -4,7 +4,7 @@
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
-ENG | [RUS](docs/README-RU.md)
+ENG | [RUS](docs/ru/README-RU.md)
 
 `VisualFSM` is a Kotlin library that implements an **MVI architecture**
 (`Model-View-Intent`)[[1]](#what-is-mvi) and a set of tools for visualization and analysis of
@@ -17,31 +17,47 @@ automatically added to the graph of States and Transitions.
 Source code analysis and the graph built are being performed with reflection and declared as a
 separate module that would allow it to be connected to testing environment.
 
-## Setup
+## Overview of library modules
 
 Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
 ```
 
 Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
 ```
 
 Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.0.3")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
 ```
 
-Tools for graph creation and analysis
+Code generation
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.0.3")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
 ```
+
+Classes for easy getting generated code
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+```
+
+Graph creation and analysis
+
+```kotlin
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+```
+
+## Quickstart
+
+See in [Quickstart](docs/eng/Quickstart-ENG.md)
 
 ## VisualFSM Pros
 
@@ -150,33 +166,41 @@ no `Transition`s or multiple `Transition`s available.
 
 A sample FSM of authorization and registration of a user: [sample](./sample).
 
-A tests sample for FSM of user authorization and registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+A tests sample for FSM of user authorization and
+registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
 
 The DOT visualization graph for graphviz is being generated using the `VisualFSM.generateDigraph(...)` method.
 
-For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your PC) use [webgraphviz](http://www.webgraphviz.com/).
-### AuthFeature
+For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your
+PC) use [webgraphviz](http://www.webgraphviz.com/).
+
+<h3 id="AuthFeature.kt">AuthFeature.kt</h3>
 
 ```kotlin
     // Use Feature with Kotlin Coroutines or FeatureRx with RxJava
-    class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
-        initialState = initialState,
-        asyncWorker = AuthFSMAsyncWorker(AuthInteractor()), 
-        transitionCallbacks = TransitionCallbacksImpl() // Tip - use DI
-    )
+@GenerateTransitionsFactory // Use this annotation for generation TransitionsFactory
+class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAction>(
+    initialState = initialState,
+    asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
+    transitionCallbacks = TransitionCallbacksImpl(), // Tip - use DI
+    transitionsFactory = provideTransitionsFactory(), // Get an instance of the generated TransitionsFactory
+    // Getting an instance of a generated TransitionsFactory for non-JVM and non-Android projects.
+    // Until the first start of code generation, the class will not be visible in the IDE.
+    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory(),
+)
 
-    val authFeature = AuthFeature(
-        initialState = AuthFSMState.Login("", "")
-    )
+val authFeature = AuthFeature(
+    initialState = AuthFSMState.Login("", "")
+)
 
-    // Observe states on Feature
-    authFeature.observeState().collect {state -> }
+// Observe states on Feature
+authFeature.observeState().collect { state -> }
 
-    // Observe states on FeatureRx
-    authFeature.observeState().subscribe {state -> } 
+// Observe states on FeatureRx
+authFeature.observeState().subscribe { state -> }
 
-    // Proceed Action
-    authFeature.proceed(Authenticate("", ""))
+// Proceed Action
+authFeature.proceed(Authenticate("", ""))
 ```
 
 ### AuthFSMState.kt
@@ -256,10 +280,7 @@ two `Transition`s, the necessary `Transition` is chosen after `predicate` functi
 ```kotlin
 class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction() {
 
-    inner class Success : AuthFSMTransition<AsyncWorkState.Registering, Login>(
-        AsyncWorkState.Registering::class,
-        Login::class
-    ) {
+    inner class Success : Transition<AsyncWorkState.Registering, Login>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.SUCCESS
 
@@ -268,10 +289,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class BadCredential : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class BadCredential : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.BAD_CREDENTIAL
 
@@ -280,10 +298,7 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
         }
     }
 
-    inner class ConnectionFailed : AuthFSMTransition<AsyncWorkState.Registering, Registration>(
-        AsyncWorkState.Registering::class,
-        Registration::class
-    ) {
+    inner class ConnectionFailed : Transition<AsyncWorkState.Registering, Registration>() {
         override fun predicate(state: AsyncWorkState.Registering) =
             result == RegistrationResult.NO_INTERNET
 
@@ -291,12 +306,6 @@ class HandleRegistrationResult(val result: RegistrationResult) : AuthFSMAction()
             return Registration(state.mail, state.password, state.password, "No internet")
         }
     }
-
-    override val transitions = listOf(
-        Success(),
-        BadCredential(),
-        ConnectionFailed(),
-    )
 }
 ```
 

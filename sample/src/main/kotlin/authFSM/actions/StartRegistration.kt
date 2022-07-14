@@ -1,14 +1,11 @@
 package authFSM.actions
 
-import authFSM.AuthFSMState.*
+import authFSM.AuthFSMState.ConfirmationRequested
+import authFSM.AuthFSMState.Registration
 import ru.kontur.mobile.visualfsm.Transition
 
 class StartRegistration(val mail: String, val password: String) : AuthFSMAction() {
-    inner class RegistrationStart :
-        Transition<Registration, ConfirmationRequested>(
-            Registration::class,
-            ConfirmationRequested::class
-        ) {
+    inner class RegistrationStart : Transition<Registration, ConfirmationRequested>() {
         override fun predicate(state: Registration): Boolean {
             return state.password == state.repeatedPassword
         }
@@ -18,11 +15,7 @@ class StartRegistration(val mail: String, val password: String) : AuthFSMAction(
         }
     }
 
-    inner class ValidationFailed :
-        Transition<Registration, Registration>(
-            Registration::class,
-            Registration::class
-        ) {
+    inner class ValidationFailed : Transition<Registration, Registration>() {
         override fun predicate(state: Registration): Boolean {
             return state.password != state.repeatedPassword
         }
@@ -36,9 +29,4 @@ class StartRegistration(val mail: String, val password: String) : AuthFSMAction(
             )
         }
     }
-
-    override fun getTransitions() = listOf(
-        RegistrationStart(),
-        ValidationFailed(),
-    )
 }

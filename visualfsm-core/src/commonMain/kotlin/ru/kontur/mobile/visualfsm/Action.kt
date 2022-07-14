@@ -6,12 +6,29 @@ package ru.kontur.mobile.visualfsm
  */
 abstract class Action<STATE : State> {
 
+    private var transitions: List<Transition<out STATE, out STATE>>? = null
+
+    /** This method is needed to use it in the generated code. Do not use it. */
+    fun setTransitions(transitions: List<Transition<out STATE, out STATE>>) {
+        this.transitions = transitions
+    }
+
     /**
-     * Returns every [Transition] declared inside [Action]
+     * Returns instances of all [transitions][Transition] declared inside this [Action]
      *
-     * @return every [Transition] declared inside [Action]
+     * @return instances of all [transitions][Transition] declared inside this [Action]
      */
-    abstract fun getTransitions(): List<Transition<out STATE, out STATE>>
+    @Deprecated(
+        message = "Deprecated, because now the list of transitions is formed in the generated code (of TransitionsFactory).\n" +
+                "Code generation not configured or configured incorrectly.\n" +
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).",
+    )
+    open fun getTransitions(): List<Transition<out STATE, out STATE>> {
+        return transitions ?: error(
+            "\nCode generation not configured or configured incorrectly.\n" +
+                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
+        )
+    }
 
     /**
      * Selects and starts a [transition][Transition].
@@ -46,13 +63,13 @@ abstract class Action<STATE : State> {
         return newState
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
         (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
 
     private fun isCorrectTransition(
         transition: Transition<STATE, STATE>,
-        oldState: STATE
+        oldState: STATE,
     ): Boolean =
         (transition.fromState == oldState::class) && transition.predicate(oldState)
 }
