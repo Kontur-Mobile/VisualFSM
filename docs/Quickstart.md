@@ -6,7 +6,7 @@ ENG | [RUS](./ru/Quickstart-RU.md)
 
 ### Android App Setup
 
-#### In the gradle script file of the module where FSM will be implemented
+#### In the gradle script file of the module where Feature class will be implemented
 
 <details>
   <summary>Groovy(build.gradle)</summary>

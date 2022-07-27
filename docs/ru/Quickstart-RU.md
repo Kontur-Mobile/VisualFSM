@@ -6,7 +6,7 @@
 
 ### Для Android приложения
 
-#### В gradle скрипте модуля, в котором будет реализация стейтмашин
+#### В gradle скрипте модуля, в котором будет реализация класса Feature
 
 <details>
   <summary>Groovy(build.gradle)</summary>
