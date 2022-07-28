@@ -1,4 +1,4 @@
-[ENG](../eng/Quickstart-ENG.md) | RUS
+[ENG](../Quickstart.md) | RUS
 
 # Первичная настройка
 
@@ -6,7 +6,7 @@
 
 ### Для Android приложения
 
-#### В gradle скрипте модуля, в котором будут использованы аннотации
+#### В gradle скрипте модуля, в котором будет реализация класса Feature
 
 <details>
   <summary>Groovy(build.gradle)</summary>
@@ -20,16 +20,16 @@ plugins {
 dependencies {
     // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
     implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0"
-    
+
     // Опционально - Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
     implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0"
 
     // Опционально - Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
     implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0"
-    
+
     // Кодогенерация
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
-    
+
     // Опционально - Классы для удобного получения сгенерированного кода
     implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
 
@@ -130,10 +130,10 @@ sourceSets {
         dependencies {
             // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
             implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
-            
+
             // Опционально - Анализ и построение графа
             testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
-            
+
             // Добавляем сгенерированный код в каталоги исходного кода
             kotlin.srcDir("${buildDir.absolutePath}/generated/ksp/")
         }
@@ -233,6 +233,11 @@ dependencies {
 
 </details>
 
+### Если используете ProGuard и модуль visualfsm-providers, добавьте исключение в proguard-rules.pro
+```
+-keep class * implements ru.kontur.mobile.visualfsm.TransitionsFactory
+```
+
 ## Простой пример использования библиотеки
 
 ### SampleFSMState.kt
@@ -240,11 +245,11 @@ dependencies {
 ```kotlin
 sealed class SampleFSMState : State {
 
-    object Initial: SampleFSMState()
+    object Initial : SampleFSMState()
 
-    object Loading: SampleFSMState()
+    object Loading : SampleFSMState()
 
-    data class Success(val result: String): SampleFSMState()
+    data class Completed(val result: String) : SampleFSMState()
 }
 ```
 
@@ -254,15 +259,15 @@ sealed class SampleFSMState : State {
 sealed class SampleFSMAction : Action<SampleFSMState>()
 
 class HandleResult(val result: String) : SampleFSMAction() {
-    inner class Success : Transition<SampleFSMState.Loading, SampleFSMState.Success>() {
-        override fun transform(state: SampleFSMState.Loading): SampleFSMState.Success {
-            return SampleFSMState.Success(result)
+    inner class Success : Transition<SampleFSMState.Loading, SampleFSMState.Completed>() {
+        override fun transform(state: SampleFSMState.Loading): SampleFSMState.Completed {
+            return SampleFSMState.Completed(result)
         }
     }
 }
 
-class StartLoading : SampleFSMAction() {
-    inner class InitiateLoading : Transition<SampleFSMState.Initial, SampleFSMState.Loading>() {
+class Load : SampleFSMAction() {
+    inner class StartLoading : Transition<SampleFSMState.Initial, SampleFSMState.Loading>() {
         override fun transform(state: SampleFSMState.Initial): SampleFSMState.Loading {
             return SampleFSMState.Loading
         }
@@ -278,7 +283,8 @@ class SampleFSMAsyncWorker : AsyncWorker<SampleFSMState, SampleFSMAction>() {
         return when (state) {
             is SampleFSMState.Loading -> {
                 AsyncWorkerTask.ExecuteAndCancelExist(state) {
-                    proceed(HandleResult(getResult()))
+                    val result = getResult()
+                    proceed(HandleResult(result))
                 }
             }
             else -> AsyncWorkerTask.Cancel()
@@ -292,41 +298,6 @@ class SampleFSMAsyncWorker : AsyncWorker<SampleFSMState, SampleFSMAction>() {
 }
 ```
 
-### SampleTransitionCallbacks.kt
-
-```kotlin
-class SampleTransitionCallbacks : TransitionCallbacks<SampleFSMState> {
-    override fun onActionLaunched(action: Action<SampleFSMState>, currentState: SampleFSMState) {
-        println("onActionLaunched\naction=$action\ncurrentState=$currentState")
-    }
-
-    override fun onTransitionSelected(
-        action: Action<SampleFSMState>,
-        transition: Transition<SampleFSMState, SampleFSMState>,
-        currentState: SampleFSMState,
-    ) {
-        println("onTransitionSelected\naction=$action\ntransition=$transition\ncurrentState=$currentState")
-    }
-
-    override fun onNewStateReduced(
-        action: Action<SampleFSMState>,
-        transition: Transition<SampleFSMState, SampleFSMState>,
-        oldState: SampleFSMState,
-        newState: SampleFSMState,
-    ) {
-        println("onNewStateReduced\naction=$action\ntransition=$transition\noldState=$oldState\nnewState=$newState")
-    }
-
-    override fun onNoTransitionError(action: Action<SampleFSMState>, currentState: SampleFSMState) {
-        println("onNoTransitionError\naction=$action\ncurrentState=$currentState")
-    }
-
-    override fun onMultipleTransitionError(action: Action<SampleFSMState>, currentState: SampleFSMState) {
-        println("onMultipleTransitionError\naction=$action\ncurrentState=$currentState")
-    }
-}
-```
-
 ### SampleFSMFeature.kt
 
 ```kotlin
@@ -336,59 +307,76 @@ class SampleFSMFeature : Feature<SampleFSMState, SampleFSMAction>(
     initialState = SampleFSMState.Initial,
     asyncWorker = SampleFSMAsyncWorker(),
     transitionCallbacks = SampleTransitionCallbacks(),
-    transitionsFactory = provideTransitionsFactory(), // Получаем экземпляр сгенерованной TransitionsFactory
-    // Получение экземпляра сгенерованной TransitionsFactory для не JVM и не Android проектов.
-    // До первого запуска кодогенерации класс не будет виден в IDE.
-    // transitionsFactory = GeneratedSampleFSMFeatureTransitionsFactory(),
+    transitionsFactory = provideTransitionsFactory(), // Получение экземпляра сгенерованной TransitionsFactory при использовании visualfsm-providers
+    // Для получения экземпляра TransitionsFactory для KMM проектов следует вызвать конструктор сгенерированного класса:
+    // Имя генерируется по маске Generated[FeatureName]TransitionsFactory()
+    // transitionsFactory = GeneratedSampleFSMFeatureTransitionsFactory(), // До первого запуска кодогенерации класс не будет виден в IDE.
 )
 ```
 
-### Main.kt
+### Использование Feature
 
 ```kotlin
-fun main() {
-    val sampleFeature = SampleFSMFeature()
-    sampleFeature.proceed(StartLoading())
-    // Дожидаемся выполнения асинхронной операции.
-    // Иначе программа завершит работу до выполнения перехода "Loading->Success".
-    Thread.sleep(3100)
+// Подписка на состояния в Feature
+sampleFeature.observeState().collect { state -> }
+
+// Подписка на состояния в FeatureRx
+sampleFeature.observeState().subscribe { state -> }
+
+// Выполнение Action
+sampleFeature.proceed(Load())
+```
+
+### SampleFSMTests.kt
+
+```kotlin
+class SampleFSMTests {
+    @Test
+    fun generateDigraph() {
+        println(
+            VisualFSM.generateDigraph(
+                baseAction = SampleFSMAction::class,
+                baseState = SampleFSMState::class,
+                initialState = SampleFSMState.Initial::class,
+            )
+        )
+        Assertions.assertTrue(true)
+    }
+
+    @Test
+    fun allStatesReachableTest() {
+        val notReachableStates = VisualFSM.getUnreachableStates(
+            baseAction = SampleFSMAction::class,
+            baseState = SampleFSMState::class,
+            initialState = SampleFSMState.Initial::class,
+        )
+
+        Assertions.assertTrue(
+            notReachableStates.isEmpty(),
+            "FSM have unreachable states: ${notReachableStates.joinToString(", ")}"
+        )
+    }
 }
 ```
 
-<details>
-  <summary>Вывод в консоль после завершения работы приложения</summary>
+### Вывод метода generateDigraph()
 
 ```
-onActionLaunched
-action=sampleFSM.actions.StartLoading@17550481
-currentState=sampleFSM.SampleFSMState$Initial@735f7ae5
-onTransitionSelected
-action=sampleFSM.actions.StartLoading@17550481
-transition=sampleFSM.actions.StartLoading$InitiateLoading@6fb554cc
-currentState=sampleFSM.SampleFSMState$Initial@735f7ae5
-onNewStateReduced
-action=sampleFSM.actions.StartLoading@17550481
-transition=sampleFSM.actions.StartLoading$InitiateLoading@6fb554cc
-oldState=sampleFSM.SampleFSMState$Initial@735f7ae5
-newState=sampleFSM.SampleFSMState$Loading@77b52d12
-onActionLaunched
-action=sampleFSM.actions.HandleResult@71489e2
-currentState=sampleFSM.SampleFSMState$Loading@77b52d12
-onTransitionSelected
-action=sampleFSM.actions.HandleResult@71489e2
-transition=sampleFSM.actions.HandleResult$Success@54914a88
-currentState=sampleFSM.SampleFSMState$Loading@77b52d12
-onNewStateReduced
-action=sampleFSM.actions.HandleResult@71489e2
-transition=sampleFSM.actions.HandleResult$Success@54914a88
-oldState=sampleFSM.SampleFSMState$Loading@77b52d12
-newState=Success(result=result)
+digraph SampleFSMStateTransitions {
+"Initial"
+"Initial" -> "Loading" [label=" StartLoading"]
+"Loading" -> "Completed" [label=" Success"]
+}
 ```
 
-</details>
+Для визуализации на компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/).
 
-## Другие примеры
+## Демонстрационные проекты
 
-### Пример для JVM и Android приложений смотрите [здесь](../../sample/src/main/kotlin/authFSM/AuthFSMFeature.kt)
+### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+
+### [Command line Kotlin приложение (Kotlin Coroutines)](../../sample)
+
+### [Command line Kotlin приложение (RxJava)](../../sample-rx)
 
 ### Пример для KMM проекта появится в скором времени

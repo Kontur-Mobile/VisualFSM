@@ -1,4 +1,4 @@
-# <img src="../logo.png" alt="VisualFSM" height="192"/>
+# <img src="../img/logo.png" alt="VisualFSM" height="192"/>
 
 [![MavenCentral](https://img.shields.io/maven-central/v/ru.kontur.mobile.visualfsm/visualfsm-core)](https://search.maven.org/artifact/ru.kontur.mobile.visualfsm/visualfsm-core)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
@@ -66,7 +66,7 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
 Визуализация позволяет тратить меньше времени на понимание сложного бизнес процесса и упрощает
 _поиск ошибок_, _добавление нового функционала_ и _рефакторинг_.
 
-<img src="../graph.png" alt="graph" width="800"/>
+<img src="../img/graph.png" alt="graph" width="800"/>
 
 Упрощенный пример графа FSM авторизации и регистрации пользователя
 
@@ -148,7 +148,7 @@ _поиск ошибок_, _добавление нового функциона
 
 * AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
 
-<img src="../asyncworker.png" alt="graph" width="600"/>
+<img src="../img/asyncworker.png" alt="graph" width="600"/>
 
 ### Feature в VisualFSM
 
@@ -161,12 +161,15 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 когда `Action` запускается, когда `Transition` выбран, новый `State` был создан, и двух ошибок —
 когда нет доступных `Transition` или когда доступно несколько `Transition`.
 
-## Пример использования
+## Примеры использования
 
-Пример реализации FSM авторизации и регистрации пользователя: [sample](../../sample).
+[Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
 
-Пример тестов для FSM авторизации и
-регистрации: [AuthFSMTests.kt](../../sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+[Command line Kotlin приложение (Kotlin Coroutines)](../../sample)
+
+[Command line Kotlin приложение (RxJava)](../../sample-rx)
+
+Пример для KMM проекта появится в скором времени
 
 Построение графа в формате DOT для graphviz выполняется с помощью метода `VisualFSM.generateDigraph(...)`
 
@@ -183,9 +186,9 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
     transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
-    // Получение экземпляра сгенерованной TransitionsFactory для не JVM и не Android проектов.
-    // До первого запуска кодогенерации класс не будет виден в IDE.
-    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory()
+    // Получение экземпляра сгенерованной TransitionsFactory для KMM проектов:
+    // Имя генерируется по маске Generated[FeatureName]TransitionsFactory()
+    // transitionsFactory = GeneratedAuthFeatureTransitionsFactory(), // До первого запуска кодогенерации класс не будет виден в IDE.
 )
 
 val authFeature = AuthFeature(
