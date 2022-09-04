@@ -103,10 +103,11 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     private fun proceed(fromState: STATE, action: ACTION) {
-        synchronized(feature as SynchronizedObject) {
+        val feature = feature ?: error("Feature is unbound")
+        synchronized(feature) {
             // If the current state does not match the state from which the task started, the result of its task is no longer expected
-            if (fromState == feature?.getCurrentState()) {
-                feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+            if (fromState == feature.getCurrentState()) {
+                feature.proceed(action)
             }
         }
     }
@@ -120,6 +121,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
                 cancelAndLaunch(task.state) { task.func(task) }
             }
+
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
                     cancelAndLaunch(task.state) { task.func(task) }

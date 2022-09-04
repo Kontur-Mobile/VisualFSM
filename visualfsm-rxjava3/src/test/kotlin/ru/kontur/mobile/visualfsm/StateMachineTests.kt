@@ -182,7 +182,7 @@ class StateMachineTests {
     }
 
     @Test
-    fun multiplyCancelByStartOtherAsyncTest(){
+    fun multiplyCancelByStartOtherAsyncTest() {
         for (i in 1..100) {
             println("Step: $i")
             cancelByStartOtherAsyncTest()
@@ -190,8 +190,10 @@ class StateMachineTests {
     }
 
     private fun cancelByStartOtherAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature =
-            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(), object : TransitionCallbacks<TestFSMState> {
+        val feature = TestFSMFeature(
+            initialState = TestFSMState.Initial,
+            asyncWorker = TestFSMAsyncWorker(),
+            transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
                 override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
                 }
 

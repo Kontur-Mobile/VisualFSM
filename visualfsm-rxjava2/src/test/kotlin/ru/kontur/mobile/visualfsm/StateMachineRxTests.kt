@@ -153,7 +153,7 @@ class StateMachineRxTests {
     }
 
     @Test
-    fun multiplyCancelByStartOtherAsyncTest(){
+    fun multiplyCancelByStartOtherAsyncTest() {
         for (i in 1..100) {
             println("Step: $i")
             cancelByStartOtherAsyncTest()
@@ -161,33 +161,36 @@ class StateMachineRxTests {
     }
 
     private fun cancelByStartOtherAsyncTest() {
-        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx(), object : TransitionCallbacks<TestFSMState> {
-            override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
-            }
+        val feature = TestFSMFeatureRx(
+            initialState = TestFSMState.Initial,
+            asyncWorker = TestFSMAsyncWorkerRx(),
+            transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
+                override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
+                }
 
-            override fun onTransitionSelected(
-                action: Action<TestFSMState>,
-                transition: Transition<TestFSMState, TestFSMState>,
-                currentState: TestFSMState,
-            ) {
-            }
+                override fun onTransitionSelected(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    currentState: TestFSMState,
+                ) {
+                }
 
-            override fun onNewStateReduced(
-                action: Action<TestFSMState>,
-                transition: Transition<TestFSMState, TestFSMState>,
-                oldState: TestFSMState,
-                newState: TestFSMState,
-            ) {
-            }
+                override fun onNewStateReduced(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    oldState: TestFSMState,
+                    newState: TestFSMState,
+                ) {
+                }
 
-            override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                throw IllegalStateException("onNoTransitionError $action $currentState")
-            }
+                override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onNoTransitionError $action $currentState")
+                }
 
-            override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                throw IllegalStateException("onMultipleTransitionError $action $currentState")
-            }
-        })
+                override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onMultipleTransitionError $action $currentState")
+                }
+            })
 
         val testObserver = feature.observeState().test()
 
