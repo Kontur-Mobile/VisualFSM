@@ -12,7 +12,6 @@ object GeneratedTransitionsFactoryProvider {
      * Provide a function that returns an instance of the generated [TransitionsFactory] for the given [feature][Feature].
      * @return an instance of the generated [TransitionsFactory]
      */
-    @Suppress("UNCHECKED_CAST")
     fun <STATE : State, ACTION : Action<STATE>> BaseFeature.Companion.provideTransitionsFactory(): BaseFeature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION> {
         return { getGeneratedTransitionsFactory(this::class) }
     }
@@ -28,7 +27,7 @@ object GeneratedTransitionsFactoryProvider {
             error(
                 "\nNot found generated TransitionsFactory for ${featureClass.qualifiedName}.\n" +
                         "Code generation not configured or configured incorrectly.\n" +
-                        "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/eng/Quickstart-ENG.md).\n"
+                        "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
             )
         }
         return kClass.primaryConstructor!!.call() as TransitionsFactory<STATE, ACTION>
