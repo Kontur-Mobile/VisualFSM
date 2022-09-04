@@ -22,37 +22,37 @@
 Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
 ```
 
 Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
 ```
 
 Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
 ```
 
 Кодогенерация
 
 ```kotlin
-ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
 ```
 
 Классы для удобного получения сгенерированного кода
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
 ```
 
 Анализ и построение графа
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
 ```
 
 ## Первичная настройка библиотеки
