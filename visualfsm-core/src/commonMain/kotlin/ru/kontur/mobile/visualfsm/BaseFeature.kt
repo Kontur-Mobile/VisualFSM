@@ -1,6 +1,8 @@
 package ru.kontur.mobile.visualfsm
 
-abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
+import kotlinx.atomicfu.locks.SynchronizedObject
+
+abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> : SynchronizedObject() {
 
     /**
      * Returns current state

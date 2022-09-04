@@ -8,12 +8,18 @@ class Finish(val success: Boolean) : TestFSMAction() {
     inner class Success : Transition<TestFSMState.Async, TestFSMState.Complete>() {
         override fun predicate(state: TestFSMState.Async) = success
 
-        override fun transform(state: TestFSMState.Async) = TestFSMState.Complete(state.label)
+        override fun transform(state: TestFSMState.Async): TestFSMState.Complete {
+            Thread.sleep(30)
+            return TestFSMState.Complete(state.label)
+        }
     }
 
     inner class Error : Transition<TestFSMState.Async, TestFSMState.Error>() {
         override fun predicate(state: TestFSMState.Async) = !success
 
-        override fun transform(state: TestFSMState.Async) = TestFSMState.Error
+        override fun transform(state: TestFSMState.Async): TestFSMState.Error {
+            Thread.sleep(30)
+            return TestFSMState.Error
+        }
     }
 }

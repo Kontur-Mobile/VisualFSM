@@ -8,7 +8,6 @@ import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRxWithBlockedSubscribe
 import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
@@ -153,10 +152,16 @@ class StateMachineRxTests {
         testObserver.dispose()
     }
 
-
     @Test
-    fun cancelByStartOtherAsyncTest() {
-        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRxWithBlockedSubscribe(), object : TransitionCallbacks<TestFSMState> {
+    fun multiplyCancelByStartOtherAsyncTest(){
+        for (i in 1..100) {
+            println("Step: $i")
+            cancelByStartOtherAsyncTest()
+        }
+    }
+
+    private fun cancelByStartOtherAsyncTest() {
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx(), object : TransitionCallbacks<TestFSMState> {
             override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
             }
 

@@ -88,11 +88,13 @@ constructor(
      * @param action [Action] to run
      */
     override fun proceed(action: ACTION) {
-        val transitionsFactory = this.transitionsFactory
-        return store.proceed(
-            action.apply {
-                if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
-            }
-        )
+        synchronized(this) {
+            val transitionsFactory = this.transitionsFactory
+            return store.proceed(
+                action.apply {
+                    if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
+                }
+            )
+        }
     }
 }

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRxWithBlockedSubscribe
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
@@ -154,8 +153,15 @@ class StateMachineRxTests {
     }
 
     @Test
-    fun cancelByStartOtherAsyncTest() {
-        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRxWithBlockedSubscribe(), object : TransitionCallbacks<TestFSMState> {
+    fun multiplyCancelByStartOtherAsyncTest(){
+        for (i in 1..100) {
+            println("Step: $i")
+            cancelByStartOtherAsyncTest()
+        }
+    }
+
+    private fun cancelByStartOtherAsyncTest() {
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx(), object : TransitionCallbacks<TestFSMState> {
             override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
             }
 

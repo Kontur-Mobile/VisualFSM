@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.atomicfu.locks.*
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -84,11 +85,13 @@ constructor(initialState: STATE, asyncWorker: AsyncWorker<STATE, ACTION>? = null
      * @param action [Action] to run
      */
     override fun proceed(action: ACTION) {
-        val transitionsFactory = this.transitionsFactory
-        return store.proceed(
-            action.apply {
-                if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
-            }
-        )
+        synchronized(this) {
+            val transitionsFactory = this.transitionsFactory
+            return store.proceed(
+                action.apply {
+                    if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
+                }
+            )
+        }
     }
 }
