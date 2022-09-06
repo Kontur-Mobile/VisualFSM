@@ -8,7 +8,6 @@ import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMAsyncWorkerRxWithBlockedSubscribe
 import ru.kontur.mobile.visualfsm.testFSM.rx.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
@@ -153,36 +152,45 @@ class StateMachineRxTests {
         testObserver.dispose()
     }
 
-
     @Test
-    fun cancelByStartOtherAsyncTest() {
-        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRxWithBlockedSubscribe(), object : TransitionCallbacks<TestFSMState> {
-            override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
-            }
+    fun multiplyCancelByStartOtherAsyncTest() {
+        for (i in 1..100) {
+            println("Step: $i")
+            cancelByStartOtherAsyncTest()
+        }
+    }
 
-            override fun onTransitionSelected(
-                action: Action<TestFSMState>,
-                transition: Transition<TestFSMState, TestFSMState>,
-                currentState: TestFSMState,
-            ) {
-            }
+    private fun cancelByStartOtherAsyncTest() {
+        val feature = TestFSMFeatureRx(
+            initialState = TestFSMState.Initial,
+            asyncWorker = TestFSMAsyncWorkerRx(),
+            transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
+                override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
+                }
 
-            override fun onNewStateReduced(
-                action: Action<TestFSMState>,
-                transition: Transition<TestFSMState, TestFSMState>,
-                oldState: TestFSMState,
-                newState: TestFSMState
-            ) {
-            }
+                override fun onTransitionSelected(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    currentState: TestFSMState,
+                ) {
+                }
 
-            override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                throw IllegalStateException("onNoTransitionError $action $currentState")
-            }
+                override fun onNewStateReduced(
+                    action: Action<TestFSMState>,
+                    transition: Transition<TestFSMState, TestFSMState>,
+                    oldState: TestFSMState,
+                    newState: TestFSMState
+                ) {
+                }
 
-            override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                throw IllegalStateException("onMultipleTransitionError $action $currentState")
-            }
-        })
+                override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onNoTransitionError $action $currentState")
+                }
+
+                override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
+                    throw IllegalStateException("onMultipleTransitionError $action $currentState")
+                }
+            })
 
         val testObserver = feature.observeState().test()
 

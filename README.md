@@ -22,37 +22,37 @@ separate module that would allow it to be connected to testing environment.
 Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
 ```
 
 Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
 ```
 
 Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
 ```
 
 Code generation
 
 ```kotlin
-ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
 ```
 
 Classes for easy getting generated code
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
 ```
 
 Graph creation and analysis
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
 ```
 
 ## Quickstart

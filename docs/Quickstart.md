@@ -19,22 +19,22 @@ plugins {
 
 dependencies {
     // Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1"
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1"
 
     // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1"
 
     // Code generation
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1"
 
     // Optional - Classes for easy getting generated code
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1"
 
     // Optional - Graph creation and analysis
-    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1"
 }
 ```
 
@@ -50,22 +50,22 @@ plugins {
 
 dependencies {
     // Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
 
     // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
 
     // Code generation
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
 
     // Optional - Classes for easy getting generated code
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
 
     // Optional - Graph creation and analysis
-    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
 }
 ```
 
@@ -129,10 +129,10 @@ sourceSets {
     val commonMain by getting {
         dependencies {
             // Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-            implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+            implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
 
             // Optional - Graph creation and analysis
-            testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+            testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
 
             // Add generated code to source code directories
             kotlin.srcDir("${buildDir.absolutePath}/generated/ksp/")
@@ -142,7 +142,7 @@ sourceSets {
 
 dependencies {
     // Code generation
-    add("kspAndroid", "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+    add("kspAndroid", "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
 }
 ```
 
@@ -171,22 +171,22 @@ kotlin {
 
 dependencies {
     // Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1"
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1"
 
     // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1"
 
     // Code generation
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0"
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1"
 
     // Optional - Classes for easy getting generated code
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1"
 
     // Optional - Graph creation and analysis
-    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0"
+    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1"
 }
 ```
 
@@ -212,22 +212,22 @@ kotlin {
 
 dependencies {
     // Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
 
     // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
 
     // Code generation
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.0")
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
 
     // Optional - Classes for easy getting generated code
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.0")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
 
     // Optional - Graph creation and analysis
-    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.0")
+    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
 }
 ```
 

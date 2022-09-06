@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm.testFSM.rx
 
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerTaskRx
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
@@ -17,6 +18,7 @@ class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
                     if ("error" == state.label) throw Exception("Error on async operation")
                 }
                     .delay(state.milliseconds.toLong(), TimeUnit.MILLISECONDS)
+                    .observeOn(Schedulers.newThread())
                     .subscribe({
                         proceed(Finish(true))
                     }, {

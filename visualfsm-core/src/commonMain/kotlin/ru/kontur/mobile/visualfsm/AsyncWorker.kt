@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.atomicfu.locks.*
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
@@ -102,9 +103,12 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     private fun proceed(fromState: STATE, action: ACTION) {
-        // If the current state does not match the state from which the task started, the result of its task is no longer expected
-        if (fromState == feature?.getCurrentState()) {
-            feature?.proceed(action) ?: throw IllegalStateException("Feature is unbound")
+        val feature = feature ?: error("Feature is unbound")
+        synchronized(feature) {
+            // If the current state does not match the state from which the task started, the result of its task is no longer expected
+            if (fromState == feature.getCurrentState()) {
+                feature.proceed(action)
+            }
         }
     }
 
@@ -117,6 +121,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
                 cancelAndLaunch(task.state) { task.func(task) }
             }
+
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
                     cancelAndLaunch(task.state) { task.func(task) }

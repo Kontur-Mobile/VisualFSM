@@ -40,6 +40,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+                implementation "org.jetbrains.kotlinx:atomicfu:$atomicfu_version"
             }
         }
         commonTest {
