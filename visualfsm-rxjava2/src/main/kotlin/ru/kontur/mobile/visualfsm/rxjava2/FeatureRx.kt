@@ -10,7 +10,13 @@ import ru.kontur.mobile.visualfsm.*
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  */
-open class FeatureRx<STATE : State, ACTION : Action<STATE>> constructor(
+open class FeatureRx<STATE : State, ACTION : Action<STATE>>
+@Deprecated(
+    message = "Deprecated, because it not support code generation.\n" +
+            "Code generation not configured or configured incorrectly.\n" +
+            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
+    replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
+) constructor(
     initialState: STATE,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
 ) : BaseFeature<STATE, ACTION>() {
@@ -21,6 +27,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>> constructor(
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
      */
+    @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
@@ -59,6 +66,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>> constructor(
                 "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
         replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
     )
+    @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
