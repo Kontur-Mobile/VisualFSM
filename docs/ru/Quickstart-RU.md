@@ -19,22 +19,22 @@ plugins {
 
 dependencies {
     // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion"
 
     // Опционально - Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion"
 
     // Опционально - Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion"
 
     // Кодогенерация
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1"
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion"
 
     // Опционально - Классы для удобного получения сгенерированного кода
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion"
 
     // Опционально - Анализ и построение графа
-    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1"
+    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion"
 }
 ```
 
@@ -45,27 +45,27 @@ dependencies {
 ```kotlin
 // Подключаем KSP плагин
 plugins {
-    id("com.google.devtools.ksp") version "1.6.10-1.0.6"
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 dependencies {
     // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 
     // Опционально - Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 
     // Опционально - Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
 
     // Кодогенерация
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 
     // Опционально - Классы для удобного получения сгенерированного кода
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion")
 
     // Опционально - Анализ и построение графа
-    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
+    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 }
 ```
 
@@ -122,17 +122,17 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     // Подключаем KSP плагин
-    id("com.google.devtools.ksp") version (kspVersion)
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 sourceSets {
     val commonMain by getting {
         dependencies {
             // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
-            implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
+            implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 
             // Опционально - Анализ и построение графа
-            testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
+            testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 
             // Добавляем сгенерированный код в каталоги исходного кода
             kotlin.srcDir("${buildDir.absolutePath}/generated/ksp/")
@@ -142,7 +142,7 @@ sourceSets {
 
 dependencies {
     // Кодогенерация
-    add("kspAndroid", "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
+    add("kspAndroid", "ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 }
 ```
 
@@ -171,22 +171,22 @@ kotlin {
 
 dependencies {
     // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion"
 
     // Опционально - Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion"
 
     // Опционально - Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion"
 
     // Кодогенерация
-    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1"
+    ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion"
 
     // Опционально - Классы для удобного получения сгенерированного кода
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1"
+    implementation "ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion"
 
     // Опционально - Анализ и построение графа
-    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1"
+    testImplementation "ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion"
 }
 ```
 
@@ -197,7 +197,7 @@ dependencies {
 ```kotlin
 // Подключаем KSP плагин
 plugins {
-    id("com.google.devtools.ksp") version "1.6.10-1.0.6"
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 // Добавляем сгенерированный код в каталоги исходного кода
@@ -212,22 +212,22 @@ kotlin {
 
 dependencies {
     // Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 
     // Опционально - Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 
     // Опционально - Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
 
     // Кодогенерация
-    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
+    ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 
     // Опционально - Классы для удобного получения сгенерированного кода
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
+    implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion")
 
     // Опционально - Анализ и построение графа
-    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
+    testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 }
 ```
 
@@ -306,7 +306,6 @@ class SampleFSMAsyncWorker : AsyncWorker<SampleFSMState, SampleFSMAction>() {
 class SampleFSMFeature : Feature<SampleFSMState, SampleFSMAction>(
     initialState = SampleFSMState.Initial,
     asyncWorker = SampleFSMAsyncWorker(),
-    transitionCallbacks = SampleTransitionCallbacks(),
     transitionsFactory = provideTransitionsFactory(), // Получение экземпляра сгенерованной TransitionsFactory при использовании visualfsm-providers
     // Для получения экземпляра TransitionsFactory для KMM проектов следует вызвать конструктор сгенерированного класса:
     // Имя генерируется по маске Generated[FeatureName]TransitionsFactory()
@@ -372,11 +371,7 @@ digraph SampleFSMStateTransitions {
 Для визуализации на компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/).
 
 ## Демонстрационные проекты
-
-### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
-
-### [Command line Kotlin приложение (Kotlin Coroutines)](../../sample)
-
-### [Command line Kotlin приложение (RxJava)](../../sample-rx)
-
-### Пример для KMM проекта появится в скором времени
+#### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+#### [KMM (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
+#### [Command line Kotlin приложение (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)
+#### [Command line Kotlin приложение (RxJava)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample-rx)

@@ -17,49 +17,61 @@
 Анализ исходного кода и построение графа выполняется с помощью рефлексии и реализован отдельным
 модулем, что позволяет подключить его только к тестовой среде.
 
+## Оглавление
+
+[Обзор модулей библиотеки](#обзор-модулей-библиотеки)
+
+[Первичная настройка библиотеки](#первичная-настройка-библиотеки)
+
+[Преимущества VisualFSM](#преимущества-visualfsm)
+
+[Структура VisualFSM](#структура-visualfsm)
+
+[Примеры использования](#примеры-использования)
+
 ## Обзор модулей библиотеки
 
 Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 ```
 
 Поддержка RxJava 3 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 ```
 
 Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
 ```
 
 Кодогенерация
 
 ```kotlin
-ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 ```
 
 Классы для удобного получения сгенерированного кода
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion")
 ```
 
 Анализ и построение графа
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 ```
 
 ## Первичная настройка библиотеки
 
 Смотрите [здесь](Quickstart-RU.md)
 
-## Плюсы VisualFSM
+## Преимущества VisualFSM
 
 ### Визуализация графа FSM
 
@@ -163,13 +175,12 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 
 ## Примеры использования
 
-[Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+#### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+#### [KMM (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
+#### [Command line Kotlin приложение (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)
+#### [Command line Kotlin приложение (RxJava)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample-rx)
 
-[Command line Kotlin приложение (Kotlin Coroutines)](../../sample)
-
-[Command line Kotlin приложение (RxJava)](../../sample-rx)
-
-Пример для KMM проекта появится в скором времени
+Пример тестов для FSM авторизации и регистрации: [AuthFSMTests.kt](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android/blob/main/app/src/test/java/ru/kontur/mobile/visualfsm/sample_android/AuthFSMTests.kt)
 
 Построение графа в формате DOT для graphviz выполняется с помощью метода `VisualFSM.generateDigraph(...)`
 
