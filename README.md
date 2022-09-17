@@ -18,11 +18,16 @@ Source code analysis and the graph built are being performed with reflection and
 separate module that would allow it to be connected to testing environment.
 
 ## Contents
-#### [Overview of library modules](#overview-of-library-modules)
-#### [Quickstart](#quickstart)
-#### [VisualFSM Pros](#visualfsm-pros)
-#### [Structure of VisualFSM](#structure-of-visualfsm)
-#### [Samples of usage](#samples-of-usage)
+
+[Overview of library modules](#overview-of-library-modules)
+
+[Quickstart](#quickstart)
+
+[VisualFSM Pros](#visualfsm-pros)
+
+[Structure of VisualFSM](#structure-of-visualfsm)
+
+[Samples of usage](#samples-of-usage)
 
 ## Overview of library modules
 
