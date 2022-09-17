@@ -14,7 +14,7 @@ ENG | [RUS](./ru/Quickstart-RU.md)
 ```groovy
 // Use KSP plugin
 plugins {
-    id "com.google.devtools.ksp" version $kspVersion
+    id "com.google.devtools.ksp" version "$kspVersion"
 }
 
 dependencies {
@@ -45,7 +45,7 @@ dependencies {
 ```kotlin
 // Use KSP plugin
 plugins {
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 dependencies {
@@ -122,7 +122,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     // Use KSP plugin
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 sourceSets {
@@ -158,7 +158,7 @@ dependencies {
 ```groovy
 // Use KSP plugin
 plugins {
-    id "com.google.devtools.ksp" version $kspVersion
+    id "com.google.devtools.ksp" version "$kspVersion"
 }
 
 // Add generated code to source code directories
@@ -197,7 +197,7 @@ dependencies {
 ```kotlin
 // Use KSP plugin
 plugins {
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 // Add generated code to source code directories

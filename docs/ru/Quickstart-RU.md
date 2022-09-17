@@ -14,7 +14,7 @@
 ```groovy
 // Подключаем KSP плагин
 plugins {
-    id "com.google.devtools.ksp" version $kspVersion
+    id "com.google.devtools.ksp" version "$kspVersion"
 }
 
 dependencies {
@@ -45,7 +45,7 @@ dependencies {
 ```kotlin
 // Подключаем KSP плагин
 plugins {
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 dependencies {
@@ -122,7 +122,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     // Подключаем KSP плагин
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 sourceSets {
@@ -197,7 +197,7 @@ dependencies {
 ```kotlin
 // Подключаем KSP плагин
 plugins {
-    id("com.google.devtools.ksp") version kspVersion
+    id("com.google.devtools.ksp") version "$kspVersion"
 }
 
 // Добавляем сгенерированный код в каталоги исходного кода
