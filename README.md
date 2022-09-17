@@ -17,42 +17,49 @@ automatically added to the graph of States and Transitions.
 Source code analysis and the graph built are being performed with reflection and declared as a
 separate module that would allow it to be connected to testing environment.
 
+## Contents
+#### [Overview of library modules](#overview-of-library-modules)
+#### [Quickstart](#quickstart)
+#### [VisualFSM Pros](#visualfsm-pros)
+#### [Structure of VisualFSM](#structure-of-visualfsm)
+#### [Samples of usage](#samples-of-usage)
+
 ## Overview of library modules
 
 Base classes for Android, JVM and KMM projects (Feature and AsyncWorker coroutines edition)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-core:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 ```
 
 Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 ```
 
 Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
 ```
 
 Code generation
 
 ```kotlin
-ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:1.1.1")
+ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 ```
 
 Classes for easy getting generated code
 
 ```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:1.1.1")
+implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion")
 ```
 
 Graph creation and analysis
 
 ```kotlin
-testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:1.1.1")
+testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 ```
 
 ## Quickstart
@@ -163,17 +170,13 @@ when `Transition` is selected, a new `State` had been reduced, and two error eve
 no `Transition`s or multiple `Transition`s available.
 
 ## Samples of usage
-
-[Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
-
-[Command line app Kotlin (Kotlin Coroutines)](./sample)
-
-[Command line app Kotlin (RxJava)](./sample-rx)
-
-Example for KMM project coming soon
+#### [Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+#### [KMM (Android + iOS) app (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
+#### [Command line app Kotlin (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)
+#### [Command line app Kotlin (RxJava)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample-rx)
 
 A tests sample for FSM of user authorization and
-registration: [AuthFSMTests.kt](./sample/src/test/kotlin/ru/kontur/mobile/visualfsm/AuthFSMTests.kt).
+registration: [AuthFSMTests.kt](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android/blob/main/app/src/test/java/ru/kontur/mobile/visualfsm/sample_android/AuthFSMTests.kt)
 
 The DOT visualization graph for graphviz is being generated using the `VisualFSM.generateDigraph(...)` method.
 
