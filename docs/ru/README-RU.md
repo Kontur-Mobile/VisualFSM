@@ -173,6 +173,18 @@ _логгирования_, _бизнес метрик_, _отладки_ и д�
 когда `Action` запускается, когда `Transition` выбран, новый `State` был создан, и двух ошибок —
 когда нет доступных `Transition` или когда доступно несколько `Transition`.
 
+### Инструменты VisualFSM
+
+- `VisualFSM.generateDigraph(...): String` - генерация графа в DOT формате для визуализации в Graphviz
+
+- `VisualFSM.getUnreachableStates(...): List<KClass<out STATE>>` - получить список всех недостижимых состояний от начального состояния
+
+- `VisualFSM.getFinalStates(...): List<KClass<out STATE>>` - получить список всех терминальных состояний
+
+- `VisualFSM.getEdgeListGraph(...): List<Triple<KClass<out STATE>, KClass<out STATE>, String>>` - получить список ребер
+
+- `VisualFSM.getAdjacencyMap(...): Map<KClass<out STATE>, List<KClass<out STATE>>>` - получить матрицу смежности
+
 ## Примеры использования
 
 #### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
