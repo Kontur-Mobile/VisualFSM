@@ -174,6 +174,18 @@ _logging_, _debugging_, _metrics_, etc. on five available events: when `Action` 
 when `Transition` is selected, a new `State` had been reduced, and two error events —
 no `Transition`s or multiple `Transition`s available.
 
+### Tools of VisualFSM
+
+- `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for visualization in Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ in browser), use the `useTransitionName` argument to set the `Transition` or `Action` class name as the edge name, or the `@Edge("name")` annotation on the `Transition` class to set a custom edge name
+
+- `VisualFSM.getUnreachableStates(...): List<KClass<out STATE>>` - get all unreachable states from initial state 
+
+- `VisualFSM.getFinalStates(...): List<KClass<out STATE>>` - get all final states
+
+- `VisualFSM.getEdgeListGraph(...): List<Triple<KClass<out STATE>, KClass<out STATE>, String>>` - builds an Edge List
+
+- `VisualFSM.getAdjacencyMap(...): Map<KClass<out STATE>, List<KClass<out STATE>>>` - builds an Adjacency Map of states
+
 ## Samples of usage
 #### [Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
 #### [KMM (Android + iOS) app (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)

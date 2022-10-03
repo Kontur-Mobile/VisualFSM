@@ -176,7 +176,7 @@ object VisualFSM {
      *
      * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
      */
-    private fun <STATE : State> getAdjacencyMap(
+    fun <STATE : State> getAdjacencyMap(
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
     ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
