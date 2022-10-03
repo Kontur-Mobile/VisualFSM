@@ -176,7 +176,7 @@ no `Transition`s or multiple `Transition`s available.
 
 ### Tools of VisualFSM
 
-- `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for Graphviz, use the useTransitionName argument to set the Transition or Action class name as the edge name, or the @Edge("") annotation on the Transition class to set a custom edge name
+- `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ on browser), use the useTransitionName argument to set the Transition or Action class name as the edge name, or the @Edge("name") annotation on the Transition class to set a custom edge name
 
 - `VisualFSM.getUnreachableStates(...): List<KClass<out STATE>>` - get all unreachable states from initial state 
 
