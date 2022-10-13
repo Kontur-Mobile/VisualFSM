@@ -35,10 +35,19 @@ abstract class Action<STATE : State> {
      * Calls [transition callbacks][TransitionCallbacks] methods.
      *
      * @param oldState current [state][State]
+     * @param oldStateId current [state][State] id
      * @param callbacks [transition callbacks][TransitionCallbacks]
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param backStateStack back state stack[BackStateStack]
      * @return [new state][State]
      */
-    fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>?): STATE {
+    internal fun run(
+        oldState: STATE,
+        oldStateId: Int,
+        callbacks: TransitionCallbacks<STATE>?,
+        stateDependencyManager: StateDependencyManager<STATE>?,
+        backStateStack: BackStateStack<STATE>
+    ): STATE {
         callbacks?.onActionLaunched(this, oldState)
 
         val availableTransitions = getAvailableTransitions(oldState)
@@ -57,6 +66,12 @@ abstract class Action<STATE : State> {
         callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
         val newState = selectedTransition.transform(oldState)
+
+        if (oldState is ToBackStack && oldState != newState) {
+            backStateStack.push(oldStateId, oldState)
+        } else {
+            stateDependencyManager?.removeDependencyForState(oldStateId, oldState)
+        }
 
         callbacks?.onNewStateReduced(this, selectedTransition, oldState, newState)
 

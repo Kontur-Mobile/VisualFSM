@@ -2,9 +2,7 @@ package ru.kontur.mobile.visualfsm.rxjava3
 
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.TransitionCallbacks
+import ru.kontur.mobile.visualfsm.*
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
@@ -12,14 +10,18 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  *
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param stateDependencyManager state dependency manager [StateDependencyManager]
+ * @param backStateStack back state stack [BackStateStack]
  */
-internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
+class StoreRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
-    private val transitionCallbacks: TransitionCallbacks<STATE>?
-) {
+    private val transitionCallbacks: TransitionCallbacks<STATE>?,
+    stateDependencyManager: StateDependencyManager<STATE>?,
+    backStateStack: BackStateStack<STATE>,
+) : BaseStore<STATE, ACTION>(initialState, transitionCallbacks, stateDependencyManager, backStateStack) {
 
     @Volatile
-    private var currentState = initialState
+    private var _currentState = initialState
     private val stateRxObservableField = BehaviorSubject.createDefault(initialState).toSerialized()
 
     /**
@@ -36,35 +38,21 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
      *
      * @return current [state][State]
      */
-    internal fun getCurrentState(): STATE {
-        return currentState
+    override fun getCurrentState(): STATE {
+        return _currentState
     }
 
     /**
-     * Changes current state
+     * Set state from back stack
      *
-     * @param action [Action] that was launched
+     * @param id state id
+     * @param newState restored state[State]
      */
-    internal fun proceed(action: ACTION) {
-        val newState = reduce(action, currentState)
-        val changed = newState != currentState
-        if (changed) {
-            currentState = newState
+    override fun setState(id: Int, newState: STATE) {
+        if (newState != _currentState) {
+            currentStateId = id
+            _currentState = newState
             stateRxObservableField.onNext(newState)
         }
-    }
-
-    /**
-     * Runs [action's][Action] transition of [states][State]
-     *
-     * @param action launched [action][Action]
-     * @param state new [state][State]
-     * @return new [state][State]
-     */
-    private fun reduce(
-        action: ACTION,
-        state: STATE
-    ): STATE {
-        return action.run(state, transitionCallbacks)
     }
 }

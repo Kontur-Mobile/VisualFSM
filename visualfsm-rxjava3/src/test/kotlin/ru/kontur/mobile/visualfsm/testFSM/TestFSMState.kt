@@ -1,9 +1,10 @@
 package ru.kontur.mobile.visualfsm.testFSM
 
 import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.ToBackStack
 
 sealed class TestFSMState : State {
-    object Initial : TestFSMState()
+    object Initial : TestFSMState(), ToBackStack
 
     data class Async(
         val label: String,

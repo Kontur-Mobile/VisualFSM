@@ -10,10 +10,15 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param stateDependencyManager state dependency manager [StateDependencyManager]
+ * @param backStateStack back state stack [BackStateStack]
  */
-internal class Store<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE, private val transitionCallbacks: TransitionCallbacks<STATE>?
-) {
+class Store<STATE : State, ACTION : Action<STATE>>(
+    initialState: STATE,
+    transitionCallbacks: TransitionCallbacks<STATE>?,
+    stateDependencyManager: StateDependencyManager<STATE>?,
+    backStateStack: BackStateStack<STATE>,
+) : BaseStore<STATE, ACTION>(initialState, transitionCallbacks, stateDependencyManager, backStateStack) {
 
     private val stateFlow = MutableStateFlow(initialState)
 
@@ -31,34 +36,19 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      *
      * @return current [state][State]
      */
-    internal fun getCurrentState(): STATE {
+    override fun getCurrentState(): STATE {
         return stateFlow.value
     }
 
     /**
-     * Changes current state
+     * Set state
      *
-     * @param action [Action] that was launched
+     * @param newState new [state][State]
      */
-    internal fun proceed(action: ACTION) {
-        val currentState = stateFlow.value
-        val newState = reduce(action, currentState)
-        val changed = newState != currentState
-        if (changed) {
+    override fun setState(id: Int, newState: STATE) {
+        if (newState != stateFlow.value) {
+            currentStateId = id
             stateFlow.value = newState
         }
-    }
-
-    /**
-     * Runs [action's][Action] transition of [states][State]
-     *
-     * @param action launched [action][Action]
-     * @param state new [state][State]
-     * @return new [state][State]
-     */
-    private fun reduce(
-        action: ACTION, state: STATE
-    ): STATE {
-        return action.run(state, transitionCallbacks)
     }
 }

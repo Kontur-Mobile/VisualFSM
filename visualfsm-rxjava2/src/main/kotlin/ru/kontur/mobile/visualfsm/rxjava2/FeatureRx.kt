@@ -9,6 +9,8 @@ import ru.kontur.mobile.visualfsm.*
  *
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param stateDependencyManager state dependency manager [StateDependencyManager]
+ * @param restoredBackStates list Pairs id and state for restored back state stack
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>
 @Deprecated(
@@ -19,13 +21,17 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
 ) constructor(
     initialState: STATE,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
-) : BaseFeature<STATE, ACTION>() {
+    stateDependencyManager: StateDependencyManager<STATE>? = null,
+    restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+) : BaseFeature<STATE, ACTION>(stateDependencyManager, transitionCallbacks, restoredBackStates) {
 
     /**
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -33,7 +39,9 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory
         asyncWorker?.bind(this)
     }
@@ -43,6 +51,8 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
      * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list for the action
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -50,7 +60,9 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory(this)
         asyncWorker?.bind(this)
     }
@@ -59,6 +71,8 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Deprecated(
         message = "Deprecated, because it not support code generation.\n" +
@@ -71,7 +85,9 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
-    ) : this(initialState, transitionCallbacks) {
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         asyncWorker?.bind(this)
     }
 
@@ -79,7 +95,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
 
     private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
+    override val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks, stateDependencyManager, backStatesStack)
 
     /**
      * Provides a [observable][Observable] of [states][State]
@@ -88,15 +104,6 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
      */
     fun observeState(): Observable<STATE> {
         return store.observeState()
-    }
-
-    /**
-     * Returns current state
-     *
-     * @return current [state][State]
-     */
-    override fun getCurrentState(): STATE {
-        return store.getCurrentState()
     }
 
     /**

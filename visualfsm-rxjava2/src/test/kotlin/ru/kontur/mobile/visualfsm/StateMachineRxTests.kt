@@ -190,6 +190,9 @@ class StateMachineRxTests {
                 override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
                     throw IllegalStateException("onMultipleTransitionError $action $currentState")
                 }
+
+                override fun onRestoredFromBackStack(oldState: TestFSMState, newState: TestFSMState) {
+                }
             })
 
         val testObserver = feature.observeState().test()

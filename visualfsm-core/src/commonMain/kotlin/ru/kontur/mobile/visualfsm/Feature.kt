@@ -9,6 +9,8 @@ import kotlinx.atomicfu.locks.*
  *
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param stateDependencyManager state dependency manager [StateDependencyManager]
+ * @param restoredBackStates list Pairs id and state for restored back state stack
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>
 @Deprecated(
@@ -18,14 +20,18 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
 ) constructor(
     initialState: STATE,
-    transitionCallbacks: TransitionCallbacks<STATE>? = null
-) : BaseFeature<STATE, ACTION>() {
+    transitionCallbacks: TransitionCallbacks<STATE>? = null,
+    stateDependencyManager: StateDependencyManager<STATE>? = null,
+    restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+) : BaseFeature<STATE, ACTION>(stateDependencyManager, transitionCallbacks, restoredBackStates) {
 
     /**
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -33,7 +39,9 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory
         asyncWorker?.bind(this)
     }
@@ -43,6 +51,8 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list for the action
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -50,7 +60,9 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory(this)
         asyncWorker?.bind(this)
     }
@@ -59,6 +71,8 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+     * @param stateDependencyManager state dependency manager [StateDependencyManager]
+     * @param restoredBackStates list Pairs id and state for restored back state stack
      */
     @Deprecated(
         message = "Deprecated, because it not support code generation.\n" +
@@ -70,14 +84,16 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null
-    ) : this(initialState, transitionCallbacks) {
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        stateDependencyManager: StateDependencyManager<STATE>? = null,
+        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         asyncWorker?.bind(this)
     }
 
     private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
+    override val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks, stateDependencyManager, backStatesStack)
 
     /**
      * Provides a [flow][Flow] of [states][State]
@@ -89,15 +105,6 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     }
 
     /**
-     * Returns current state
-     *
-     * @return current [state][State]
-     */
-    override fun getCurrentState(): STATE {
-        return store.getCurrentState()
-    }
-
-    /**
      * Submits an [action][Action] to be executed to the [store][Store]
      *
      * @param action [Action] to run
@@ -105,7 +112,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     override fun proceed(action: ACTION) {
         synchronized(this) {
             val transitionsFactory = this.transitionsFactory
-            return store.proceed(
+            store.proceed(
                 action.apply {
                     if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
                 }

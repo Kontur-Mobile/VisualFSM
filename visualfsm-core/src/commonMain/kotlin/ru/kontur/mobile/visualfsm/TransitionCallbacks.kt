@@ -45,6 +45,19 @@ interface TransitionCallbacks<STATE : State> {
     )
 
     /**
+     * Is called when [state][State] is restored from back stack
+     *
+     * @param oldState current [state][STATE]
+     * @param newState new [state][State]
+     */
+    fun onRestoredFromBackStack(
+        oldState: STATE,
+        newState: STATE
+    ) {
+        // Default implementation for back compatibility
+    }
+
+    /**
      * Is called when there is no available [transition][Transition]
      *
      * @param action [Action] that was being launched
