@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeature
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSM.action.Close
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 import kotlin.reflect.KClass
 
@@ -40,7 +41,7 @@ class StateDependencyManagerTests {
 
         assertEquals(TestFSMState.Complete("async1"), feature.getCurrentState())
 
-        feature.back()
+        feature.proceed(Close())
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 

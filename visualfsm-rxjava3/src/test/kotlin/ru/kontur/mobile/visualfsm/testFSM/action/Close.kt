@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm.testFSM.action
 import ru.kontur.mobile.visualfsm.TransitionBack
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 
-class Cancel : TestFSMAction() {
+class Close : TestFSMAction() {
 
-    inner class Cancel : TransitionBack<TestFSMState.Async, TestFSMState.Initial>()
+    inner class Close : TransitionBack<TestFSMState.Complete, TestFSMState.Initial>()
 }

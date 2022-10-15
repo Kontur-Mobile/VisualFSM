@@ -1,5 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
+import kotlin.reflect.KClass
+
 /**
  * Inherit to declare third party logic on provided event calls (like logging, debugging, or metrics)
  */
@@ -14,7 +16,8 @@ interface TransitionCallbacks<STATE : State> {
     fun onActionLaunched(
         action: Action<STATE>,
         currentState: STATE
-    )
+    ) {
+    }
 
     /**
      * Is called on transition being selected
@@ -27,7 +30,8 @@ interface TransitionCallbacks<STATE : State> {
         action: Action<STATE>,
         transition: Transition<STATE, STATE>,
         currentState: STATE
-    )
+    ) {
+    }
 
     /**
      * Is called when [new state][State] reduced
@@ -42,7 +46,8 @@ interface TransitionCallbacks<STATE : State> {
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
-    )
+    ) {
+    }
 
     /**
      * Is called when [state][State] is restored from back stack
@@ -54,7 +59,18 @@ interface TransitionCallbacks<STATE : State> {
         oldState: STATE,
         newState: STATE
     ) {
-        // Default implementation for back compatibility
+    }
+
+    /**
+     * Is called when [state][State] is not found from back stack
+     *
+     * @param backStackStateClass desired [state][STATE] class
+     * @param oldState current [state][STATE]
+     */
+    fun onNoStateInBackStackError(
+        backStackStateClass: KClass<STATE>,
+        oldState: STATE
+    ) {
     }
 
     /**
@@ -66,7 +82,8 @@ interface TransitionCallbacks<STATE : State> {
     fun onNoTransitionError(
         action: Action<STATE>,
         currentState: STATE
-    )
+    ) {
+    }
 
     /**
      * Is called when more than one [transition][Transition] is available
@@ -77,5 +94,6 @@ interface TransitionCallbacks<STATE : State> {
     fun onMultipleTransitionError(
         action: Action<STATE>,
         currentState: STATE
-    )
+    ) {
+    }
 }

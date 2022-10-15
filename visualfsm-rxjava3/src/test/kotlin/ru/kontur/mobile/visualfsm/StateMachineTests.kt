@@ -30,6 +30,7 @@ class StateMachineTests {
                     "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\"\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel\"]\n" +
+                    "\"Complete\" -> \"Initial\" [label=\" Close\"]\n" +
                     "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
@@ -61,9 +62,8 @@ class StateMachineTests {
         )
 
         assertTrue(
-            finalStates.size == 2 && finalStates.containsAll(
+            finalStates.size == 1 && finalStates.containsAll(
                 listOf(
-                    TestFSMState.Complete::class,
                     TestFSMState.Error::class
                 )
             ),

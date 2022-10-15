@@ -1,11 +1,10 @@
 package ru.kontur.mobile.visualfsm.feature
 
 import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
 import ru.kontur.mobile.visualfsm.*
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.backStack.StateWithId
 import ru.kontur.mobile.visualfsm.store.BaseStore
-import kotlin.reflect.KClass
 
 /**
  * BaseFeature - common code for Feature and FeatureRx
@@ -28,7 +27,7 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>>(
     }
 
     protected abstract val store: BaseStore<STATE, ACTION>
-    protected val backStatesStack = BackStateStack(restoredBackStates)
+    protected val backStatesStack = BackStateStack(restoredBackStates.map { StateWithId(it.first, it.second) })
 
     /**
      * Returns current state
@@ -45,63 +44,6 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>>(
      * @param action [Action] to run
      */
     abstract fun proceed(action: ACTION)
-
-    /**
-     * Restore back state[State] from stack.
-     * Use back() only if you need to restore the state without changing it,
-     * to restore with a change, use back(state: State)
-     *
-     * @return true[Boolean] if stack is not empty, else false[Boolean]
-     */
-    fun back(): Boolean {
-        synchronized(this) {
-            val stateWithId = backStatesStack.popWithId() ?: return false
-            val (id, backState) = stateWithId
-            performBack(id, backState)
-            return true
-        }
-    }
-
-    /**
-     * Restore updated back state[State] from stack with update.
-     * Use back() without arguments if you need to restore the state without changes
-     *
-     * @return true[Boolean] if stack is not empty and state class is the same as state from backStack class else false[Boolean]
-     */
-    fun back(state: STATE): Boolean {
-        synchronized(this) {
-            val stateWithId = backStatesStack.peekWithId() ?: return false
-            val (id, backState) = stateWithId
-
-            return if (backState::class == state::class) {
-                backStatesStack.removeLast()
-                performBack(id, state)
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    fun backTo(stateClass: KClass<STATE>): Boolean {
-        return false // ToDo call remove all dependency skipped states
-    }
-
-    fun backTo(state: STATE): Boolean {
-        return false // ToDo call remove all dependency skipped states
-    }
-
-    fun peekStateFromBackStack(): STATE? {
-        return backStatesStack.peek()
-    }
-
-    private fun performBack(id: Int, backState: STATE) {
-        val oldState = store.getCurrentState()
-        val oldStateId = store.currentStateId
-        store.setState(id, backState)
-        dependencyManager?.removeDependencyForState(oldStateId, oldState)
-        transitionCallbacks?.onRestoredFromBackStack(oldState, backState)
-    }
 
     companion object
 }

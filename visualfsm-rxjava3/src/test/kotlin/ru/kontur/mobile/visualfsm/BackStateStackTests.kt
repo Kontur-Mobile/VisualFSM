@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeature
 import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.testFSM.action.Start
 
 class BackStateStackTests {
@@ -19,7 +20,7 @@ class BackStateStackTests {
 
         assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
 
-        feature.back()
+        feature.proceed(Cancel())
 
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
     }

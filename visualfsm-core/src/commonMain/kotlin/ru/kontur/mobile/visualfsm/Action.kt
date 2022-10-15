@@ -1,7 +1,9 @@
 package ru.kontur.mobile.visualfsm
 
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.backStack.StateWithId
 import ru.kontur.mobile.visualfsm.backStack.ToBackStack
+import ru.kontur.mobile.visualfsm.backStack.ToBackStackNewRoot
 
 /**
  * Is an input object for the State machine.
@@ -53,7 +55,7 @@ abstract class Action<STATE : State> {
     ): STATE {
         callbacks?.onActionLaunched(this, oldState)
 
-        val availableTransitions = getAvailableTransitions(oldState)
+        val availableTransitions = getAvailableTransitions(oldState, backStateStack)
 
         if (availableTransitions.size > 1) {
             callbacks?.onMultipleTransitionError(this, oldState)
@@ -68,26 +70,99 @@ abstract class Action<STATE : State> {
 
         callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
-        val newState = selectedTransition.transform(oldState)
+        val nextState = getNextState(
+            oldState,
+            selectedTransition,
+            backStateStack,
+            stateDependencyManager,
+            callbacks
+        )
 
-        if (oldState is ToBackStack && oldState != newState) {
-            backStateStack.push(oldStateId, oldState)
+        pushNewStateToStackIfNeed(
+            oldStateId,
+            oldState,
+            nextState,
+            selectedTransition,
+            backStateStack,
+            stateDependencyManager
+        )
+
+        callbacks?.onNewStateReduced(this, selectedTransition, oldState, nextState)
+
+        return nextState
+    }
+
+    private fun pushNewStateToStackIfNeed(
+        oldStateId: Int,
+        oldState: STATE,
+        nextState: STATE,
+        selectedTransition: Transition<STATE, STATE>,
+        backStateStack: BackStateStack<STATE>,
+        stateDependencyManager: StateDependencyManager<STATE>?,
+    ) {
+        if (selectedTransition is ToBackStack && oldState != nextState) {
+            backStateStack.pushAndGetRemoved(
+                StateWithId(oldStateId, oldState),
+                selectedTransition is ToBackStackNewRoot
+            ).forEach {
+                stateDependencyManager?.removeDependencyForState(it.id, it.state)
+            }
         } else {
             stateDependencyManager?.removeDependencyForState(oldStateId, oldState)
         }
+    }
 
-        callbacks?.onNewStateReduced(this, selectedTransition, oldState, newState)
+    private fun getNextState(
+        oldState: STATE,
+        selectedTransition: Transition<STATE, STATE>,
+        backStateStack: BackStateStack<STATE>,
+        stateDependencyManager: StateDependencyManager<STATE>?,
+        callbacks: TransitionCallbacks<STATE>?,
+    ): STATE {
+        val nextState = if (selectedTransition is TransitionBack) {
+            val peekResult = backStateStack.peek(selectedTransition.toState)
+            if (peekResult == null) {
+                callbacks?.onNoStateInBackStackError(selectedTransition.toState, oldState)
+                oldState
+            } else {
+                val (stateFromBackStack, removedStates) = backStateStack.popAndGetRemoved(selectedTransition.toState)
+                removedStates.forEach {
+                    stateDependencyManager?.removeDependencyForState(it.id, it.state)
+                }
+                selectedTransition.transform(oldState, stateFromBackStack.state)
+            }
+        } else {
+            selectedTransition.transform(oldState)
+        }
 
-        return newState
+        return nextState
     }
 
     @Suppress("UNCHECKED_CAST", "DEPRECATION")
-    private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
-        (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
+    private fun getAvailableTransitions(
+        oldState: STATE,
+        backStateStack: BackStateStack<STATE>
+    ): List<Transition<STATE, STATE>> {
+        return (getTransitions() as List<Transition<STATE, STATE>>).filter {
+            isCorrectTransition(
+                it,
+                oldState,
+                backStateStack
+            )
+        }
+    }
+
 
     private fun isCorrectTransition(
         transition: Transition<STATE, STATE>,
         oldState: STATE,
-    ): Boolean =
-        (transition.fromState == oldState::class) && transition.predicate(oldState)
+        backStateStack: BackStateStack<STATE>,
+    ): Boolean {
+        return if (transition is TransitionBack) {
+            val backState = backStateStack.peek(transition.toState)?.state
+            (transition.fromState == oldState::class) && transition.predicate(oldState, backState)
+        } else {
+            (transition.fromState == oldState::class) && transition.predicate(oldState)
+        }
+    }
 }
