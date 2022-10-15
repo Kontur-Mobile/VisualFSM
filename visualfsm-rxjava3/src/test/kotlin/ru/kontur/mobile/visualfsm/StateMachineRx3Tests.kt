@@ -3,15 +3,15 @@ package ru.kontur.mobile.visualfsm
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Cancel
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Start
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.rx.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.rx.TestFSMFeatureRx
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeatureRx
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
+import ru.kontur.mobile.visualfsm.testFSM.action.Start
+import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
-class StateMachineRxTests {
+class StateMachineRx3Tests {
 
     @Test
     fun generateDigraphTest() {
@@ -26,7 +26,6 @@ class StateMachineRxTests {
                     "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\"\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel\"]\n" +
-                    "\"Complete\" -> \"Initial\" [label=\" Close\"]\n" +
                     "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
@@ -58,8 +57,9 @@ class StateMachineRxTests {
         )
 
         assertTrue(
-            finalStates.size == 1 && finalStates.containsAll(
+            finalStates.size == 2 && finalStates.containsAll(
                 listOf(
+                    TestFSMState.Complete::class,
                     TestFSMState.Error::class
                 )
             ),
@@ -133,10 +133,10 @@ class StateMachineRxTests {
 
         feature.proceed(Cancel())
 
-        //Task canceled
+        // Task canceled
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
-        //Start new
+        // Start new
         feature.proceed(Start("async2", 150))
 
         assertEquals(TestFSMState.Async("async2", 150), feature.getCurrentState())
@@ -179,7 +179,7 @@ class StateMachineRxTests {
                     action: Action<TestFSMState>,
                     transition: Transition<TestFSMState, TestFSMState>,
                     oldState: TestFSMState,
-                    newState: TestFSMState
+                    newState: TestFSMState,
                 ) {
                 }
 

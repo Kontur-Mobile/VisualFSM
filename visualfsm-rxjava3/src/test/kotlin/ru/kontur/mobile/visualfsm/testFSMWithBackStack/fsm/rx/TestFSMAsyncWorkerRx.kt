@@ -1,17 +1,17 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack.rx
+package ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.rx
 
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerTaskRx
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState.Async
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Finish
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.TestFSMWBSState
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.TestFSMWBSState.Async
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.action.Finish
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.action.TestFSMAction
 import java.util.concurrent.TimeUnit
 
-class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMState, TestFSMAction>() {
-    override fun onNextState(state: TestFSMState): AsyncWorkerTaskRx<TestFSMState> {
+class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMWBSState, TestFSMAction>() {
+    override fun onNextState(state: TestFSMWBSState): AsyncWorkerTaskRx<TestFSMWBSState> {
         return when (state) {
             is Async -> AsyncWorkerTaskRx.ExecuteAndCancelExist(state) {
                 Single.fromCallable {

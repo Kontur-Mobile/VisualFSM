@@ -27,7 +27,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
     stateDependencyManager: StateDependencyManager<STATE>? = null,
     restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-) : BaseFeature<STATE, ACTION>(stateDependencyManager, transitionCallbacks, restoredBackStates) {
+) : BaseFeature<STATE, ACTION>(
+    initialState,
+    initialStateAddToBackStackStrategy,
+    stateDependencyManager,
+    transitionCallbacks,
+    restoredBackStates
+) {
 
     /**
      * @param initialState initial [state][State]
@@ -46,7 +52,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(
+        initialState,
+        initialStateAddToBackStackStrategy,
+        transitionCallbacks,
+        stateDependencyManager,
+        restoredBackStates
+    ) {
         this.transitionsFactory = transitionsFactory
         asyncWorker?.bind(this)
     }
@@ -68,7 +80,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(
+        initialState,
+        initialStateAddToBackStackStrategy,
+        transitionCallbacks,
+        stateDependencyManager,
+        restoredBackStates
+    ) {
         this.transitionsFactory = transitionsFactory(this)
         asyncWorker?.bind(this)
     }
@@ -94,7 +112,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(
+        initialState,
+        initialStateAddToBackStackStrategy,
+        transitionCallbacks,
+        stateDependencyManager,
+        restoredBackStates
+    ) {
         asyncWorker?.bind(this)
     }
 

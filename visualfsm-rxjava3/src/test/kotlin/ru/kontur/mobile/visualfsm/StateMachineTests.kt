@@ -7,12 +7,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMAsyncWorker
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMFeature
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Cancel
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Start
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeature
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
+import ru.kontur.mobile.visualfsm.testFSM.action.Start
+import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
 class StateMachineTests {
@@ -30,7 +30,6 @@ class StateMachineTests {
                     "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\"\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel\"]\n" +
-                    "\"Complete\" -> \"Initial\" [label=\" Close\"]\n" +
                     "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
@@ -62,8 +61,9 @@ class StateMachineTests {
         )
 
         assertTrue(
-            finalStates.size == 1 && finalStates.containsAll(
+            finalStates.size == 2 && finalStates.containsAll(
                 listOf(
+                    TestFSMState.Complete::class,
                     TestFSMState.Error::class
                 )
             ),

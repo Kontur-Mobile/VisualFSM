@@ -1,9 +1,9 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack
+package ru.kontur.mobile.visualfsm.testFSM
 
 import ru.kontur.mobile.visualfsm.*
 import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
 
 @GenerateTransitionsFactory
 class TestFSMFeature(

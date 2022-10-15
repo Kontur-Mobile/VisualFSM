@@ -1,7 +1,7 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack.action
+package ru.kontur.mobile.visualfsm.testFSM.action
 
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
 
 class Start(val label: String, val milliseconds: Int) : TestFSMAction() {
 
