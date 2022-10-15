@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm.providers
 
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.feature.BaseFeature
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 

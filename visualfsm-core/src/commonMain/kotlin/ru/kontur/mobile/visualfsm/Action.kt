@@ -1,5 +1,8 @@
 package ru.kontur.mobile.visualfsm
 
+import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.backStack.ToBackStack
+
 /**
  * Is an input object for the State machine.
  * The [action][Action] chooses [transition][Transition] and performs it

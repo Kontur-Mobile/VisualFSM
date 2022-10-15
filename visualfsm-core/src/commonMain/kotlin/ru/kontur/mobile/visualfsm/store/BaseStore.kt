@@ -1,4 +1,7 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.store
+
+import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.backStack.BackStateStack
 
 /**
  * BaseStore

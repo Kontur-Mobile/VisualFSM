@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.backStack
 
 /**
  * BackStateStack provides a Last In First Out (LIFO) states[State].

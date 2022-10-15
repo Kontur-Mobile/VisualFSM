@@ -1,7 +1,10 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.feature
 
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
+import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.store.BaseStore
 import kotlin.reflect.KClass
 
 /**

@@ -2,6 +2,8 @@ package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.atomicfu.locks.*
+import ru.kontur.mobile.visualfsm.feature.BaseFeature
+import ru.kontur.mobile.visualfsm.store.Store
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes

@@ -2,6 +2,7 @@ package ru.kontur.mobile.visualfsm.rxjava2
 
 import io.reactivex.Observable
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.feature.BaseFeature
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes

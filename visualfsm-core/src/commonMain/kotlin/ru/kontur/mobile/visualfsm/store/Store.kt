@@ -1,8 +1,13 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.store
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.StateDependencyManager
+import ru.kontur.mobile.visualfsm.TransitionCallbacks
+import ru.kontur.mobile.visualfsm.backStack.BackStateStack
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.

@@ -3,6 +3,8 @@ package ru.kontur.mobile.visualfsm.rxjava3
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.store.BaseStore
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
