@@ -2,7 +2,7 @@ package ru.kontur.mobile.visualfsm
 
 /**
  * Describes the transition rule between states.
- * For back to state in stack, use interfaces ToBackStack and ToBackStackNewRoot
+ * For back to state in stack, use BackStackStrategy argument fot Transition
  * for transitions that perform a transition with adding the old state to the back stack.
  * In generic contains [initial state][fromState] and [destination state][toState].
  * Defines [predicate] and [transform] functions

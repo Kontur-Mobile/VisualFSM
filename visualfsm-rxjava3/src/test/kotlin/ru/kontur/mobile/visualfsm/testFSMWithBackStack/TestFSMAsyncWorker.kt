@@ -1,11 +1,11 @@
-package ru.kontur.mobile.visualfsm.testFSM
+package ru.kontur.mobile.visualfsm.testFSMWithBackStack
 
 import kotlinx.coroutines.delay
 import ru.kontur.mobile.visualfsm.AsyncWorker
 import ru.kontur.mobile.visualfsm.AsyncWorkerTask
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.Async
-import ru.kontur.mobile.visualfsm.testFSM.action.Finish
-import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState.Async
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Finish
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
 
 class TestFSMAsyncWorker : AsyncWorker<TestFSMState, TestFSMAction>() {
     override fun onNextState(state: TestFSMState): AsyncWorkerTask<TestFSMState> {

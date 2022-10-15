@@ -1,9 +1,8 @@
 package ru.kontur.mobile.visualfsm
 
+import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
 import ru.kontur.mobile.visualfsm.backStack.StateWithId
-import ru.kontur.mobile.visualfsm.backStack.ToBackStack
-import ru.kontur.mobile.visualfsm.backStack.ToBackStackNewRoot
 
 /**
  * Is an input object for the State machine.
@@ -100,10 +99,13 @@ abstract class Action<STATE : State> {
         backStateStack: BackStateStack<STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
     ) {
-        if (selectedTransition is ToBackStack && oldState != nextState) {
+        if ((selectedTransition.backStackStrategy == BackStackStrategy.ADD
+                    || selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT)
+            && oldState != nextState
+        ) {
             backStateStack.pushAndGetRemoved(
-                StateWithId(oldStateId, oldState),
-                selectedTransition is ToBackStackNewRoot
+                StateWithId(oldStateId + 1, oldState),
+                selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT
             ).forEach {
                 stateDependencyManager?.removeDependencyForState(it.id, it.state)
             }

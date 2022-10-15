@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.testFSM
+package ru.kontur.mobile.visualfsm.testFSMWithBackStack
 
 import ru.kontur.mobile.visualfsm.State
 

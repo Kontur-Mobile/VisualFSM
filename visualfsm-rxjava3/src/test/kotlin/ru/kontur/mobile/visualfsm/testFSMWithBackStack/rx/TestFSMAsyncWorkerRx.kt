@@ -1,13 +1,13 @@
-package ru.kontur.mobile.visualfsm.testFSM.rx
+package ru.kontur.mobile.visualfsm.testFSMWithBackStack.rx
 
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerTaskRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState.Async
-import ru.kontur.mobile.visualfsm.testFSM.action.Finish
-import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState.Async
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Finish
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
 import java.util.concurrent.TimeUnit
 
 class TestFSMAsyncWorkerRx : AsyncWorkerRx<TestFSMState, TestFSMAction>() {

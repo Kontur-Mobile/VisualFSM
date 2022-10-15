@@ -7,12 +7,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorker
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeature
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
-import ru.kontur.mobile.visualfsm.testFSM.action.Start
-import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMAsyncWorker
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMFeature
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.TestFSMState
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Cancel
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.Start
+import ru.kontur.mobile.visualfsm.testFSMWithBackStack.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
 class StateMachineTests {

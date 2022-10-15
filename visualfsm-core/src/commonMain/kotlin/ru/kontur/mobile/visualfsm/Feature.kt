@@ -2,6 +2,7 @@ package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.atomicfu.locks.*
+import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.feature.BaseFeature
 import ru.kontur.mobile.visualfsm.store.Store
 
@@ -22,6 +23,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
 ) constructor(
     initialState: STATE,
+    initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
     stateDependencyManager: StateDependencyManager<STATE>? = null,
     restoredBackStates: List<Pair<Int, STATE>> = listOf(),
@@ -38,12 +40,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
+        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory
         asyncWorker?.bind(this)
     }
@@ -59,12 +62,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
+        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         this.transitionsFactory = transitionsFactory(this)
         asyncWorker?.bind(this)
     }
@@ -85,17 +89,19 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
+        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
         restoredBackStates: List<Pair<Int, STATE>> = listOf(),
-    ) : this(initialState, transitionCallbacks, stateDependencyManager, restoredBackStates) {
+    ) : this(initialState, initialStateAddToBackStackStrategy, transitionCallbacks, stateDependencyManager, restoredBackStates) {
         asyncWorker?.bind(this)
     }
 
     private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    override val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks, stateDependencyManager, backStatesStack)
+    override val store: Store<STATE, ACTION> =
+        Store(initialState, transitionCallbacks, stateDependencyManager, backStatesStack)
 
     /**
      * Provides a [flow][Flow] of [states][State]

@@ -1,5 +1,6 @@
 package ru.kontur.mobile.visualfsm
 
+import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import kotlin.reflect.KClass
 
 /**
@@ -7,7 +8,7 @@ import kotlin.reflect.KClass
  * In generic contains [initial state][fromState] and [destination state][toState].
  * Defines [predicate] and [transform] functions
  */
-abstract class Transition<FROM : State, TO : State>() {
+abstract class Transition<FROM : State, TO : State>(val backStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD) {
 
     /**
      * @param fromState a [state][State] that FSM had on [transition][Transition] start
