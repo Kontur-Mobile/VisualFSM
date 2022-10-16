@@ -1,14 +1,17 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.rx2tests
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMAsyncWorkerRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMFeatureRx
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
-import ru.kontur.mobile.visualfsm.testFSM.action.Cancel
-import ru.kontur.mobile.visualfsm.testFSM.action.Start
-import ru.kontur.mobile.visualfsm.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.Transition
+import ru.kontur.mobile.visualfsm.TransitionCallbacks
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.TestFSMAsyncWorkerRx
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.TestFSMFeatureRx
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.action.Cancel
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.action.Start
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
 class StateMachineRxTests {

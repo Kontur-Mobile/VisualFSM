@@ -1,7 +1,7 @@
-package ru.kontur.mobile.visualfsm.testFSM.action
+package ru.kontur.mobile.visualfsm.rx2tests.testFSM.action
 
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.testFSM.TestFSMState
+import ru.kontur.mobile.visualfsm.rx2tests.testFSM.TestFSMState
 
 class Finish(val success: Boolean) : TestFSMAction() {
 
