@@ -2,6 +2,8 @@ package ru.kontur.mobile.visualfsm.store
 
 import ru.kontur.mobile.visualfsm.*
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
+import ru.kontur.mobile.visualfsm.backStack.StateWithId
+import ru.kontur.mobile.visualfsm.uuid.UUIDStringGenerator
 
 /**
  * BaseStore
@@ -20,7 +22,7 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     private val backStateStack: BackStateStack<STATE>,
 ) {
 
-    var currentStateId: Int = 0
+    var currentStateId: String = UUIDStringGenerator.randomUUID()
 
     init {
         stateDependencyManager?.initDependencyForState(currentStateId, initialState)
@@ -36,11 +38,11 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     /**
      * Set state
      *
-     * @param id state[State] id
+     * @param id new state[State] identifier
      * @param newState new state[State]
      * @return true is state[State] changed
      */
-    abstract fun setState(id: Int, newState: STATE)
+    abstract fun setState(id: String, newState: STATE)
 
     /**
      * Changes current state
@@ -51,13 +53,7 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     fun proceed(action: ACTION) {
         val currentState = getCurrentState()
         val newState = reduce(action, currentState)
-        if (currentState != newState) {
-            currentStateId++
-            stateDependencyManager?.initDependencyForState(currentStateId, newState)
-        } else {
-            currentStateId
-        }
-        setState(currentStateId, newState)
+        setState(newState.id, newState.state)
     }
 
     /**
@@ -69,7 +65,7 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
      */
     private fun reduce(
         action: ACTION, state: STATE
-    ): STATE {
+    ): StateWithId<STATE> {
         return action.run(state, currentStateId, transitionCallbacks, stateDependencyManager, backStateStack)
     }
 }

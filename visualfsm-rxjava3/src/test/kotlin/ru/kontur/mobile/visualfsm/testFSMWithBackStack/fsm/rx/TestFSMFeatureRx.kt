@@ -2,7 +2,6 @@ package ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.rx
 
 import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
-import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
 import ru.kontur.mobile.visualfsm.rxjava3.AsyncWorkerRx
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
@@ -16,7 +15,6 @@ class TestFSMFeatureRx(
     transitionCallbacks: TransitionCallbacks<TestFSMWBSState>? = null,
 ) : FeatureRx<TestFSMWBSState, TestFSMAction>(
     initialState = initialState,
-    initialStateAddToBackStackStrategy = BackStackStrategy.ADD,
     asyncWorker = asyncWorker,
     transitionCallbacks = transitionCallbacks,
     transitionsFactory = provideTransitionsFactory()

@@ -42,7 +42,7 @@ class BackStateStack<STATE: State>(elements: List<StateWithId<STATE>> = listOf()
 
         for (i in backStatesDeque.size downTo 1) {
             val lastStateWithId = backStatesDeque.last()
-            if (lastStateWithId::class != stateClass) {
+            if (lastStateWithId.state::class != stateClass) {
                 skippedStates.add(lastStateWithId)
             }
             backStatesDeque.removeLast()

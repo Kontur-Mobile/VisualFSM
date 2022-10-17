@@ -15,19 +15,19 @@ class StateDependencyManagerTests {
 
     @Test
     fun stateDependencyTest() {
-        val stateDependencyInited: MutableList<Pair<Int, KClass<out TestFSMWBSState>>> = mutableListOf()
-        val stateDependencyRemoved: MutableList<Pair<Int, KClass<out TestFSMWBSState>>> = mutableListOf()
+        val stateDependencyInited: MutableList<Pair<String, KClass<out TestFSMWBSState>>> = mutableListOf()
+        val stateDependencyRemoved: MutableList<Pair<String, KClass<out TestFSMWBSState>>> = mutableListOf()
 
 
         val feature = TestFSMWBSFeature(
             initialState = TestFSMWBSState.Initial,
             asyncWorker = TestFSMWBSAsyncWorker(),
             stateDependencyManager = object : StateDependencyManager<TestFSMWBSState> {
-                override fun initDependencyForState(id: Int, state: TestFSMWBSState) {
+                override fun initDependencyForState(id: String, state: TestFSMWBSState) {
                     stateDependencyInited.add(id to state::class)
                 }
 
-                override fun removeDependencyForState(id: Int, state: TestFSMWBSState) {
+                override fun removeDependencyForState(id: String, state: TestFSMWBSState) {
                     stateDependencyRemoved.add(id to state::class)
                 }
             })
@@ -46,15 +46,30 @@ class StateDependencyManagerTests {
 
         assertEquals(TestFSMWBSState.Initial, feature.getCurrentState())
 
-        assertTrue(stateDependencyInited.containsAll(listOf(
-            0 to TestFSMWBSState.Initial::class,
-            1 to TestFSMWBSState.Async::class,
-            2 to TestFSMWBSState.Complete::class,
-            )))
+        val statesInited = stateDependencyInited.map { it.second }
 
-        assertTrue(stateDependencyRemoved.containsAll(listOf(
-            1 to TestFSMWBSState.Async::class,
-            2 to TestFSMWBSState.Complete::class,
+        assertTrue(statesInited.equals(listOf(
+            TestFSMWBSState.Initial::class,
+            TestFSMWBSState.Async::class,
+            TestFSMWBSState.Complete::class,
         )))
+
+        val statesRemoved = stateDependencyRemoved.map { it.second }
+
+        assertTrue(statesRemoved.equals(listOf(
+            TestFSMWBSState.Async::class,
+            TestFSMWBSState.Complete::class,
+        )))
+//
+//        assertTrue(stateDependencyInited.(listOf(
+//            0 to TestFSMWBSState.Initial::class,
+//            1 to TestFSMWBSState.Async::class,
+//            2 to TestFSMWBSState.Complete::class,
+//            )))
+//
+//        assertTrue(stateDependencyRemoved.containsAll(listOf(
+//            1 to TestFSMWBSState.Async::class,
+//            2 to TestFSMWBSState.Complete::class,
+//        )))
     }
 }

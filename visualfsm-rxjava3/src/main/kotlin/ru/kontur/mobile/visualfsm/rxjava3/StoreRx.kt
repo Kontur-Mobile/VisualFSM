@@ -50,10 +50,10 @@ class StoreRx<STATE : State, ACTION : Action<STATE>>(
      * @param id state id
      * @param newState restored state[State]
      */
-    override fun setState(id: Int, newState: STATE) {
+    override fun setState(id: String, newState: STATE) {
         if (newState != _currentState) {
-            currentStateId = id
             _currentState = newState
+            currentStateId = id
             stateRxObservableField.onNext(newState)
         }
     }

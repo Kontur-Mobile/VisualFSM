@@ -3,6 +3,7 @@ package ru.kontur.mobile.visualfsm
 import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
 import ru.kontur.mobile.visualfsm.backStack.StateWithId
+import ru.kontur.mobile.visualfsm.uuid.UUIDStringGenerator
 
 /**
  * Is an input object for the State machine.
@@ -39,7 +40,7 @@ abstract class Action<STATE : State> {
      * Calls [transition callbacks][TransitionCallbacks] methods.
      *
      * @param oldState current [state][State]
-     * @param oldStateId current [state][State] id
+     * @param oldStateId current [state][State] identifier
      * @param callbacks [transition callbacks][TransitionCallbacks]
      * @param stateDependencyManager state dependency manager [StateDependencyManager]
      * @param backStateStack back state stack[BackStateStack]
@@ -47,11 +48,11 @@ abstract class Action<STATE : State> {
      */
     internal fun run(
         oldState: STATE,
-        oldStateId: Int,
+        oldStateId: String,
         callbacks: TransitionCallbacks<STATE>?,
         stateDependencyManager: StateDependencyManager<STATE>?,
         backStateStack: BackStateStack<STATE>
-    ): STATE {
+    ): StateWithId<STATE> {
         callbacks?.onActionLaunched(this, oldState)
 
         val availableTransitions = getAvailableTransitions(oldState, backStateStack)
@@ -64,35 +65,36 @@ abstract class Action<STATE : State> {
 
         if (selectedTransition == null) {
             callbacks?.onNoTransitionError(this, oldState)
-            return oldState
+            return StateWithId(oldStateId, oldState)
         }
 
         callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
         val nextState = getNextState(
             oldState,
+            oldStateId,
             selectedTransition,
             backStateStack,
             stateDependencyManager,
             callbacks
         )
 
-        pushNewStateToStackIfNeed(
+        pushOldStateToStackIfNeed(
             oldStateId,
             oldState,
-            nextState,
+            nextState.state,
             selectedTransition,
             backStateStack,
             stateDependencyManager
         )
 
-        callbacks?.onNewStateReduced(this, selectedTransition, oldState, nextState)
+        callbacks?.onNewStateReduced(this, selectedTransition, oldState, nextState.state)
 
         return nextState
     }
 
-    private fun pushNewStateToStackIfNeed(
-        oldStateId: Int,
+    private fun pushOldStateToStackIfNeed(
+        oldStateId: String,
         oldState: STATE,
         nextState: STATE,
         selectedTransition: Transition<STATE, STATE>,
@@ -104,7 +106,7 @@ abstract class Action<STATE : State> {
             && oldState != nextState
         ) {
             backStateStack.pushAndGetRemoved(
-                StateWithId(oldStateId + 1, oldState),
+                StateWithId(oldStateId, oldState),
                 selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT
             ).forEach {
                 stateDependencyManager?.removeDependencyForState(it.id, it.state)
@@ -116,28 +118,35 @@ abstract class Action<STATE : State> {
 
     private fun getNextState(
         oldState: STATE,
+        oldStateId: String,
         selectedTransition: Transition<STATE, STATE>,
         backStateStack: BackStateStack<STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
         callbacks: TransitionCallbacks<STATE>?,
-    ): STATE {
-        val nextState = if (selectedTransition is TransitionBack) {
+    ): StateWithId<STATE> {
+        val nextStateWithId = if (selectedTransition is TransitionBack) {
             val peekResult = backStateStack.peek(selectedTransition.toState)
             if (peekResult == null) {
                 callbacks?.onNoStateInBackStackError(selectedTransition.toState, oldState)
-                oldState
+                StateWithId(oldStateId, oldState)
             } else {
                 val (stateFromBackStack, removedStates) = backStateStack.popAndGetRemoved(selectedTransition.toState)
                 removedStates.forEach {
                     stateDependencyManager?.removeDependencyForState(it.id, it.state)
                 }
-                selectedTransition.transform(oldState, stateFromBackStack.state)
+                val transformedBackStackState = selectedTransition.transform(oldState, stateFromBackStack.state)
+                StateWithId(stateFromBackStack.id, transformedBackStackState)
             }
         } else {
-            selectedTransition.transform(oldState)
+            val newState = selectedTransition.transform(oldState)
+            val newStateId = UUIDStringGenerator.randomUUID()
+            if (oldState != newState) {
+                stateDependencyManager?.initDependencyForState(newStateId, newState)
+            }
+            StateWithId(newStateId, newState)
         }
 
-        return nextState
+        return nextStateWithId
     }
 
     @Suppress("UNCHECKED_CAST", "DEPRECATION")

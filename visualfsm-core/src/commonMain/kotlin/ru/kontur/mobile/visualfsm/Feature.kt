@@ -2,7 +2,6 @@ package ru.kontur.mobile.visualfsm
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.atomicfu.locks.*
-import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
 import ru.kontur.mobile.visualfsm.feature.BaseFeature
 import ru.kontur.mobile.visualfsm.store.Store
 
@@ -23,13 +22,10 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
 ) constructor(
     initialState: STATE,
-    initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
     stateDependencyManager: StateDependencyManager<STATE>? = null,
-    restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+    restoredBackStates: List<Pair<String, STATE>> = listOf(),
 ) : BaseFeature<STATE, ACTION>(
-    initialState,
-    initialStateAddToBackStackStrategy,
     stateDependencyManager,
     transitionCallbacks,
     restoredBackStates
@@ -46,15 +42,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
-        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+        restoredBackStates: List<Pair<String, STATE>> = listOf(),
     ) : this(
         initialState,
-        initialStateAddToBackStackStrategy,
         transitionCallbacks,
         stateDependencyManager,
         restoredBackStates
@@ -74,15 +68,13 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
-        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+        restoredBackStates: List<Pair<String, STATE>> = listOf(),
     ) : this(
         initialState,
-        initialStateAddToBackStackStrategy,
         transitionCallbacks,
         stateDependencyManager,
         restoredBackStates
@@ -107,14 +99,12 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
-        initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<Int, STATE>> = listOf(),
+        restoredBackStates: List<Pair<String, STATE>> = listOf(),
     ) : this(
         initialState,
-        initialStateAddToBackStackStrategy,
         transitionCallbacks,
         stateDependencyManager,
         restoredBackStates

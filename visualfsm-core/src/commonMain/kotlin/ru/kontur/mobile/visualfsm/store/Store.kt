@@ -50,10 +50,10 @@ class Store<STATE : State, ACTION : Action<STATE>>(
      *
      * @param newState new [state][State]
      */
-    override fun setState(id: Int, newState: STATE) {
+    override fun setState(id: String, newState: STATE) {
         if (newState != stateFlow.value) {
-            currentStateId = id
             stateFlow.value = newState
+            currentStateId = id
         }
     }
 }

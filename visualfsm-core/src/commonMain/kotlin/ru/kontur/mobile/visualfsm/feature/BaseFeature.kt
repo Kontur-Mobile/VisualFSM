@@ -2,7 +2,7 @@ package ru.kontur.mobile.visualfsm.feature
 
 import kotlinx.atomicfu.locks.SynchronizedObject
 import ru.kontur.mobile.visualfsm.*
-import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
+import ru.kontur.mobile.visualfsm.store.Store
 import ru.kontur.mobile.visualfsm.backStack.BackStateStack
 import ru.kontur.mobile.visualfsm.backStack.StateWithId
 import ru.kontur.mobile.visualfsm.store.BaseStore
@@ -14,26 +14,18 @@ import ru.kontur.mobile.visualfsm.store.BaseStore
  * @param dependencyManager state dependency manager [StateDependencyManager]
  * @param restoredBackStates list Pairs id and state for restored back state stack */
 abstract class BaseFeature<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE,
-    initialStateAddToBackStackStrategy: BackStackStrategy = BackStackStrategy.NO_ADD,
     private val dependencyManager: StateDependencyManager<STATE>?,
     private val transitionCallbacks: TransitionCallbacks<STATE>?,
-    restoredBackStates: List<Pair<Int, STATE>>,
+    restoredBackStates: List<Pair<String, STATE>>,
 ) : SynchronizedObject() {
 
     protected abstract val store: BaseStore<STATE, ACTION>
     protected val backStatesStack = BackStateStack(restoredBackStates.map { StateWithId(it.first, it.second) })
 
     init {
-        if (restoredBackStates.isEmpty()) {
-            if (initialStateAddToBackStackStrategy != BackStackStrategy.NO_ADD) {
-                backStatesStack.pushAndGetRemoved(StateWithId(0, initialState), false)
-            }
-        } else {
-            dependencyManager?.let {
-                restoredBackStates.forEach { (id, state) ->
-                    it.initDependencyForState(id, state)
-                }
+        dependencyManager?.let {
+            restoredBackStates.forEach { (id, state) ->
+                it.initDependencyForState(id, state)
             }
         }
     }
