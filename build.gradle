@@ -38,6 +38,7 @@ subprojects {
         kspVersion = '1.7.20-1.0.7'
         kotlinPoetVersion = '1.12.0'
         kotlinCompileTestingVersion = '1.4.9'
+        UUUIDCoreVersion = '0.0.17'
     }
 
     repositories {

@@ -35,7 +35,7 @@ kotlin {
     else if (isMingwX64) nativeTarget = mingwX64("native")
     else throw new GradleException("Host OS is not supported in Kotlin/Native.")
 
-    
+
     sourceSets {
         commonMain {
             dependencies {
@@ -55,13 +55,17 @@ kotlin {
 
         }
         jsMain {
-
+            dependencies {
+                implementation(npm("uuid", "9.0.0"))
+            }
         }
         jsTest {
 
         }
         nativeMain {
-
+            dependencies {
+                implementation "app.softwork:kotlinx-uuid-core:$UUUIDCoreVersion"
+            }
         }
         nativeTest {
 
