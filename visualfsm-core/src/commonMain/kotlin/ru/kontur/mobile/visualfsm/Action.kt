@@ -70,14 +70,22 @@ abstract class Action<STATE : State> {
 
         callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
-        val nextState = getNextState(
-            oldState,
-            oldStateId,
-            selectedTransition,
-            backStateStack,
-            stateDependencyManager,
-            callbacks
-        )
+        val nextState = if (selectedTransition is TransitionBack) {
+            getStateFromBackStack(
+                oldState,
+                oldStateId,
+                selectedTransition,
+                backStateStack,
+                stateDependencyManager,
+                callbacks
+            )
+        } else {
+            getNextState(
+                oldState,
+                selectedTransition,
+                stateDependencyManager,
+            )
+        }
 
         pushOldStateToStackIfNeed(
             oldStateId,
@@ -101,16 +109,18 @@ abstract class Action<STATE : State> {
         backStateStack: BackStateStack<STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
     ) {
-        if ((selectedTransition.backStackStrategy == BackStackStrategy.ADD
-                    || selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT)
-            && oldState != nextState
-        ) {
-            backStateStack.pushAndGetRemoved(
-                StateWithId(oldStateId, oldState),
-                selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT
-            ).forEach {
-                stateDependencyManager?.removeDependencyForState(it.id, it.state)
+        if (selectedTransition.backStackStrategy != BackStackStrategy.NO_ADD && oldState != nextState) {
+
+            if (selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT) {
+                backStateStack.pushNewRoot(
+                    StateWithId(oldStateId, oldState)
+                ).forEach {
+                    stateDependencyManager?.removeDependencyForState(it.id, it.state)
+                }
+            } else {
+                backStateStack.push(StateWithId(oldStateId, oldState))
             }
+
         } else {
             stateDependencyManager?.removeDependencyForState(oldStateId, oldState)
         }
@@ -118,32 +128,37 @@ abstract class Action<STATE : State> {
 
     private fun getNextState(
         oldState: STATE,
-        oldStateId: String,
         selectedTransition: Transition<STATE, STATE>,
+        stateDependencyManager: StateDependencyManager<STATE>?,
+    ): StateWithId<STATE> {
+        val newState = selectedTransition.transform(oldState)
+        val newStateId = UUIDStringGenerator.randomUUID()
+        if (oldState != newState) {
+            stateDependencyManager?.initDependencyForState(newStateId, newState)
+        }
+        return StateWithId(newStateId, newState)
+    }
+
+    private fun getStateFromBackStack(
+        oldState: STATE,
+        oldStateId: String,
+        selectedTransition: TransitionBack<STATE, STATE>,
         backStateStack: BackStateStack<STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
         callbacks: TransitionCallbacks<STATE>?,
     ): StateWithId<STATE> {
-        val nextStateWithId = if (selectedTransition is TransitionBack) {
-            val peekResult = backStateStack.peek(selectedTransition.toState)
-            if (peekResult == null) {
-                callbacks?.onNoStateInBackStackError(selectedTransition.toState, oldState)
-                StateWithId(oldStateId, oldState)
-            } else {
-                val (stateFromBackStack, removedStates) = backStateStack.popAndGetRemoved(selectedTransition.toState)
-                removedStates.forEach {
-                    stateDependencyManager?.removeDependencyForState(it.id, it.state)
-                }
-                val transformedBackStackState = selectedTransition.transform(oldState, stateFromBackStack.state)
-                StateWithId(stateFromBackStack.id, transformedBackStackState)
-            }
+        val peekResult = backStateStack.peek(selectedTransition.toState)
+
+        val nextStateWithId = if (peekResult == null) {
+            callbacks?.onNoStateInBackStackError(selectedTransition.toState, oldState)
+            StateWithId(oldStateId, oldState)
         } else {
-            val newState = selectedTransition.transform(oldState)
-            val newStateId = UUIDStringGenerator.randomUUID()
-            if (oldState != newState) {
-                stateDependencyManager?.initDependencyForState(newStateId, newState)
+            val (stateFromBackStack, removedStates) = backStateStack.popAndGetRemoved(selectedTransition.toState)
+            removedStates.forEach {
+                stateDependencyManager?.removeDependencyForState(it.id, it.state)
             }
-            StateWithId(newStateId, newState)
+            val transformedBackStackState = selectedTransition.transform(oldState, stateFromBackStack.state)
+            StateWithId(stateFromBackStack.id, transformedBackStackState)
         }
 
         return nextStateWithId

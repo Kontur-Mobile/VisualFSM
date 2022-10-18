@@ -16,11 +16,11 @@ import ru.kontur.mobile.visualfsm.store.BaseStore
 abstract class BaseFeature<STATE : State, ACTION : Action<STATE>>(
     private val dependencyManager: StateDependencyManager<STATE>?,
     private val transitionCallbacks: TransitionCallbacks<STATE>?,
-    restoredBackStates: List<Pair<String, STATE>>,
+    restoredBackStates: List<StateWithId<STATE>>,
 ) : SynchronizedObject() {
 
     protected abstract val store: BaseStore<STATE, ACTION>
-    protected val backStatesStack = BackStateStack(restoredBackStates.map { StateWithId(it.first, it.second) })
+    protected val backStatesStack = BackStateStack(restoredBackStates)
 
     init {
         dependencyManager?.let {

@@ -7,31 +7,36 @@ import kotlin.reflect.KClass
  * BackStateStack provides a Last In First Out (LIFO) states[State] with id [StateWithId].
  * @param elements - elements for restore stack
  */
-class BackStateStack<STATE: State>(elements: List<StateWithId<STATE>> = listOf()) {
+class BackStateStack<STATE : State>(elements: List<StateWithId<STATE>> = listOf()) {
     private val backStatesDeque: ArrayDeque<StateWithId<STATE>> = ArrayDeque(elements)
 
     /**
-     * Pushes a state and id onto the top of the stack.
+     * Pushes a state with id[StateWithId] onto the top of the stack.
      *
      * @param stateWithId the state with id to push onto the stack
-     * @return removed states if newRoot is true
      */
-    fun pushAndGetRemoved(stateWithId: StateWithId<STATE>, newRoot: Boolean): List<StateWithId<STATE>> {
-        val removedStates = if (newRoot) {
-            val allStates = backStatesDeque.toList()
-            backStatesDeque.clear()
-            allStates
-        } else {
-            listOf()
-        }
+    fun push(stateWithId: StateWithId<STATE>) {
+        backStatesDeque.addLast(stateWithId)
+    }
+
+    /**
+     * Pushes a state with id[StateWithId] onto the top of the stack as new root.
+     *
+     * @param stateWithId the state with id to push onto the stack
+     * @return removed states
+     */
+    fun pushNewRoot(stateWithId: StateWithId<STATE>): List<StateWithId<STATE>> {
+        val removedStates = backStatesDeque.toList()
+        backStatesDeque.clear()
         backStatesDeque.addLast(stateWithId)
         return removedStates
     }
 
+
     /**
      * Pops a StateWithId
      *
-     * @return the Pair with StateWithId popped from the stack and list of removed StateWithId, or null if the stack is empty or stateClass not found
+     * @return the Pair with StateWithId popped from the stack and list of removed StateWithId
      */
     fun popAndGetRemoved(stateClass: KClass<STATE>): Pair<StateWithId<STATE>, List<StateWithId<STATE>>> {
         val stateWithId = peek(stateClass)

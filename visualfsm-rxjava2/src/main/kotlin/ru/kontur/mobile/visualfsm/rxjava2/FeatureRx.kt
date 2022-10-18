@@ -2,6 +2,7 @@ package ru.kontur.mobile.visualfsm.rxjava2
 
 import io.reactivex.Observable
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.backStack.StateWithId
 import ru.kontur.mobile.visualfsm.feature.BaseFeature
 
 /**
@@ -23,7 +24,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
     initialState: STATE,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
     stateDependencyManager: StateDependencyManager<STATE>? = null,
-    restoredBackStates: List<Pair<String, STATE>> = listOf(),
+    restoredBackStates: List<StateWithId<STATE>> = listOf(),
 ) : BaseFeature<STATE, ACTION>(
     stateDependencyManager,
     transitionCallbacks,
@@ -45,7 +46,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<String, STATE>> = listOf(),
+        restoredBackStates: List<StateWithId<STATE>> = listOf(),
     ) : this(
         initialState,
         transitionCallbacks,
@@ -71,7 +72,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<String, STATE>> = listOf(),
+        restoredBackStates: List<StateWithId<STATE>> = listOf(),
     ) : this(
         initialState,
         transitionCallbacks,
@@ -101,7 +102,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         stateDependencyManager: StateDependencyManager<STATE>? = null,
-        restoredBackStates: List<Pair<String, STATE>> = listOf(),
+        restoredBackStates: List<StateWithId<STATE>> = listOf(),
     ) : this(
         initialState,
         transitionCallbacks,
