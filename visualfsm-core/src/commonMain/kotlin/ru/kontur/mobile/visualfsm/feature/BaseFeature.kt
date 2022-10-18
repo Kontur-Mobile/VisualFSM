@@ -12,7 +12,7 @@ import ru.kontur.mobile.visualfsm.store.BaseStore
  *
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  * @param dependencyManager state dependency manager [StateDependencyManager]
- * @param restoredBackStates list Pairs id and state for restored back state stack */
+ * @param restoredBackStates list of [StateWithId] for restored back state stack */
 abstract class BaseFeature<STATE : State, ACTION : Action<STATE>>(
     private val dependencyManager: StateDependencyManager<STATE>?,
     private val transitionCallbacks: TransitionCallbacks<STATE>?,

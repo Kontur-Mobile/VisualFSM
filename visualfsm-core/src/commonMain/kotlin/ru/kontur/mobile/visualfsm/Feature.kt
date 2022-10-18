@@ -13,7 +13,7 @@ import ru.kontur.mobile.visualfsm.store.Store
  * @param initialState initial [state][State]
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
  * @param stateDependencyManager state dependency manager [StateDependencyManager]
- * @param restoredBackStates list Pairs id and state for restored back state stack
+ * @param restoredBackStates list of [StateWithId] for restored back state stack
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>
 @Deprecated(
@@ -38,7 +38,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
      * @param stateDependencyManager state dependency manager [StateDependencyManager]
-     * @param restoredBackStates list Pairs id and state for restored back state stack
+     * @param restoredBackStates list of [StateWithId] for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -64,7 +64,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list for the action
      * @param stateDependencyManager state dependency manager [StateDependencyManager]
-     * @param restoredBackStates list Pairs id and state for restored back state stack
+     * @param restoredBackStates list of [StateWithId] for restored back state stack
      */
     @Suppress("DEPRECATION")
     constructor(
@@ -89,7 +89,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
      * @param stateDependencyManager state dependency manager [StateDependencyManager]
-     * @param restoredBackStates list Pairs id and state for restored back state stack
+     * @param restoredBackStates list of [StateWithId] for restored back state stack
      */
     @Deprecated(
         message = "Deprecated, because it not support code generation.\n" +
