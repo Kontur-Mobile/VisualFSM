@@ -1,6 +1,6 @@
 package ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.action
 
-import ru.kontur.mobile.visualfsm.TransitionBack
+import ru.kontur.mobile.visualfsm.backStack.TransitionBack
 import ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.TestFSMWBSState
 
 class Cancel : TestFSMAction() {

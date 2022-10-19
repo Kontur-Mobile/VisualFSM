@@ -20,20 +20,6 @@ class BackStateStack<STATE : State>(elements: List<StateWithId<STATE>> = listOf(
     }
 
     /**
-     * Pushes a state with id[StateWithId] onto the top of the stack as new root.
-     *
-     * @param stateWithId the state with id to push onto the stack
-     * @return removed states
-     */
-    fun pushNewRoot(stateWithId: StateWithId<STATE>): List<StateWithId<STATE>> {
-        val removedStates = backStatesDeque.toList()
-        backStatesDeque.clear()
-        backStatesDeque.addLast(stateWithId)
-        return removedStates
-    }
-
-
-    /**
      * Pops a StateWithId
      *
      * @return the Pair with StateWithId popped from the stack and list of removed StateWithId
@@ -41,17 +27,17 @@ class BackStateStack<STATE : State>(elements: List<StateWithId<STATE>> = listOf(
     fun popAndGetRemoved(stateClass: KClass<STATE>): Pair<StateWithId<STATE>, List<StateWithId<STATE>>> {
         val stateWithId = peek(stateClass)
         val skippedStates = mutableListOf<StateWithId<STATE>>()
+
         if (stateWithId == null) {
             throw IllegalStateException("No states found in back stack")
         }
 
-        for (i in backStatesDeque.size downTo 1) {
+        do {
             val lastStateWithId = backStatesDeque.last()
-            if (lastStateWithId.state::class != stateClass) {
-                skippedStates.add(lastStateWithId)
-            }
+            skippedStates.add(lastStateWithId)
             backStatesDeque.removeLast()
-        }
+        } while (lastStateWithId.state::class != stateClass)
+
 
         return stateWithId to skippedStates
     }
@@ -64,5 +50,16 @@ class BackStateStack<STATE : State>(elements: List<StateWithId<STATE>> = listOf(
      */
     fun peek(stateClass: KClass<STATE>): StateWithId<STATE>? {
         return backStatesDeque.lastOrNull { it.state::class == stateClass }
+    }
+
+    /**
+     * Clear of the stack.
+     *
+     * @return removed states
+     */
+    fun clear(): List<StateWithId<STATE>> {
+        val removedStates = backStatesDeque.toList()
+        backStatesDeque.clear()
+        return removedStates
     }
 }

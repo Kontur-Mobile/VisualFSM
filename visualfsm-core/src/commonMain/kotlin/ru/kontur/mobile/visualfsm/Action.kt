@@ -1,8 +1,6 @@
 package ru.kontur.mobile.visualfsm
 
-import ru.kontur.mobile.visualfsm.backStack.BackStackStrategy
-import ru.kontur.mobile.visualfsm.backStack.BackStateStack
-import ru.kontur.mobile.visualfsm.backStack.StateWithId
+import ru.kontur.mobile.visualfsm.backStack.*
 import ru.kontur.mobile.visualfsm.uuid.UUIDStringGenerator
 
 /**
@@ -82,60 +80,67 @@ abstract class Action<STATE : State> {
         } else {
             getNextState(
                 oldState,
+                oldStateId,
                 selectedTransition,
                 stateDependencyManager,
             )
         }
 
-        pushOldStateToStackIfNeed(
-            oldStateId,
-            oldState,
-            nextState.state,
-            selectedTransition,
-            backStateStack,
-            stateDependencyManager
-        )
+        when (selectedTransition) {
+            is TransitionPush -> {
+                pushOldStateToStack(
+                    oldStateId,
+                    oldState,
+                    backStateStack
+                )
+            }
+
+            is TransitionClear -> {
+                clearStack(
+                    backStateStack,
+                    stateDependencyManager
+                )
+            }
+
+            else -> {
+                stateDependencyManager?.removeDependencyForState(oldStateId, oldState)
+            }
+        }
 
         callbacks?.onNewStateReduced(this, selectedTransition, oldState, nextState.state)
 
         return nextState
     }
 
-    private fun pushOldStateToStackIfNeed(
+    private fun pushOldStateToStack(
         oldStateId: String,
         oldState: STATE,
-        nextState: STATE,
-        selectedTransition: Transition<STATE, STATE>,
+        backStateStack: BackStateStack<STATE>,
+    ) {
+        backStateStack.push(StateWithId(oldStateId, oldState))
+    }
+
+    private fun clearStack(
         backStateStack: BackStateStack<STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
     ) {
-        if (selectedTransition.backStackStrategy != BackStackStrategy.NO_ADD && oldState != nextState) {
-
-            if (selectedTransition.backStackStrategy == BackStackStrategy.NEW_ROOT) {
-                backStateStack.pushNewRoot(
-                    StateWithId(oldStateId, oldState)
-                ).forEach {
-                    stateDependencyManager?.removeDependencyForState(it.id, it.state)
-                }
-            } else {
-                backStateStack.push(StateWithId(oldStateId, oldState))
-            }
-
-        } else {
-            stateDependencyManager?.removeDependencyForState(oldStateId, oldState)
+        backStateStack.clear().forEach {
+            stateDependencyManager?.removeDependencyForState(it.id, it.state)
         }
     }
 
     private fun getNextState(
         oldState: STATE,
+        oldStateId: String,
         selectedTransition: Transition<STATE, STATE>,
         stateDependencyManager: StateDependencyManager<STATE>?,
     ): StateWithId<STATE> {
         val newState = selectedTransition.transform(oldState)
+        if (newState == oldState) return StateWithId(oldStateId, oldState)
+
         val newStateId = UUIDStringGenerator.randomUUID()
-        if (oldState != newState) {
-            stateDependencyManager?.initDependencyForState(newStateId, newState)
-        }
+        stateDependencyManager?.initDependencyForState(newStateId, newState)
+
         return StateWithId(newStateId, newState)
     }
 
@@ -154,9 +159,13 @@ abstract class Action<STATE : State> {
             StateWithId(oldStateId, oldState)
         } else {
             val (stateFromBackStack, removedStates) = backStateStack.popAndGetRemoved(selectedTransition.toState)
-            removedStates.forEach {
+
+            removedStates.filter {
+                it.id != stateFromBackStack.id
+            }.forEach {
                 stateDependencyManager?.removeDependencyForState(it.id, it.state)
             }
+
             val transformedBackStackState = selectedTransition.transform(oldState, stateFromBackStack.state)
             StateWithId(stateFromBackStack.id, transformedBackStackState)
         }

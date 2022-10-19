@@ -1,4 +1,7 @@
-package ru.kontur.mobile.visualfsm
+package ru.kontur.mobile.visualfsm.backStack
+
+import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.Transition
 
 /**
  * Describes the transition rule between states.
