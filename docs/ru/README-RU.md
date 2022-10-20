@@ -162,7 +162,7 @@ _поиск ошибок_, _добавление нового функциона
 
 * AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
 
-<img src="../img/asyncworker.png" alt="graph" width="600"/>
+![AsyncWorker](../img/asyncworker.png)
 
 ### Feature в VisualFSM
 

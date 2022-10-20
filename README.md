@@ -162,7 +162,7 @@ To handle a state change to state without async work, you must use a task:
 
 * AsyncWorkerTask.Cancel - stop asynchronous work, if running
 
-<img src="docs/img/asyncworker.png" alt="graph" width="600"/>
+![AsyncWorker](docs/img/asyncworker.png)
 
 ### Feature of VisualFSM
 
