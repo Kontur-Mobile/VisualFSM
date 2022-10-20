@@ -36,4 +36,16 @@ sealed class AsyncWorkerTaskRx<STATE : State> {
         val state: STATE,
         val func: ExecuteAndCancelExist<STATE>.() -> Disposable,
     ) : AsyncWorkerTaskRx<STATE>()
+
+    /**
+     * Execute or do not interrupt async work for [state] if exist currently working task with same state class
+     * Used for tasks that deliver the result in several stages
+     *
+     * @param state [a state][State] that async task starts for
+     * @param func the function that subscribes to task rx chain, must return a disposable
+     */
+    data class ExecuteIfNotExistWithSameClass<STATE : State>(
+        val state: STATE,
+        val func: ExecuteIfNotExistWithSameClass<STATE>.() -> Disposable,
+    ) : AsyncWorkerTaskRx<STATE>()
 }

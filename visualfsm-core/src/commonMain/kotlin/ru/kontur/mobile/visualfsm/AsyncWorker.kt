@@ -99,6 +99,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][Feature]
      *
+     * @param action launched [Action]
+     */
+    fun AsyncWorkerTask.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][Feature]
+     *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
@@ -124,6 +133,13 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
+                    cancelAndLaunch(task.state) { task.func(task) }
+                }
+            }
+
+            is AsyncWorkerTask.ExecuteIfNotExistWithSameClass -> {
+                val launchedState = launchedAsyncState
+                if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateJob?.isActive != true) {
                     cancelAndLaunch(task.state) { task.func(task) }
                 }
             }

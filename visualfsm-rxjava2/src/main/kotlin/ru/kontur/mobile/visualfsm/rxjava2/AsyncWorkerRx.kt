@@ -88,6 +88,15 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
+     * @param action launched [Action]
+     */
+    fun AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
@@ -110,8 +119,16 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
             is AsyncWorkerTaskRx.ExecuteAndCancelExist -> {
                 disposeAndLaunch(task.state) { task.func(task) }
             }
+
             is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
+                    disposeAndLaunch(task.state) { task.func(task) }
+                }
+            }
+
+            is AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass -> {
+                val launchedState = launchedAsyncState
+                if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateDisposable?.isDisposed != false) {
                     disposeAndLaunch(task.state) { task.func(task) }
                 }
             }
