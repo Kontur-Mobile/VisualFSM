@@ -15,6 +15,7 @@ dependencies {
     kspTest project(":visualfsm-compiler")
     implementation project(':visualfsm-providers')
 
+    testImplementation project(':core-tests')
     testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")

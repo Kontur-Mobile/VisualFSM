@@ -4,23 +4,21 @@ plugins {
 }
 
 dependencies {
-    testImplementation project(':visualfsm-core')
-
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib"
-    testImplementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
-
-    kspTest project(":visualfsm-compiler")
-    testImplementation project(':visualfsm-providers')
+    implementation project(':visualfsm-core')
+    implementation project(':visualfsm-providers')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    ksp project(":visualfsm-compiler")
 
     testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
     testImplementation project(':visualfsm-tools')
 }
 
 kotlin {
     sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
         test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
     }
 }
