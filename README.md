@@ -137,6 +137,8 @@ with similar start `State`s.
 
 ### AsyncWorker of VisualFSM
 
+![AsyncWorker](docs/img/asyncworker.png)
+
 `AsyncWorker` controls the start and stop of async tasks. `AsyncWorker` starts async requests or
 stops them it it gets specified `State` via a subscription. As long as the request completes with
 either success or error, the `Action` will be called and the FSM will be set with a new `State`. For
@@ -161,8 +163,6 @@ current running async request, so for this case there are two type of AsyncWorkT
 To handle a state change to state without async work, you must use a task:
 
 * AsyncWorkerTask.Cancel - stop asynchronous work, if running
-
-![AsyncWorker](docs/img/asyncworker.png)
 
 ### Feature of VisualFSM
 
