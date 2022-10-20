@@ -1,0 +1,33 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'com.google.devtools.ksp' version("$kspVersion")
+}
+
+dependencies {
+    testImplementation project(':visualfsm-core')
+
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation "io.reactivex.rxjava3:rxjava:$rxJava3Version"
+
+    kspTest project(":visualfsm-compiler")
+    testImplementation project(':visualfsm-providers')
+
+    testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    testImplementation project(':visualfsm-tools')
+}
+
+kotlin {
+    sourceSets {
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

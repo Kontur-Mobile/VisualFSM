@@ -103,8 +103,8 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     private fun proceed(fromState: STATE, action: ACTION) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
-            // If the current state does not match the state from which the task started, the result of its task is no longer expected
-            if (fromState == feature.getCurrentState()) {
+            // If the current state class does not match the state class from which the task started, the result of its task is no longer expected
+            if (fromState::class == feature.getCurrentState()::class) {
                 feature.proceed(action)
             }
         }
