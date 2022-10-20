@@ -84,7 +84,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTask.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, false)
     }
 
     /**
@@ -93,7 +93,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTask.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, false)
     }
 
     /**
@@ -102,7 +102,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTask.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, true)
     }
 
     /**
@@ -110,12 +110,15 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
+     * @param handleActionForSameStateClass handle action for same state class
      */
-    private fun proceed(fromState: STATE, action: ACTION) {
+    private fun proceed(fromState: STATE, action: ACTION, handleActionForSameStateClass: Boolean) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
-            // If the current state class does not match the state class from which the task started, the result of its task is no longer expected
-            if (fromState::class == feature.getCurrentState()::class) {
+            // If the current state does not match the state from which the task started, the result of its task is no longer expected
+            if ((handleActionForSameStateClass && fromState::class == feature.getCurrentState()::class)
+                || fromState == feature.getCurrentState()
+            ) {
                 feature.proceed(action)
             }
         }

@@ -4,6 +4,7 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.Feature
 import ru.kontur.mobile.visualfsm.State
 
 
@@ -73,7 +74,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, false)
     }
 
     /**
@@ -82,7 +83,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, false)
     }
 
     /**
@@ -91,20 +92,23 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action)
+        proceed(this.state, action, true)
     }
 
     /**
-     * Submits an [action][Action] to be executed in the [feature][FeatureRx]
+     * Submits an [action][Action] to be executed in the [feature][Feature]
      *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
+     * @param handleActionForSameStateClass handle action for same state class
      */
-    private fun proceed(fromState: STATE, action: ACTION) {
+    private fun proceed(fromState: STATE, action: ACTION, handleActionForSameStateClass: Boolean) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
-            // If the current state class does not match the state class from which the task started, the result of its task is no longer expected
-            if (fromState::class == feature.getCurrentState()::class) {
+            // If the current state does not match the state from which the task started, the result of its task is no longer expected
+            if ((handleActionForSameStateClass && fromState::class == feature.getCurrentState()::class)
+                || fromState == feature.getCurrentState()
+            ) {
                 feature.proceed(action)
             }
         }
