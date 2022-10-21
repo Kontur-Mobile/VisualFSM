@@ -74,7 +74,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteIfNotExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action, false)
+        proceed(this.state, action)
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteAndCancelExist<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action, false)
+        proceed(this.state, action)
     }
 
     /**
@@ -92,7 +92,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      * @param action launched [Action]
      */
     fun AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
-        proceed(this.state, action, true)
+        proceed(this.state, action)
     }
 
     /**
@@ -100,13 +100,12 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
-     * @param handleActionForSameStateClass handle action for same state class
      */
-    private fun proceed(fromState: STATE, action: ACTION, handleActionForSameStateClass: Boolean) {
+    private fun AsyncWorkerTaskRx<STATE>.proceed(fromState: STATE, action: ACTION) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
             // If the current state does not match the state from which the task started, the result of its task is no longer expected
-            if ((handleActionForSameStateClass && fromState::class == feature.getCurrentState()::class)
+            if ((this is AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass && fromState::class == feature.getCurrentState()::class)
                 || fromState == feature.getCurrentState()
             ) {
                 feature.proceed(action)

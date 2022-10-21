@@ -15,7 +15,7 @@ sealed class AsyncWorkerTaskRx<STATE : State> {
 
     /**
      * Starts async work for [state]
-     * only if there are no tasks currently running with this state
+     * or do not interrupt if there are currently running task with equals state
      *
      * @param state [a state][State] that async task starts for
      * @param func the function that subscribes to task rx chain, must return a disposable
@@ -38,7 +38,8 @@ sealed class AsyncWorkerTaskRx<STATE : State> {
     ) : AsyncWorkerTaskRx<STATE>()
 
     /**
-     * Execute or do not interrupt async work for [state] if exist currently working task with same state class
+     * Starts async work for [state]
+     * or do not interrupt if there are currently running task with same state class
      * Used for tasks that deliver the result in several stages
      *
      * @param state [a state][State] that async task starts for
