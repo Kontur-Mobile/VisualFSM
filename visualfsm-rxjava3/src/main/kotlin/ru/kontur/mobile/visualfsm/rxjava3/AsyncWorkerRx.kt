@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.Feature
 import ru.kontur.mobile.visualfsm.State
 
 /**
@@ -87,14 +88,25 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][FeatureRx]
      *
+     * @param action launched [Action]
+     */
+    fun AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][Feature]
+     *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
-    private fun proceed(fromState: STATE, action: ACTION) {
+    private fun AsyncWorkerTaskRx<STATE>.proceed(fromState: STATE, action: ACTION) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
             // If the current state does not match the state from which the task started, the result of its task is no longer expected
-            if (fromState == feature.getCurrentState()) {
+            if ((this is AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass && fromState::class == feature.getCurrentState()::class)
+                || fromState == feature.getCurrentState()
+            ) {
                 feature.proceed(action)
             }
         }
@@ -112,6 +124,13 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
 
             is AsyncWorkerTaskRx.ExecuteIfNotExist -> {
                 if (launchedAsyncStateDisposable?.isDisposed != false || task.state != launchedAsyncState) {
+                    disposeAndLaunch(task.state) { task.func(task) }
+                }
+            }
+
+            is AsyncWorkerTaskRx.ExecuteIfNotExistWithSameClass -> {
+                val launchedState = launchedAsyncState
+                if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateDisposable?.isDisposed != false) {
                     disposeAndLaunch(task.state) { task.func(task) }
                 }
             }

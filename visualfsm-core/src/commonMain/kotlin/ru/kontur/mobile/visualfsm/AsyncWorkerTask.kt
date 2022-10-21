@@ -13,7 +13,7 @@ sealed class AsyncWorkerTask<STATE : State> {
 
     /**
      * Starts async work for [state]
-     * only if there are no tasks currently running with this state
+     * or do not interrupt if there are currently running task with equals state
      *
      * @param state [a state][State] that async task starts for
      * @param func a suspend function that should be executed
@@ -33,5 +33,18 @@ sealed class AsyncWorkerTask<STATE : State> {
     data class ExecuteAndCancelExist<STATE : State>(
         val state: STATE,
         val func: suspend ExecuteAndCancelExist<STATE>.() -> Unit,
+    ) : AsyncWorkerTask<STATE>()
+
+    /**
+     * Starts async work for [state]
+     * or do not interrupt if there are currently running task with same state class
+     * Used for tasks that deliver the result in several stages
+     *
+     * @param state [a state][State] that async task starts for
+     * @param func a suspend function that should be executed
+     */
+    data class ExecuteIfNotExistWithSameClass<STATE : State>(
+        val state: STATE,
+        val func: suspend ExecuteIfNotExistWithSameClass<STATE>.() -> Unit,
     ) : AsyncWorkerTask<STATE>()
 }
