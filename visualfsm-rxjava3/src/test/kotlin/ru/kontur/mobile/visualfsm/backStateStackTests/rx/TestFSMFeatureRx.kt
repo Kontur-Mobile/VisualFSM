@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.rx
+package ru.kontur.mobile.visualfsm.backStateStackTests.rx
 
 import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.TransitionCallbacks

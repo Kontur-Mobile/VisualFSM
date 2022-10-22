@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack
+package ru.kontur.mobile.visualfsm.backStateStackTests
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

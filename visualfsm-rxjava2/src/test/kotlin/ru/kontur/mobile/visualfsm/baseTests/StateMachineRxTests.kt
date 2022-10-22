@@ -14,7 +14,7 @@ import ru.kontur.mobile.visualfsm.baseTests.rx.TestFSMAsyncWorkerRx
 import ru.kontur.mobile.visualfsm.baseTests.rx.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
-class StateMachineRx3Tests {
+class StateMachineRxTests {
 
     @Test
     fun generateDigraphTest() {

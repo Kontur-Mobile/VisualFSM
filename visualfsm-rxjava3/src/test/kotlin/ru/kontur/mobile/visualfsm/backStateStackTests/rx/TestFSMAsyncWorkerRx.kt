@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.testFSMWithBackStack.fsm.rx
+package ru.kontur.mobile.visualfsm.backStateStackTests.rx
 
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
