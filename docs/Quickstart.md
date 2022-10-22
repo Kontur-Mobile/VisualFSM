@@ -77,7 +77,7 @@ dependencies {
   <summary>Groovy(build.gradle)</summary>
 
 ```groovy
-// Add generated code to source code directories
+// Add generated code to source code directories (for old versions Android Gradle Plugin)
 android {
     ...
     applicationVariants.all { variant ->
@@ -93,7 +93,7 @@ android {
   <summary>Kotlin(build.gradle.kts)</summary>
 
 ```kotlin
-// Add generated code to source code directories
+// Add generated code to source code directories (for old versions Android Gradle Plugin)
 android {
     ...
     applicationVariants.all {
