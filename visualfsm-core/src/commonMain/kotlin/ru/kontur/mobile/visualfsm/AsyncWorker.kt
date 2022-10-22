@@ -99,14 +99,25 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Submits an [action][Action] to be executed in the [feature][Feature]
      *
+     * @param action launched [Action]
+     */
+    fun AsyncWorkerTask.ExecuteIfNotExistWithSameClass<STATE>.proceed(action: ACTION) {
+        proceed(this.state, action)
+    }
+
+    /**
+     * Submits an [action][Action] to be executed in the [feature][Feature]
+     *
      * @param fromState the state from which the asynchronous task was started [State]
      * @param action launched [Action]
      */
-    private fun proceed(fromState: STATE, action: ACTION) {
+    private fun AsyncWorkerTask<STATE>.proceed(fromState: STATE, action: ACTION) {
         val feature = feature ?: error("Feature is unbound")
         synchronized(feature) {
             // If the current state does not match the state from which the task started, the result of its task is no longer expected
-            if (fromState == feature.getCurrentState()) {
+            if ((this is AsyncWorkerTask.ExecuteIfNotExistWithSameClass && fromState::class == feature.getCurrentState()::class)
+                || fromState == feature.getCurrentState()
+            ) {
                 feature.proceed(action)
             }
         }
@@ -124,6 +135,13 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
 
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
+                    cancelAndLaunch(task.state) { task.func(task) }
+                }
+            }
+
+            is AsyncWorkerTask.ExecuteIfNotExistWithSameClass -> {
+                val launchedState = launchedAsyncState
+                if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateJob?.isActive != true) {
                     cancelAndLaunch(task.state) { task.func(task) }
                 }
             }

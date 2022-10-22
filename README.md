@@ -137,6 +137,8 @@ with similar start `State`s.
 
 ### AsyncWorker of VisualFSM
 
+![AsyncWorker](docs/img/asyncworker.png)
+
 `AsyncWorker` controls the start and stop of async tasks. `AsyncWorker` starts async requests or
 stops them it it gets specified `State` via a subscription. As long as the request completes with
 either success or error, the `Action` will be called and the FSM will be set with a new `State`. For
@@ -152,15 +154,15 @@ then fsm may stuck in the current state and the onStateSubscriptionError method 
 There might be a case when we can get a `State` via a subscription that is fully equivalent to
 current running async request, so for this case there are two type of AsyncWorkTask:
 
-* AsyncWorkerTask.ExecuteIfNotExist - launch only if equivalent operation is not currently running (priority is
-  given to a running operation)
+* AsyncWorkerTask.ExecuteIfNotExist - launch only if operation with equals state is not currently running (priority is
+  given to a running operation with equals state object)
+* AsyncWorkerTask.ExecuteIfNotExistWithSameClass - launch only if operation with same state class is not currently running (priority is
+  given to a running operation with same state class, used for tasks that deliver the result in several stages)
 * AsyncWorkerTask.ExecuteAndCancelExist - relaunch async work (priority is for the new on).
 
 To handle a state change to state without async work, you must use a task:
 
 * AsyncWorkerTask.Cancel - stop asynchronous work, if running
-
-<img src="docs/img/asyncworker.png" alt="graph" width="600"/>
 
 ### Feature of VisualFSM
 
