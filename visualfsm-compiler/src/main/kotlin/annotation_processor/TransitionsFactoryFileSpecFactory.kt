@@ -32,7 +32,7 @@ class TransitionsFactoryFileSpecFactory {
         classBuilder.addSuperinterface(
             TransitionsFactory::class.asClassName().parameterizedBy(
                 baseStateClassDeclaration.toClassName(),
-                baseActionClassDeclaration.asStarProjectedType().toTypeName()
+                baseActionClassDeclaration.toClassName()
             )
         )
 
@@ -110,6 +110,13 @@ class TransitionsFactoryFileSpecFactory {
                 val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
                         "But the super class of \"${transitionClass.getCanonicalClassNameAndLink()}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
                 error(errorMessage)
+            }
+            transitionSuperTypeGenericTypes.forEach { transitionSuperTypeGenericType ->
+                try {
+                    transitionSuperTypeGenericType.toTypeName()
+                } catch (e: IllegalArgumentException) {
+                    error("Super class of \"${transitionClass.getCanonicalClassNameAndLink()}\" contains generic parameter with invalid class name.")
+                }
             }
             transitionSuperTypeGenericTypes
         }
