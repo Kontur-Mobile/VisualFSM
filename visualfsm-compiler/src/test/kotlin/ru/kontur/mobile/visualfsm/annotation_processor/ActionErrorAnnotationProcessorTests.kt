@@ -11,7 +11,7 @@ internal class ActionErrorAnnotationProcessorTests {
 
     @Test
     fun testBaseActionMustBeSealed() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -45,7 +45,7 @@ internal class ActionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -55,7 +55,7 @@ internal class ActionErrorAnnotationProcessorTests {
 
     @Test
     fun testBaseActionMustHaveSubclasses() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -89,7 +89,7 @@ internal class ActionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -99,7 +99,7 @@ internal class ActionErrorAnnotationProcessorTests {
 
     @Test
     fun testActionMustContainsTransitionsAsInnerClasses() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -123,7 +123,7 @@ internal class ActionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -133,7 +133,7 @@ internal class ActionErrorAnnotationProcessorTests {
 
     @Test
     fun testActionMustNotOverrideGetTransitionsFunction() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -171,7 +171,7 @@ internal class ActionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()

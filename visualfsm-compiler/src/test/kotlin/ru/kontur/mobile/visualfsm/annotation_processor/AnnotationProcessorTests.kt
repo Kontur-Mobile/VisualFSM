@@ -11,7 +11,7 @@ import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspGeneratedS
 internal class AnnotationProcessorTests {
     @Test
     fun testBaseActionWithoutInternalModifier() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -45,7 +45,7 @@ internal class AnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -79,7 +79,7 @@ internal class AnnotationProcessorTests {
 
     @Test
     fun testBaseActionWithInternalModifier() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -113,7 +113,7 @@ internal class AnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()

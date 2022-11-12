@@ -11,7 +11,7 @@ internal class TransitionErrorAnnotationProcessorTests {
 
     @Test
     fun testAllTransitionsMustHaveInnerModifier() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -45,7 +45,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -55,7 +55,7 @@ internal class TransitionErrorAnnotationProcessorTests {
 
     @Test
     fun testAllTransitionsMustNotHaveAbstractModifier() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -89,7 +89,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -99,7 +99,7 @@ internal class TransitionErrorAnnotationProcessorTests {
 
     @Test
     fun testAllTransitionsMustNotHaveConstructorParameters() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -133,7 +133,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -143,7 +143,7 @@ internal class TransitionErrorAnnotationProcessorTests {
 
     @Test
     fun testAllTransitionsMustNotHaveTwoGenericParameters() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -179,7 +179,7 @@ internal class TransitionErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()

@@ -11,7 +11,7 @@ internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
     fun testClassWithUsesGeneratedTransitionsFactoryAnnotationNotInheritedFromFeature() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -42,7 +42,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -52,7 +52,7 @@ internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
     fun testFeatureMustHaveSuperClassWithTwoGenericParams() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -96,7 +96,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -106,7 +106,7 @@ internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
     fun testFeatureMustHaveSuperClassWithBaseStateGenericParameter() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -150,7 +150,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
@@ -160,7 +160,7 @@ internal class FeatureErrorAnnotationProcessorTests {
 
     @Test
     fun testFeatureMustHaveSuperClassWithBaseActionGenericParameter() {
-        val testActionSource = SourceFile.kotlin(
+        val testFSMSource = SourceFile.kotlin(
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
@@ -204,7 +204,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         )
 
         val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testActionSource
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
         }
         val result = compilation.compile()
