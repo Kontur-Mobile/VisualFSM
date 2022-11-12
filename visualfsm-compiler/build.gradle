@@ -14,8 +14,6 @@ dependencies {
     implementation project(':visualfsm-rxjava2')
     implementation project(':visualfsm-rxjava3')
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-
     implementation "com.google.devtools.ksp:symbol-processing-api:$kspVersion"
 
     implementation "com.squareup:kotlinpoet:$kotlinPoetVersion"
