@@ -50,18 +50,23 @@ class TransitionsFactoryFileSpecFactory {
             }
         }
 
+        if (Modifier.INTERNAL in baseActionClassDeclaration.modifiers) {
+            classBuilder.addModifiers(KModifier.INTERNAL)
+        }
+
         val createFunctionCodeBuilder = StringBuilder()
 
         createFunctionCodeBuilder.append("return·when·(action)·{\n")
         actionSealedSubclasses.forEach { actionSubclassDeclaration ->
             val transactionImplementations = getTransitionImplementationsForAction(actionSubclassDeclaration)
-            createFunctionCodeBuilder.append("····is·${actionSubclassDeclaration.toClassName()}·->·listOf(\n")
+            createFunctionCodeBuilder.append("······is·${actionSubclassDeclaration.toClassName()}·->·listOf(\n")
             transactionImplementations.forEach {
                 createFunctionCodeBuilder.append("${it},\n")
             }
-            createFunctionCodeBuilder.append("····)\n")
+            createFunctionCodeBuilder.append("······)\n\n")
         }
-        createFunctionCodeBuilder.append("}\n")
+        createFunctionCodeBuilder.append("······else·->·error(\"Code·generation·error.·Not·all·actions·were·processed·in·the·when·block.\")\n")
+        createFunctionCodeBuilder.append("··}\n")
         classBuilder.addFunction(
             FunSpec.builder("create")
                 .addModifiers(KModifier.OVERRIDE)
@@ -112,10 +117,10 @@ class TransitionsFactoryFileSpecFactory {
         val transitionImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
             val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
             val implementationBuilder = StringBuilder()
-            implementationBuilder.append("········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
-            implementationBuilder.append("············_fromState·=·${fromStateType.toTypeName()}::class\n")
-            implementationBuilder.append("············_toState·=·${toStateType.toTypeName()}::class\n")
-            implementationBuilder.append("········}")
+            implementationBuilder.append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
+            implementationBuilder.append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
+            implementationBuilder.append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+            implementationBuilder.append("··········}")
             implementationBuilder.toString()
         }
 
