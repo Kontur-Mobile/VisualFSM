@@ -69,7 +69,9 @@ object VisualFSM {
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
+                actionClass.nestedClasses
+                    .filter { it.allSuperclasses.contains(Transition::class) }
+                    .map { it as KClass<Transition<out STATE, out STATE>> }
 
             transactions.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
@@ -77,13 +79,11 @@ object VisualFSM {
                 val toState = transitionKClass.supertypes.first().arguments
                     .last().type?.classifier as KClass<out STATE>
 
-                val nameFromEdgeAnnotation = transitionKClass.findAnnotation<Edge>()?.name
-
-                val edgeName = when {
-                    nameFromEdgeAnnotation != null -> nameFromEdgeAnnotation
-                    useTransitionName -> transitionKClass.simpleName
-                    else -> actionClass.simpleName
-                } ?: throw IllegalStateException("Edge must have name")
+                val edgeName = if (useTransitionName) {
+                    getEdgeName(transitionKClass)
+                } else {
+                    getEdgeNameByActionName(transitionKClass, actionClass)
+                }
 
                 edgeList.add(
                     Triple(
@@ -96,6 +96,32 @@ object VisualFSM {
         }
 
         return edgeList
+    }
+
+    /**
+     * Returns the "name" parameter of the [Edge][Edge] annotation if the [transition][Transition] class is annotated with [Edge][Edge],
+     * otherwise the simple name of the [transition][Transition] class
+     *
+     * @param transitionKClass [transition][Transition] class
+     * @return edge name for [transition][Transition]
+     */
+    fun <STATE : State> getEdgeName(transitionKClass: KClass<out Transition<out STATE, out STATE>>): String {
+        return transitionKClass.findAnnotation<Edge>()?.name ?: transitionKClass.simpleName!!
+    }
+
+    /**
+     * Returns the "name" parameter of the [Edge][Edge] annotation if the [transition][Transition] class is annotated with [Edge][Edge],
+     * otherwise the simple name of the [action][Action] class
+     *
+     * @param transitionKClass [transition][Transition] class
+     * @param actionClass [action][Action] class that contains the [transition][Transition] class
+     * @return edge name for [transition][Transition]
+     */
+    fun <STATE : State> getEdgeNameByActionName(
+        transitionKClass: KClass<out Transition<out STATE, out STATE>>,
+        actionClass: KClass<out Action<STATE>>,
+    ): String {
+        return transitionKClass.findAnnotation<Edge>()?.name ?: actionClass.simpleName!!
     }
 
     /**
