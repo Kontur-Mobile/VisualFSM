@@ -1,7 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.atomicfu.locks.*
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -80,11 +80,11 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     private val store: Store<STATE, ACTION> = Store(initialState, transitionCallbacks)
 
     /**
-     * Provides a [flow][Flow] of [states][State]
+     * Provides a [flow][StateFlow] of [states][State]
      *
-     * @return a [flow][Flow] of [states][State]
+     * @return a [flow][StateFlow] of [states][State]
      */
-    fun observeState(): Flow<STATE> {
+    fun observeState(): StateFlow<STATE> {
         return store.observeState()
     }
 
