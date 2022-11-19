@@ -4,225 +4,119 @@ import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
-import java.util.*
+import ru.kontur.mobile.visualfsm.tools.internal.DOTGenerator
+import ru.kontur.mobile.visualfsm.tools.internal.GraphAnalyzer
+import ru.kontur.mobile.visualfsm.tools.internal.GraphGenerator
 import kotlin.reflect.KClass
-import kotlin.reflect.full.allSuperclasses
-import kotlin.reflect.full.findAnnotation
 
 object VisualFSM {
 
     /**
      * Generates a FSM DOT graph for Graphviz
      *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param baseState base [state][State] [class][KClass]
+     * @param initialState initial [state][State] [class][KClass]
      * @return a DOT graph for Graphviz
      */
     fun <STATE : State> generateDigraph(
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
-        useTransitionName: Boolean = true,
-    ): String {
-        val result = StringBuilder()
+    ) = DOTGenerator.generate(baseAction, baseState, initialState, true)
 
-        result.appendLine("\ndigraph ${baseState.simpleName}Transitions {")
-
-        result.appendLine("\"${initialState.qualifiedName!!.substringAfterLast("${baseState.simpleName}.")}\"")
-
-        getEdgeListGraph(
-            baseAction,
-            useTransitionName
-        ).forEach { (fromStateName, toStateName, edgeName) ->
-            // Пробел перед названием action'а нужен для аккуратного отображения
-            result.appendLine(
-                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                    toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"]"
-            )
-        }
-
-        getUnreachableStates(
-            baseAction,
-            baseState,
-            initialState
-        ).forEach {
-            result.appendLine("\"${it.simpleStateNameWithSealedName(baseState)}\" [color=\"red\"]")
-        }
-
-        result.appendLine("}\n")
-
-        return result.toString()
-    }
+    /**
+     * Generates a FSM DOT graph for Graphviz
+     *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param baseState base [state][State] [class][KClass]
+     * @param initialState initial [state][State] [class][KClass]
+     * @param useTransitionName use [transition][Transition] [class][KClass] name or [Edge("")][Edge] annotation for edge name getting
+     * @return a DOT graph for Graphviz
+     */
+    @Deprecated(
+        message = "Deprecated, because generate edge name by action class is deprecated.",
+        replaceWith = ReplaceWith("generateDigraph function without useTransitionName argument.")
+    )
+    fun <STATE : State> generateDigraph(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+        initialState: KClass<out STATE>,
+        useTransitionName: Boolean,
+    ) = DOTGenerator.generate(baseAction, baseState, initialState, useTransitionName)
 
     /**
      * Builds an Edge list
      *
+     * @param baseAction base [action][Action] [class][KClass]
      * @return a list of edges in following order [(initial state, final state, edge name), ...]
      */
-    @Suppress("UNCHECKED_CAST")
+    fun <STATE : State> getEdgeListGraph(
+        baseAction: KClass<out Action<STATE>>,
+    ) = GraphGenerator.getEdgeListGraph(baseAction, true)
+
+    /**
+     * Builds an Edge list
+     *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param useTransitionName use [transition][Transition] class name or [Edge("")][Edge] annotation for edge name getting
+     * @return a list of edges in following order [(initial state, final state, edge name), ...]
+     */
+    @Deprecated(
+        message = "Deprecated, because generate edge name by action class is deprecated.",
+        replaceWith = ReplaceWith("getEdgeListGraph function without useTransitionName argument.")
+    )
     fun <STATE : State> getEdgeListGraph(
         baseAction: KClass<out Action<STATE>>,
         useTransitionName: Boolean,
-    ): List<Triple<KClass<out STATE>, KClass<out STATE>, String>> {
-        val edgeList = mutableListOf<Triple<KClass<out STATE>, KClass<out STATE>, String>>()
+    ) = GraphGenerator.getEdgeListGraph(baseAction, useTransitionName)
 
-        val actions = baseAction.sealedSubclasses
+    /**
+     * Builds an Adjacency Map of states
+     *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param baseState base [state][State] [class][KClass]
+     * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
+     */
+    fun <STATE : State> getAdjacencyMap(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+    ) = GraphGenerator.getAdjacencyMap(baseAction, baseState)
 
-        actions.forEach { actionClass: KClass<out Action<STATE>> ->
-            val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
-
-            transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments
-                    .first().type?.classifier as KClass<out STATE>
-                val toState = transitionKClass.supertypes.first().arguments
-                    .last().type?.classifier as KClass<out STATE>
-
-                val nameFromEdgeAnnotation = transitionKClass.findAnnotation<Edge>()?.name
-
-                val edgeName = when {
-                    nameFromEdgeAnnotation != null -> nameFromEdgeAnnotation
-                    useTransitionName -> transitionKClass.simpleName
-                    else -> actionClass.simpleName
-                } ?: throw IllegalStateException("Edge must have name")
-
-                edgeList.add(
-                    Triple(
-                        fromState,
-                        toState,
-                        edgeName
-                    )
-                )
-            }
-        }
-
-        return edgeList
-    }
+    /**
+     * Returns the "name" parameter of the [Edge][Edge] annotation if the [transition][Transition] class is annotated with [Edge][Edge],
+     * otherwise the simple name of the [transition][Transition] class
+     *
+     * @param transitionClass [transition][Transition] [class][KClass]
+     * @return edge name for [transition][Transition]
+     */
+    fun <STATE : State> getEdgeName(
+        transitionClass: KClass<out Transition<out STATE, out STATE>>,
+    ) = GraphGenerator.getEdgeName(transitionClass)
 
     /**
      * Checks all the states for reachability
      *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param baseState base [state][State] [class][KClass]
+     * @param initialState initial [state][State] [class][KClass]
      * @return a list of unreachable states for a disconnected graph, and an empty list for a connected one
      */
     fun <STATE : State> getUnreachableStates(
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
-    ): List<KClass<out STATE>> {
-        val result = mutableListOf<KClass<out STATE>>()
-        val stateToVisited = mutableMapOf<KClass<out STATE>, Boolean>()
-        val queue = LinkedList<KClass<out STATE>>()
-
-        val graph = getAdjacencyMap(
-            baseAction,
-            baseState,
-        )
-
-        val stateNames = graph.keys
-
-        stateToVisited.putAll(stateNames.map { it to false })
-
-        queue.add(initialState)
-        stateToVisited[initialState] = true
-
-        while (queue.isNotEmpty()) {
-            val node = queue.poll()!!
-
-            val iterator = graph[node]!!.iterator()
-            while (iterator.hasNext()) {
-                val nextNode = iterator.next()
-                if (!stateToVisited[nextNode]!!) {
-                    stateToVisited[nextNode] = true
-                    queue.add(nextNode)
-                }
-            }
-        }
-
-        stateToVisited.forEach { (state, isVisited) ->
-            if (!isVisited) {
-                result.add(state)
-            }
-        }
-
-        return result
-    }
+    ) = GraphAnalyzer.getUnreachableStates(baseAction, baseState, initialState)
 
     /**
      * Builds a list of final states
      *
+     * @param baseAction base [action][Action] [class][KClass]
+     * @param baseState base [state][State] [class][KClass]
      * @return a list of final states
      */
     fun <STATE : State> getFinalStates(
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
-    ): List<KClass<out STATE>> {
-        val finalStates = mutableListOf<KClass<out STATE>>()
-
-        val graph = getAdjacencyMap(
-            baseAction,
-            baseState,
-        )
-
-        graph.forEach { (startState, destinationStates) ->
-            if (destinationStates.isEmpty()) {
-                finalStates.add(startState)
-            }
-        }
-
-        return finalStates
-    }
-
-    /**
-     * Builds an Adjacency Map of states
-     *
-     * @return a map of states adjacency in the following form: [(state to [state, ...]), ...]
-     */
-    fun <STATE : State> getAdjacencyMap(
-        baseAction: KClass<out Action<STATE>>,
-        baseState: KClass<STATE>,
-    ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
-        val stateNames = HashSet<KClass<out STATE>>()
-        val actions = baseAction.sealedSubclasses
-        val graph = mutableMapOf<KClass<out STATE>, MutableList<KClass<out STATE>>>()
-
-        populateStateNamesSet(stateNames, baseState)
-
-        graph.putAll(stateNames.map { it to LinkedList() })
-
-        actions.forEach { actionClass: KClass<out Action<*>> ->
-            val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
-
-            transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments
-                    .first().type!!.classifier as KClass<out STATE>
-                val toState = transitionKClass.supertypes.first().arguments
-                    .last().type!!.classifier as KClass<out STATE>
-
-                graph[fromState]?.add(toState)
-            }
-        }
-
-        return graph
-    }
-
-    /**
-     * Recursively fills a set with graph states. Every [State] class might not be a state,
-     * they could just combine and have those [State] classes as inheritors
-     */
-    private fun <STATE : State> populateStateNamesSet(
-        stateNames: HashSet<KClass<out STATE>>,
-        stateClass: KClass<out STATE>,
-    ) {
-        stateClass.sealedSubclasses.forEach { sealedSubclass ->
-            if (sealedSubclass.sealedSubclasses.isEmpty()) {
-                stateNames.add(sealedSubclass)
-            } else {
-                populateStateNamesSet(stateNames, sealedSubclass)
-            }
-        }
-    }
-
-    private fun <STATE : State> KClass<out STATE>.simpleStateNameWithSealedName(fsmName: KClass<out STATE>): String {
-        return this.qualifiedName!!.substringAfterLast("${fsmName.simpleName}.")
-    }
+    ) = GraphAnalyzer.getFinalStates(baseAction, baseState)
 }

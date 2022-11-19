@@ -83,6 +83,14 @@ class AnnotationProcessor(
             error(errorMessage)
         }
 
+        featureSuperTypeGenericTypes.forEach { featureSuperTypeGenericType ->
+            try {
+                featureSuperTypeGenericType.toTypeName()
+            } catch (e: IllegalArgumentException) {
+                error("Super class of \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" contains generic parameter with invalid class name.")
+            }
+        }
+
         val featureSuperTypeClassDeclarations = featureSuperTypeGenericTypes.mapNotNull {
             it.type?.resolve()?.declaration?.closestClassDeclaration()
         }

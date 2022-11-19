@@ -1,7 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
@@ -18,11 +18,11 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
     private val stateFlow = MutableStateFlow(initialState)
 
     /**
-     * Provides a [flow][Flow] of [states][State]
+     * Provides a [flow][StateFlow] of [states][State]
      *
-     * @return a [flow][Flow] of [states][State]
+     * @return a [flow][StateFlow] of [states][State]
      */
-    internal fun observeState(): Flow<STATE> {
+    internal fun observeState(): StateFlow<STATE> {
         return stateFlow.asStateFlow()
     }
 
