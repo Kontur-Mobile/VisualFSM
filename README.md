@@ -6,9 +6,8 @@
 
 ENG | [RUS](docs/ru/README-RU.md)
 
-`VisualFSM` is a Kotlin library that implements an **MVI architecture**
-(`Model-View-Intent`)[[1]](#what-is-mvi) and a set of tools for visualization and analysis of
-**FSM**'s (`Finite-state machine`)[[2]](#what-is-fsm) diagram of states.
+`VisualFSM` is a Kotlin Multiplatform library for implements an **FSM**-based (`Finite-state machine`)[[2]](#what-is-fsm) **MVI** pattern
+(`Model-View-Intent`)[[1]](#what-is-mvi) and a set of tools for visualization and analysis of **FSM**'s diagram of states.
 
 The graph is being built from source code of **FSM**'s implementation. There is no need of custom
 written configurations for **FSM**, you can just create new State and Action classes, they would be
