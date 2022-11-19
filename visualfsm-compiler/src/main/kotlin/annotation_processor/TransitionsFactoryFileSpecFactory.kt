@@ -66,7 +66,7 @@ class TransitionsFactoryFileSpecFactory {
             createFunctionCodeBuilder.append("······)\n\n")
         }
         createFunctionCodeBuilder.append("······else·->·error(\"Code·generation·error.·Not·all·actions·were·processed·in·the·when·block.\")\n")
-        createFunctionCodeBuilder.append("··}\n")
+        createFunctionCodeBuilder.append("··}")
         classBuilder.addFunction(
             FunSpec.builder("create")
                 .addModifiers(KModifier.OVERRIDE)

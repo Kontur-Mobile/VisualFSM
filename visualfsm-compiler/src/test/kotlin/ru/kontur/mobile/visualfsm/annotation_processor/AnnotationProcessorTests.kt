@@ -71,7 +71,6 @@ internal class AnnotationProcessorTests {
                     "\n" +
                     "        else -> error(\"Code generation error. Not all actions were processed in the when block.\")\n" +
                     "    }\n" +
-                    "\n" +
                     "}\n",
             generatedTestStateTransitionsFactory.readText()
         )
@@ -139,7 +138,6 @@ internal class AnnotationProcessorTests {
                     "\n" +
                     "        else -> error(\"Code generation error. Not all actions were processed in the when block.\")\n" +
                     "    }\n" +
-                    "\n" +
                     "}\n",
             generatedTestStateTransitionsFactory.readText()
         )
