@@ -1,31 +1,33 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.*
+import kotlinx.atomicfu.locks.synchronized
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.atomicfu.locks.*
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Manages the start and stop of state-based asynchronous tasks
  */
-abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
-
-    /**
-     * [The coroutine scope][CoroutineScope] for the currently running async task
-     */
-    protected open val taskScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
+abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
+    coroutineDispatcher: CoroutineContext = Dispatchers.Default
+) {
     /**
      * [The coroutine scope][CoroutineScope] used to subscribe
      * to [feature's][Feature] [flow of states][State]
      */
-    protected open val subscriptionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val subscriptionScope = CoroutineScope(coroutineDispatcher + SupervisorJob())
 
     private var feature: Feature<STATE, ACTION>? = null
     private var launchedAsyncState: STATE? = null
-    private var subscriptionJob: Job? = null
     private var launchedAsyncStateJob: Job? = null
 
     /**
@@ -36,15 +38,11 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      */
     internal fun bind(feature: Feature<STATE, ACTION>) {
         this.feature = feature
-        subscriptionJob = subscriptionScope.launch {
-            feature.observeState().map {
-                onNextState(it)
-            }.onEach {
-                handleTask(it)
-            }.catch {
-                onStateSubscriptionError(it)
-            }.collect()
-        }
+        feature.observeState()
+            .map { onNextState(it) }
+            .onEach { handleTask(it) }
+            .catch { onStateSubscriptionError(it) }
+            .launchIn(subscriptionScope)
     }
 
     /**
@@ -53,7 +51,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
      */
     fun unbind() {
         cancel()
-        subscriptionJob?.cancel()
+        subscriptionScope.cancel()
         feature = null
     }
 
@@ -126,19 +124,17 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Handle new task
      */
-    private fun handleTask(task: AsyncWorkerTask<STATE>) {
+    private suspend fun handleTask(task: AsyncWorkerTask<STATE>) {
         when (task) {
             is AsyncWorkerTask.Cancel -> cancel()
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
                 cancelAndLaunch(task.state) { task.func(task) }
             }
-
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
                     cancelAndLaunch(task.state) { task.func(task) }
                 }
             }
-
             is AsyncWorkerTask.ExecuteIfNotExistWithSameClass -> {
                 val launchedState = launchedAsyncState
                 if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateJob?.isActive != true) {
@@ -151,10 +147,12 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>> {
     /**
      * Cancel current task and launch new
      */
-    private fun cancelAndLaunch(stateToLaunch: STATE, func: suspend () -> Unit) {
-        launchedAsyncStateJob?.cancel()
-        launchedAsyncState = stateToLaunch
-        launchedAsyncStateJob = taskScope.launch { func() }
+    private suspend fun cancelAndLaunch(stateToLaunch: STATE, func: suspend () -> Unit) {
+        coroutineScope {
+            launchedAsyncStateJob?.cancel()
+            launchedAsyncState = stateToLaunch
+            launchedAsyncStateJob = launch { func() }
+        }
     }
 
     /**
