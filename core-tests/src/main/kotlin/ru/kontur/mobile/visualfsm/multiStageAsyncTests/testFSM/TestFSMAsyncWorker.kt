@@ -6,8 +6,9 @@ import ru.kontur.mobile.visualfsm.AsyncWorkerTask
 import ru.kontur.mobile.visualfsm.multiStageAsyncTests.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.multiStageAsyncTests.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.multiStageAsyncTests.testFSM.action.UpdateStage
+import kotlin.coroutines.CoroutineContext
 
-class TestFSMAsyncWorker : AsyncWorker<TestFSMState, TestFSMAction>() {
+class TestFSMAsyncWorker(coroutineDispatcher: CoroutineContext) : AsyncWorker<TestFSMState, TestFSMAction>(coroutineDispatcher) {
     override fun onNextState(state: TestFSMState): AsyncWorkerTask<TestFSMState> {
         return when (state) {
             is TestFSMState.AsyncWithStage -> AsyncWorkerTask.ExecuteIfNotExistWithSameClass(state) {

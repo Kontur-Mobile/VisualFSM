@@ -1,24 +1,46 @@
 package ru.kontur.mobile.visualfsm.baseTests.testFSM
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import ru.kontur.mobile.visualfsm.AsyncWorker
 import ru.kontur.mobile.visualfsm.AsyncWorkerTask
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMState.Async
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.TestFSMAction
+import kotlin.coroutines.CoroutineContext
 
-class TestFSMAsyncWorker : AsyncWorker<TestFSMState, TestFSMAction>() {
+class TestFSMAsyncWorker(
+    coroutineDispatcher: CoroutineContext,
+    private val onSubscriptionError: ((Throwable) -> Unit)? = null
+) : AsyncWorker<TestFSMState, TestFSMAction>(coroutineDispatcher) {
     override fun onNextState(state: TestFSMState): AsyncWorkerTask<TestFSMState> {
         return when (state) {
             is Async -> AsyncWorkerTask.ExecuteAndCancelExist(state) {
-                delay(state.milliseconds.toLong())
-                if ("error" == state.label) {
-                    proceed(Finish(false))
-                } else {
-                    proceed(Finish(true))
+                try {
+                    delay(state.milliseconds.toLong())
+                    if (state.label.contains("error")) {
+                        throw IllegalStateException(state.label)
+                    }
+                    proceed(Finish(success = true))
+                } catch (e: Exception) {
+                    if (e is CancellationException) {
+                        throw e
+                    }
+                    if (e.message == "uncaught error") {
+                        throw e
+                    }
+                    proceed(Finish(success = false))
                 }
             }
             else -> AsyncWorkerTask.Cancel()
+        }
+    }
+
+    override fun onStateSubscriptionError(throwable: Throwable) {
+        if (onSubscriptionError == null) {
+            super.onStateSubscriptionError(throwable)
+        } else {
+            onSubscriptionError.invoke(throwable)
         }
     }
 }

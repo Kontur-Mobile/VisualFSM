@@ -1,8 +1,13 @@
 package ru.kontur.mobile.visualfsm.baseTests
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -16,10 +21,11 @@ import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.TestFSMAction
+import ru.kontur.mobile.visualfsm.helper.runFSMFeatureTest
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StateMachineTests {
-
     @Test
     fun generateDigraphTest() {
         val digraph = VisualFSM.generateDigraph(
@@ -76,38 +82,26 @@ class StateMachineTests {
 
     @Test
     fun startAsyncTest() {
-        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
-
+        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(StandardTestDispatcher()))
         assertEquals(TestFSMState.Initial, feature.getCurrentState())
 
         feature.proceed(Start("async1", 1))
-
         assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
     }
 
     @Test
-    fun endAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(3).collect {
-                states.add(it)
-            }
+    fun endAsyncTest() = runFSMFeatureTest(
+        featureFactory = { dispatcher ->
+            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(dispatcher))
         }
-
-        assertEquals(TestFSMState.Initial, feature.getCurrentState())
-
-        feature.proceed(Start("async1", 1))
-
-        assertEquals(TestFSMState.Async("async1", 1), feature.getCurrentState())
-
-        job.await()
+    ) { feature, states ->
+        feature.proceed(Start("async1", 1000))
+        advanceUntilIdle()
 
         assertEquals(
             listOf(
                 TestFSMState.Initial,
-                TestFSMState.Async("async1", 1),
+                TestFSMState.Async("async1", 1000),
                 TestFSMState.Complete("async1")
             ),
             states
@@ -115,28 +109,18 @@ class StateMachineTests {
     }
 
     @Test
-    fun errorAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(3).collect {
-                states.add(it)
-            }
+    fun errorAsyncTest() = runFSMFeatureTest(
+        featureFactory = { dispatcher ->
+            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(dispatcher))
         }
-
-        assertEquals(TestFSMState.Initial, feature.getCurrentState())
-
-        feature.proceed(Start("error", 1))
-
-        assertEquals(TestFSMState.Async("error", 1), feature.getCurrentState())
-
-        job.await()
+    ) { feature, states ->
+        feature.proceed(Start("error", 1000))
+        advanceUntilIdle()
 
         assertEquals(
             listOf(
                 TestFSMState.Initial,
-                TestFSMState.Async("error", 1),
+                TestFSMState.Async("error", 1000),
                 TestFSMState.Error
             ),
             states
@@ -144,33 +128,21 @@ class StateMachineTests {
     }
 
     @Test
-    fun cancelAsyncTest() = runTest(UnconfinedTestDispatcher()) {
-        val feature = TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker())
-        val states = mutableListOf<TestFSMState>()
-
-        val job = async {
-            feature.observeState().take(5).collect {
-                states.add(it)
-            }
+    fun cancelAsyncTest() = runFSMFeatureTest(
+        featureFactory = { dispatcher ->
+            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(dispatcher))
         }
-
-        assertEquals(TestFSMState.Initial, feature.getCurrentState())
-
+    ) { feature, states ->
         feature.proceed(Start("async1", 100))
+        advanceTimeBy(50)
 
-        assertEquals(TestFSMState.Async("async1", 100), feature.getCurrentState())
-
+        // Cancel task
         feature.proceed(Cancel())
+        advanceUntilIdle()
 
-        //Task canceled
-        assertEquals(TestFSMState.Initial, feature.getCurrentState())
-
-        //Start new
+        // Start new
         feature.proceed(Start("async2", 150))
-
-        assertEquals(TestFSMState.Async("async2", 150), feature.getCurrentState())
-
-        job.await()
+        advanceUntilIdle()
 
         assertEquals(
             listOf(
@@ -185,6 +157,65 @@ class StateMachineTests {
     }
 
     @Test
+    fun destroyFeatureAsyncCancellationTest() {
+        var exceptionHandled = false
+
+        runFSMFeatureTest(
+            featureFactory = { dispatcher ->
+                TestFSMFeature(
+                    TestFSMState.Initial,
+                    TestFSMAsyncWorker(dispatcher, onSubscriptionError = {
+                        exceptionHandled = true
+                    })
+                )
+            }
+        ) { feature, states ->
+            feature.proceed(Start("async1", 100))
+            advanceTimeBy(50)
+
+            feature.onDestroy()
+            advanceUntilIdle()
+
+            assertEquals(
+                listOf(
+                    TestFSMState.Initial,
+                    TestFSMState.Async("async1", 100)
+                ),
+                states
+            )
+        }
+        assertEquals(false, exceptionHandled)
+    }
+
+    @Test
+    fun stateSubscriptionErrorHandlerTest() {
+        var exceptionHandled = false
+
+        runFSMFeatureTest(
+            featureFactory = { dispatcher ->
+                TestFSMFeature(
+                    TestFSMState.Initial,
+                    TestFSMAsyncWorker(dispatcher, onSubscriptionError = {
+                        exceptionHandled = true
+                    })
+                )
+            }
+        ) { feature, states ->
+            feature.proceed(Start("uncaught error", 1000))
+            advanceUntilIdle()
+
+            assertEquals(
+                listOf(
+                    TestFSMState.Initial,
+                    TestFSMState.Async("uncaught error", 1000)
+                ),
+                states
+            )
+        }
+        assertEquals(true, exceptionHandled)
+    }
+
+    @Test
     fun multiplyCancelByStartOtherAsyncTest() {
         for (i in 1..100) {
             println("Step: $i")
@@ -195,7 +226,7 @@ class StateMachineTests {
     private fun cancelByStartOtherAsyncTest() = runTest(UnconfinedTestDispatcher()) {
         val feature = TestFSMFeature(
             initialState = TestFSMState.Initial,
-            asyncWorker = TestFSMAsyncWorker(),
+            asyncWorker = TestFSMAsyncWorker(Dispatchers.Default),
             transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
                 override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
                 }
