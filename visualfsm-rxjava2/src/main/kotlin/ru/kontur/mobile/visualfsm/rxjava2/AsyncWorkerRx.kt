@@ -31,7 +31,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      */
     internal fun bind(feature: FeatureRx<STATE, ACTION>) {
         this.feature = feature
-        subscriptionDisposable = feature.observeState()
+        subscriptionDisposable = feature.observeAllStates()
             .observeOn(taskManagementScheduler)
             .map(::onNextState)
             .subscribe(::handleTask, ::onStateSubscriptionError)

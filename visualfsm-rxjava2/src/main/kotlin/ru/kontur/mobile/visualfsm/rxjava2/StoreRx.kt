@@ -50,8 +50,8 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
         val changed = newState != currentState
         if (changed) {
             currentState = newState
-            stateRxObservableField.onNext(newState)
         }
+        stateRxObservableField.onNext(newState)
     }
 
     /**

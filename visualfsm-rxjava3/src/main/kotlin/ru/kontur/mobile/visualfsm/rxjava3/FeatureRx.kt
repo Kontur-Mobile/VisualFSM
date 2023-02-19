@@ -85,6 +85,16 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
      * @return a [observable][Observable] of [states][State]
      */
     fun observeState(): Observable<STATE> {
+        return store.observeState().distinctUntilChanged()
+    }
+
+    /**
+     * Provides a [observable][Observable] of [states][State] without
+     * distinctUntilChanged(), for AsyncWorkerRx
+     *
+     * @return a [observable][Observable] of [states][State]
+     */
+    internal fun observeAllStates(): Observable<STATE> {
         return store.observeState()
     }
 

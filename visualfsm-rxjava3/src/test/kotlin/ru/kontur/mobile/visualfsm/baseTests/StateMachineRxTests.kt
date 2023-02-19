@@ -82,6 +82,37 @@ class StateMachineRxTests {
     }
 
     @Test
+    fun restartAsyncTest() {
+        val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
+        val testObserver = feature.observeState().test()
+
+        feature.proceed(Start("async1", 1000, "1"))
+        Thread.sleep(500)
+        feature.proceed(Start("async1", 1000, "2"))
+
+        testObserver.awaitCount(3)
+
+        val states = testObserver.values()
+
+        assertEquals(
+            listOf(
+                TestFSMState.Initial,
+                TestFSMState.Async("async1", 1000),
+                TestFSMState.Complete("async1", "2") // expected salt "2",
+                // because internal SharedFlow does not have a distinctUntilChange
+                // and first AsyncState was cancelled by ExecuteAndCancelExist task type
+            ),
+            states
+        )
+        testObserver.dispose()
+
+        assertEquals(
+            "1", // expected salt "1", because external StateFlow has a distinctUntilChange
+            (states[1] as TestFSMState.Async).salt
+        )
+    }
+
+    @Test
     fun endAsyncTest() {
         val feature = TestFSMFeatureRx(TestFSMState.Initial, TestFSMAsyncWorkerRx())
         val testObserver = feature.observeState().test()
