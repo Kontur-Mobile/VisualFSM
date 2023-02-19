@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
 import kotlinx.atomicfu.locks.*
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -86,6 +87,15 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      */
     fun observeState(): StateFlow<STATE> {
         return store.observeState()
+    }
+
+    /**
+     * Provides a [flow][SharedFlow] of [states][State] for AsyncWorker
+     *
+     * @return a [flow][SharedFlow] of [states][State]
+     */
+    internal fun observeStateShared(): SharedFlow<STATE> {
+        return store.observeStateShared()
     }
 
     /**

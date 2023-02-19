@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
+    id 'kotlinx-atomicfu'
 }
 
 group = artifactsGroup
@@ -17,9 +18,6 @@ kotlin {
     }
     js(BOTH) {
         browser {
-            commonWebpackConfig {
-                cssSupport.enabled = true
-            }
         }
     }
     iosArm32()
@@ -40,7 +38,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-                implementation "org.jetbrains.kotlinx:atomicfu:$atomicfu_version"
             }
         }
         commonTest {

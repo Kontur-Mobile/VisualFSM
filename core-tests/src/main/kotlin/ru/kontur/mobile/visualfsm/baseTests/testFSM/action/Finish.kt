@@ -3,13 +3,13 @@ package ru.kontur.mobile.visualfsm.baseTests.testFSM.action
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMState
 
-class Finish(val success: Boolean) : TestFSMAction() {
+class Finish(val success: Boolean, val salt: String = "") : TestFSMAction() {
     inner class Success : Transition<TestFSMState.Async, TestFSMState.Complete>() {
         override fun predicate(state: TestFSMState.Async) = success
 
         override fun transform(state: TestFSMState.Async): TestFSMState.Complete {
             Thread.sleep(10)
-            return TestFSMState.Complete(state.label)
+            return TestFSMState.Complete(state.label, salt)
         }
     }
 

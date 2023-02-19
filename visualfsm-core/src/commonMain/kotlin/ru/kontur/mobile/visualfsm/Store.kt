@@ -1,8 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
@@ -15,7 +14,12 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE, private val transitionCallbacks: TransitionCallbacks<STATE>?
 ) {
 
+    private val sharedFlow = MutableSharedFlow<STATE>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val stateFlow = MutableStateFlow(initialState)
+
+    init {
+        sharedFlow.tryEmit(initialState)
+    }
 
     /**
      * Provides a [flow][StateFlow] of [states][State]
@@ -24,6 +28,15 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun observeState(): StateFlow<STATE> {
         return stateFlow.asStateFlow()
+    }
+
+    /**
+     * Provides a [flow][SharedFlow] of [states][State]
+     *
+     * @return a [flow][SharedFlow] of [states][State]
+     */
+    internal fun observeStateShared(): SharedFlow<STATE> {
+        return sharedFlow.asSharedFlow()
     }
 
     /**
@@ -41,12 +54,9 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      * @param action [Action] that was launched
      */
     internal fun proceed(action: ACTION) {
-        val currentState = stateFlow.value
-        val newState = reduce(action, currentState)
-        val changed = newState != currentState
-        if (changed) {
-            stateFlow.value = newState
-        }
+        val newState = reduce(action, getCurrentState())
+        stateFlow.value = newState
+        sharedFlow.tryEmit(newState)
     }
 
     /**
