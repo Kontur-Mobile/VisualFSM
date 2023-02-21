@@ -38,7 +38,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun bind(feature: Feature<STATE, ACTION>) {
         this.feature = feature
-        feature.observeState()
+        feature.observeAllStates()
             .map { onNextState(it) }
             .onEach { handleTask(it) }
             .catch { onStateSubscriptionError(it) }
@@ -58,7 +58,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
     /**
      * Provides a state to manage async work
      * Don't forget to handle each task's errors in this method,
-     * if an unhandled exception occurs, then fsm may stuck in the current state
+     * if an unhandled exception occurs, then fsm may stick in the current state
      * and the onStateSubscriptionError method will be called
      *
      * @param state a next [state][State]
@@ -67,10 +67,10 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
     protected abstract fun onNextState(state: STATE): AsyncWorkerTask<STATE>
 
     /**
-     * Called when catched subscription error
+     * Called when caught subscription error
      * Override this for logs or metrics
      * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
-     * @param throwable catched [Throwable]
+     * @param throwable caught [Throwable]
      */
     protected open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
@@ -130,11 +130,13 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
             is AsyncWorkerTask.ExecuteAndCancelExist -> {
                 cancelAndLaunch(task.state) { task.func(task) }
             }
+
             is AsyncWorkerTask.ExecuteIfNotExist -> {
                 if (launchedAsyncStateJob?.isActive != true || task.state != launchedAsyncState) {
                     cancelAndLaunch(task.state) { task.func(task) }
                 }
             }
+
             is AsyncWorkerTask.ExecuteIfNotExistWithSameClass -> {
                 val launchedState = launchedAsyncState
                 if (launchedState == null || task.state::class != launchedState::class || launchedAsyncStateJob?.isActive != true) {

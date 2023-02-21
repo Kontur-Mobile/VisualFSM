@@ -21,7 +21,7 @@ class TestFSMAsyncWorker(
                     if (state.label.contains("error")) {
                         throw IllegalStateException(state.label)
                     }
-                    proceed(Finish(success = true))
+                    proceed(Finish(success = true, state.salt))
                 } catch (e: Exception) {
                     if (e is CancellationException) {
                         throw e
@@ -29,7 +29,7 @@ class TestFSMAsyncWorker(
                     if (e.message == "uncaught error") {
                         throw e
                     }
-                    proceed(Finish(success = false))
+                    proceed(Finish(success = false, state.salt))
                 }
             }
             else -> AsyncWorkerTask.Cancel()

@@ -90,6 +90,34 @@ class StateMachineTests {
     }
 
     @Test
+    fun restartAsyncTest() = runFSMFeatureTest(
+        featureFactory = { dispatcher ->
+            TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(dispatcher))
+        }
+    ) { feature, states ->
+        feature.proceed(Start("async1", 1000, "1"))
+        Thread.sleep(500)
+        feature.proceed(Start("async1", 1000, "2"))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf(
+                TestFSMState.Initial,
+                TestFSMState.Async("async1", 1000),
+                TestFSMState.Complete("async1", "2") // expected salt "2",
+                // because internal SharedFlow does not have a distinctUntilChange
+                // and first AsyncState was cancelled by ExecuteAndCancelExist task type
+            ),
+            states
+        )
+
+        assertEquals(
+            "1", // expected salt "1", because external StateFlow has a distinctUntilChange
+            (states[1] as TestFSMState.Async).salt
+        )
+    }
+
+    @Test
     fun endAsyncTest() = runFSMFeatureTest(
         featureFactory = { dispatcher ->
             TestFSMFeature(TestFSMState.Initial, TestFSMAsyncWorker(dispatcher))

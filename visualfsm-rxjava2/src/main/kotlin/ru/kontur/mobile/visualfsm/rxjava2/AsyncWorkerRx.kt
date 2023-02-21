@@ -31,7 +31,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
      */
     internal fun bind(feature: FeatureRx<STATE, ACTION>) {
         this.feature = feature
-        subscriptionDisposable = feature.observeState()
+        subscriptionDisposable = feature.observeAllStates()
             .observeOn(taskManagementScheduler)
             .map(::onNextState)
             .subscribe(::handleTask, ::onStateSubscriptionError)
@@ -50,7 +50,7 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     /**
      * Provides a state to manage async work
      * Don't forget to handle each task's errors in this method,
-     * if an unhandled exception occurs, then fsm may stuck in the current state
+     * if an unhandled exception occurs, then fsm may stick in the current state
      * and the onStateSubscriptionError method will be called
      *
      * @param state a next [state][State]
@@ -59,10 +59,10 @@ abstract class AsyncWorkerRx<STATE : State, ACTION : Action<STATE>> {
     protected abstract fun onNextState(state: STATE): AsyncWorkerTaskRx<STATE>
 
     /**
-     * Called when catched subscription error
+     * Called when caught subscription error
      * Override this for logs or metrics
      * Call of this method signals the presence of unhandled exceptions in the [onNextState] method.
-     * @param throwable catched [Throwable]
+     * @param throwable caught [Throwable]
      */
     protected open fun onStateSubscriptionError(throwable: Throwable) {
         throw throwable
