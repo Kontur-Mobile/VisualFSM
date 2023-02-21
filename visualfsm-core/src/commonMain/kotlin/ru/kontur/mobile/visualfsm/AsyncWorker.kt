@@ -38,7 +38,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun bind(feature: Feature<STATE, ACTION>) {
         this.feature = feature
-        feature.observeStateShared()
+        feature.observeAllStates()
             .map { onNextState(it) }
             .onEach { handleTask(it) }
             .catch { onStateSubscriptionError(it) }
