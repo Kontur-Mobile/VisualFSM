@@ -95,7 +95,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @return a [flow][SharedFlow] of [states][State]
      */
     internal fun observeAllStates(): SharedFlow<STATE> {
-        return store.observeStateShared()
+        return store.observeAllStates()
     }
 
     /**
