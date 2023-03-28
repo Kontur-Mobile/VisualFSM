@@ -96,7 +96,7 @@ class StateMachineTests {
         }
     ) { feature, states ->
         feature.proceed(Start("async1", 1000, "1"))
-        Thread.sleep(500)
+        advanceTimeBy(500)
         feature.proceed(Start("async1", 1000, "2"))
         advanceUntilIdle()
 
