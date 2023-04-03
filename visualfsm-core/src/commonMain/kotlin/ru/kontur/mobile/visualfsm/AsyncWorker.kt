@@ -7,10 +7,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -40,7 +41,9 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
         this.feature = feature
         feature.observeAllStates()
             .map { onNextState(it) }
-            .onEach { handleTask(it) }
+            .flatMapMerge {
+                suspend { handleTask(it) }.asFlow()
+            }
             .catch { onStateSubscriptionError(it) }
             .launchIn(subscriptionScope)
     }
@@ -110,7 +113,7 @@ abstract class AsyncWorker<STATE : State, ACTION : Action<STATE>>(
      * @param action launched [Action]
      */
     private fun AsyncWorkerTask<STATE>.proceed(fromState: STATE, action: ACTION) {
-        val feature = feature ?: error("Feature is unbound")
+        val feature = feature ?: return
         synchronized(feature) {
             // If the current state does not match the state from which the task started, the result of its task is no longer expected
             if ((this is AsyncWorkerTask.ExecuteIfNotExistWithSameClass && fromState::class == feature.getCurrentState()::class)

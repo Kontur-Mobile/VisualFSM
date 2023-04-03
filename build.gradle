@@ -7,7 +7,7 @@ ext {
          MINOR version when you add functionality in a backwards compatible manner, and
          PATCH version when you make backwards compatible bug fixes.
     */
-    artifactsBuildVersion = '1.3.1'
+    artifactsBuildVersion = '1.3.2'
     artifactsGroup = 'ru.kontur.mobile.visualfsm'
 }
 
