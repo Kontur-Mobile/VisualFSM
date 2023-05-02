@@ -10,11 +10,8 @@ import com.google.devtools.ksp.innerArguments
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.kontur.mobile.visualfsm.Transition
@@ -70,6 +67,12 @@ class TransitionsFactoryFileSpecFactory {
         classBuilder.addFunction(
             FunSpec.builder("create")
                 .addModifiers(KModifier.OVERRIDE)
+                .addAnnotation(
+                    AnnotationSpec
+                        .builder(Suppress::class)
+                        .addMember("%S", "REDUNDANT_ELSE_IN_WHEN")
+                        .build()
+                )
                 .addParameter("action", baseActionClassDeclaration.toClassName())
                 .addStatement(createFunctionCodeBuilder.toString())
                 .build()

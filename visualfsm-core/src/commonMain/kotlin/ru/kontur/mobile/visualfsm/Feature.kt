@@ -22,6 +22,8 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
     transitionCallbacks: TransitionCallbacks<STATE>? = null
 ) : BaseFeature<STATE, ACTION>() {
 
+    internal val synchronizedObject = SynchronizedObject()
+
     /**
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
@@ -113,7 +115,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>
      * @param action [Action] to run
      */
     override fun proceed(action: ACTION) {
-        synchronized(this) {
+        synchronized(synchronizedObject) {
             val transitionsFactory = this.transitionsFactory
             return store.proceed(
                 action.apply {

@@ -54,9 +54,11 @@ internal class AnnotationProcessorTests {
         val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
-            "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
+            "import kotlin.Suppress\n" +
+                    "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
                     "\n" +
                     "public class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
+                    "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\")\n" +
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "        is TestAction1 -> listOf(\n" +
                     "            action.Transition1().apply {\n" +
@@ -121,9 +123,11 @@ internal class AnnotationProcessorTests {
         val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
-            "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
+            "import kotlin.Suppress\n" +
+                    "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
                     "\n" +
                     "internal class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
+                    "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\")\n" +
                     "  public override fun create(action: TestAction) = when (action) {\n" +
                     "        is TestAction1 -> listOf(\n" +
                     "            action.Transition1().apply {\n" +
