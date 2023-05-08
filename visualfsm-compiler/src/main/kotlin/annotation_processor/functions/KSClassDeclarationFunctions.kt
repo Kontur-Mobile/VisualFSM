@@ -1,5 +1,6 @@
 package annotation_processor.functions
 
+import annotation_processor.functions.LocationFunctions.getLinkOrEmptyString
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Location
@@ -36,12 +37,6 @@ internal object KSClassDeclarationFunctions {
     }
 
     fun KSClassDeclaration.getCanonicalClassNameAndLink(): String {
-        return "${toClassName().canonicalName}${getLinkOrEmptyString(location)}"
-    }
-
-    private fun getLinkOrEmptyString(location: Location): String {
-        if (location !is FileLocation) return ""
-        val fileName = location.filePath.substringAfterLast("/")
-        return "($fileName:${location.lineNumber})"
+        return "${toClassName().canonicalName}${location.getLinkOrEmptyString()}"
     }
 }

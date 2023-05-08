@@ -4,10 +4,13 @@ import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
-import java.util.*
+import ru.kontur.mobile.visualfsm.tools.internal.PropertyTransitionsUtils.isTransition
+import java.util.LinkedList
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 internal object GraphGenerator {
 
@@ -26,12 +29,17 @@ internal object GraphGenerator {
         val actions = baseAction.sealedSubclasses
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
-            val transactions =
+            val transactionsClasses =
                 actionClass.nestedClasses
                     .filter { it.allSuperclasses.contains(Transition::class) }
                     .map { it as KClass<Transition<out STATE, out STATE>> }
 
-            transactions.forEach { transitionKClass ->
+            val transactionsProperties =
+                actionClass.memberProperties
+                    .filter { it.isTransition() }
+                    .map { it as KProperty1<Action<STATE>, Transition<out STATE, out STATE>> }
+
+            transactionsClasses.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
                     .first().type?.classifier as KClass<out STATE>
                 val toState = transitionKClass.supertypes.first().arguments
@@ -43,13 +51,21 @@ internal object GraphGenerator {
                     getEdgeNameByActionName(transitionKClass, actionClass)
                 }
 
-                edgeList.add(
-                    Triple(
-                        fromState,
-                        toState,
-                        edgeName
-                    )
-                )
+                edgeList.add(Triple(fromState, toState, edgeName))
+            }
+            transactionsProperties.forEach { transactionKProperty ->
+                val fromState = transactionKProperty.returnType.arguments
+                    .first().type?.classifier as KClass<out STATE>
+                val toState = transactionKProperty.returnType.arguments
+                    .last().type?.classifier as KClass<out STATE>
+
+                val edgeName = if (useTransitionName) {
+                    getEdgeName(transactionKProperty)
+                } else {
+                    getEdgeNameByActionName(transactionKProperty, actionClass)
+                }
+
+                edgeList.add(Triple(fromState, toState, edgeName))
             }
         }
 
@@ -74,14 +90,26 @@ internal object GraphGenerator {
 
         graph.putAll(stateNames.map { it to LinkedList() })
 
-        actions.forEach { actionClass: KClass<out Action<*>> ->
-            val transactions =
+        actions.forEach { actionClass: KClass<out Action<STATE>> ->
+            val transactionClasses =
                 actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
 
-            transactions.forEach { transitionKClass ->
+            val transactionProperties =
+                actionClass.memberProperties.filter { it.isTransition() }
+
+            transactionClasses.forEach { transitionKClass ->
                 val fromState = transitionKClass.supertypes.first().arguments
                     .first().type!!.classifier as KClass<out STATE>
                 val toState = transitionKClass.supertypes.first().arguments
+                    .last().type!!.classifier as KClass<out STATE>
+
+                graph[fromState]?.add(toState)
+            }
+
+            transactionProperties.forEach { transactionK1Property ->
+                val fromState = transactionK1Property.returnType.arguments
+                    .first().type!!.classifier as KClass<out STATE>
+                val toState = transactionK1Property.returnType.arguments
                     .last().type!!.classifier as KClass<out STATE>
 
                 graph[fromState]?.add(toState)
@@ -100,6 +128,10 @@ internal object GraphGenerator {
      */
     fun <STATE : State> getEdgeName(transitionKClass: KClass<out Transition<out STATE, out STATE>>): String {
         return transitionKClass.findAnnotation<Edge>()?.name ?: transitionKClass.simpleName!!
+    }
+
+    fun <STATE : State> getEdgeName(transitionKProperty: KProperty1<Action<STATE>, Transition<out STATE, out STATE>>): String {
+        return transitionKProperty.findAnnotation<Edge>()?.name ?: transitionKProperty.name.toPascalCase()
     }
 
     /**
@@ -132,5 +164,16 @@ internal object GraphGenerator {
         actionClass: KClass<out Action<STATE>>,
     ): String {
         return transitionKClass.findAnnotation<Edge>()?.name ?: actionClass.simpleName!!
+    }
+
+    private fun <STATE : State> getEdgeNameByActionName(
+        transitionKProperty: KProperty1<Action<STATE>, Transition<out STATE, out STATE>>,
+        actionClass: KClass<out Action<STATE>>,
+    ): String {
+        return transitionKProperty.findAnnotation<Edge>()?.name ?: actionClass.simpleName!!.toPascalCase()
+    }
+
+    private fun String.toPascalCase(): String {
+        return replaceFirstChar { it.uppercase() }
     }
 }

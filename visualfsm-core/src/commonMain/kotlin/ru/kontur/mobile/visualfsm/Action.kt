@@ -13,6 +13,21 @@ abstract class Action<STATE : State> {
         this.transitions = transitions
     }
 
+    fun <FROM : STATE, TO : STATE> transition(
+        predicate: (FROM) -> Boolean = { true },
+        transform: (FROM) -> TO
+    ): Transition<FROM, TO> {
+        return object : Transition<FROM, TO>() {
+            override fun predicate(state: FROM) = predicate(state)
+            override fun transform(state: FROM) = transform(state)
+        }
+    }
+
+    fun <FROM : STATE, TO : STATE> transition(
+        predicate: Boolean,
+        transform: (FROM) -> TO
+    ): Transition<FROM, TO> = transition(predicate = { predicate }, transform = transform)
+
     /**
      * Returns instances of all [transitions][Transition] declared inside this [Action]
      *

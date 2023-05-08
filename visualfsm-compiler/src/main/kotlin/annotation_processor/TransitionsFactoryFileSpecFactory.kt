@@ -4,14 +4,22 @@ import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSe
 import annotation_processor.functions.KSClassDeclarationFunctions.getCanonicalClassNameAndLink
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
+import annotation_processor.functions.KSPropertyDeclarationFunctions.getCanonicalPropertyNameAndLink
+import annotation_processor.functions.KSPropertyDeclarationFunctions.getName
+import annotation_processor.functions.KSPropertyDeclarationFunctions.isTypeOfClass
 import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.innerArguments
+import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.kontur.mobile.visualfsm.Transition
@@ -87,8 +95,12 @@ class TransitionsFactoryFileSpecFactory {
             it.classKind == ClassKind.CLASS && it.isSubclassOf(Transition::class)
         }
 
-        if (!transitionClasses.iterator().hasNext()) {
-            error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
+        val transactionProperties = actionClassDeclaration.getAllProperties().filter {
+            it.isTypeOfClass(Transition::class)
+        }
+
+        if (!transitionClasses.iterator().hasNext() && !transactionProperties.iterator().hasNext()) {
+            error("Action must contains transitions as inner classes or as properties. The \"${actionClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
         }
 
         transitionClasses.forEach { transitionClass ->
@@ -100,6 +112,12 @@ class TransitionsFactoryFileSpecFactory {
             }
             if (transitionClass.primaryConstructor!!.parameters.isNotEmpty()) {
                 error("Transition must not have constructor parameters. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
+            }
+        }
+
+        transactionProperties.forEach { transactionProperty ->
+            if (transactionProperty.isPrivate()) {
+                error("Transition must not be private. The \"${transactionProperty.getCanonicalPropertyNameAndLink()}\" does not meet this requirement.")
             }
         }
 
@@ -124,7 +142,26 @@ class TransitionsFactoryFileSpecFactory {
             transitionSuperTypeGenericTypes
         }
 
-        val transitionImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
+        val transitionPropertiesToGenericTypes = transactionProperties.associateWith { transactionProperty ->
+            val transitionType = transactionProperty.type.resolve()
+
+            val transitionTypeGenericTypes = transitionType.innerArguments
+            if (transitionTypeGenericTypes.size != 2) {
+                val errorMessage = "Property type of transition must have exactly two generic types (fromState and toState). " +
+                        "But the property type of \"${transactionProperty.getCanonicalPropertyNameAndLink()}\" have ${transitionTypeGenericTypes.size}: ${transitionTypeGenericTypes.map { it.toTypeName() }}"
+                error(errorMessage)
+            }
+            transitionTypeGenericTypes.forEach { transactionPropertyGenericTypeGenericType ->
+                try {
+                    transactionPropertyGenericTypeGenericType.toTypeName()
+                } catch (e: IllegalArgumentException) {
+                    error("Property type of \"${transactionProperty.getCanonicalPropertyNameAndLink()}\" contains generic parameter with invalid class name.")
+                }
+            }
+            transitionTypeGenericTypes
+        }
+
+        val transitionClassImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
             val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
             buildString {
                 append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
@@ -133,7 +170,16 @@ class TransitionsFactoryFileSpecFactory {
                 append("··········}")
             }
         }
+        val transactionPropertiesImplementations = transitionPropertiesToGenericTypes.map { (transitionImplementation, transactionPropertyGenericTypes) ->
+            val (fromStateType, toStateType) = transactionPropertyGenericTypes
+            buildString {
+                append("··········action.${transitionImplementation.getName()}.apply·{\n")
+                append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
+                append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+                append("··········}")
+            }
+        }
 
-        return transitionImplementations
+        return transitionClassImplementations + transactionPropertiesImplementations
     }
 }
