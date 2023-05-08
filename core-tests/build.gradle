@@ -1,11 +1,11 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version("$kspVersion")
+    id "org.jetbrains.kotlin.jvm"
+    id "com.google.devtools.ksp" version("$kspVersion")
 }
 
 dependencies {
-    implementation project(':visualfsm-core')
-    implementation project(':visualfsm-providers')
+    implementation project(":visualfsm-core")
+    implementation project(":visualfsm-providers")
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     ksp project(":visualfsm-compiler")
@@ -13,13 +13,13 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:$junitJupiterVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-    testImplementation project(':visualfsm-tools')
+    testImplementation project(":visualfsm-tools")
 }
 
 kotlin {
     sourceSets {
-        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
-        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+        main.kotlin.srcDirs += "build/generated/ksp/main/kotlin"
+        test.kotlin.srcDirs += "build/generated/ksp/test/kotlin"
     }
 }
 

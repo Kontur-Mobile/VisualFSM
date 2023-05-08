@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
+    id "org.jetbrains.kotlin.jvm"
 }
 
 group = artifactsGroup
@@ -10,9 +10,9 @@ repositories {
 }
 
 dependencies {
-    implementation project(':visualfsm-core')
-    implementation project(':visualfsm-rxjava2')
-    implementation project(':visualfsm-rxjava3')
+    implementation project(":visualfsm-core")
+    implementation project(":visualfsm-rxjava2")
+    implementation project(":visualfsm-rxjava3")
 
     implementation "com.google.devtools.ksp:symbol-processing-api:$kspVersion"
 
@@ -31,4 +31,4 @@ test {
     useJUnitPlatform()
 }
 
-apply from: '../publish.gradle'
+apply from: "../publish.gradle"

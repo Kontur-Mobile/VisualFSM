@@ -1,2 +1,10 @@
-include ':visualfsm-core', ':visualfsm-rxjava2', ':visualfsm-rxjava3', ':visualfsm-compiler', ':visualfsm-tools', ':visualfsm-providers', ':core-tests'
+include ":visualfsm-core"
+include ":visualfsm-compiler"
+include ":visualfsm-providers"
 
+include ":visualfsm-tools"
+
+include ":visualfsm-rxjava2"
+include ":visualfsm-rxjava3"
+
+include ":core-tests"

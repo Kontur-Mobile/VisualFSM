@@ -1,30 +1,30 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.devtools.ksp' version("$kspVersion")
+    id "org.jetbrains.kotlin.jvm"
+    id "com.google.devtools.ksp" version("$kspVersion")
 }
 
 group = artifactsGroup
 version = artifactsBuildVersion
 
 dependencies {
-    implementation project(':visualfsm-core')
+    implementation project(":visualfsm-core")
 
     kspTest project(":visualfsm-compiler")
-    implementation project(':visualfsm-providers')
+    implementation project(":visualfsm-providers")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "io.reactivex.rxjava2:rxjava:$rxJava2Version"
 
-    testImplementation project(':core-tests')
+    testImplementation project(":core-tests")
     testImplementation platform("org.junit:junit-bom:$junitJupiterVersion")
     testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation project(':visualfsm-tools')
+    testImplementation project(":visualfsm-tools")
 }
 
 kotlin {
     sourceSets {
-        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
-        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+        main.kotlin.srcDirs += "build/generated/ksp/main/kotlin"
+        test.kotlin.srcDirs += "build/generated/ksp/test/kotlin"
     }
 }
 
@@ -35,4 +35,4 @@ test {
     }
 }
 
-apply from: '../publish.gradle'
+apply from: "../publish.gradle"
