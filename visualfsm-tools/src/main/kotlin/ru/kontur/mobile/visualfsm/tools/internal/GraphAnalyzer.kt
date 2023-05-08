@@ -2,7 +2,7 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
-import java.util.*
+import java.util.LinkedList
 import kotlin.reflect.KClass
 
 internal object GraphAnalyzer {
@@ -22,8 +22,8 @@ internal object GraphAnalyzer {
         val queue = LinkedList<KClass<out STATE>>()
 
         val graph = GraphGenerator.getAdjacencyMap(
-            baseAction,
-            baseState,
+            baseAction = baseAction,
+            baseState = baseState,
         )
 
         val stateNames = graph.keys

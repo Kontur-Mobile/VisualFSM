@@ -30,7 +30,9 @@ class AnnotationProcessor(
             .getSymbolsWithAnnotation(GenerateTransitionsFactory::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
 
-        if (!annotatedWithFeatureClassDeclarations.iterator().hasNext()) return emptyList()
+        if (!annotatedWithFeatureClassDeclarations.iterator().hasNext()) {
+            return emptyList()
+        }
 
         try {
             annotatedWithFeatureClassDeclarations.forEach {
@@ -65,7 +67,11 @@ class AnnotationProcessor(
             className = generatedTransitionsFactoryClassName,
         )
 
-        writeToFile(generatedTransitionsFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionsFactoryFileSpec)
+        writeToFile(
+            className = generatedTransitionsFactoryClassName,
+            packageName = featureClassDeclaration.packageName.asString(),
+            fileSpec = generatedTransitionsFactoryFileSpec
+        )
     }
 
     private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {

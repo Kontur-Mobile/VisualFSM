@@ -24,23 +24,22 @@ internal object DOTGenerator {
         result.appendLine("\"${initialState.qualifiedName!!.substringAfterLast("${baseState.simpleName}.")}\"")
 
         GraphGenerator.getEdgeListGraph(
-            baseAction,
-            useTransitionName
-        ).forEach { (fromStateName, toStateName, edgeName) ->
+            baseAction = baseAction,
+            useTransitionName = useTransitionName
+        ).forEach { (fromState, toState, edgeName) ->
+            val fromStateName = fromState.simpleStateNameWithSealedName(baseState)
+            val toStateName = toState.simpleStateNameWithSealedName(baseState)
             // Пробел перед названием action'а нужен для аккуратного отображения
-            result.appendLine(
-                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                    toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"]"
-            )
+            result.appendLine("\"$fromStateName\" -> \"$toStateName\" [label=\" ${edgeName}\"]")
         }
 
         GraphAnalyzer.getUnreachableStates(
-            baseAction,
-            baseState,
-            initialState
-        ).forEach {
-            result.appendLine("\"${it.simpleStateNameWithSealedName(baseState)}\" [color=\"red\"]")
+            baseAction = baseAction,
+            baseState = baseState,
+            initialState = initialState
+        ).forEach { state ->
+            val stateName = state.simpleStateNameWithSealedName(baseState)
+            result.appendLine("\"$stateName\" [color=\"red\"]")
         }
 
         result.appendLine("}\n")

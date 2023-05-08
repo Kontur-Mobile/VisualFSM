@@ -2,7 +2,11 @@ package ru.kontur.mobile.visualfsm.annotation_processor
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.Feature
+import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
+import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.Transition
 import java.io.File
 import java.nio.file.Paths
 import kotlin.reflect.KClass

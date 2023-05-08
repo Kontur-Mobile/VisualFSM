@@ -126,12 +126,12 @@ class TransitionsFactoryFileSpecFactory {
 
         val transitionImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
             val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
-            val implementationBuilder = StringBuilder()
-            implementationBuilder.append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
-            implementationBuilder.append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
-            implementationBuilder.append("··············_toState·=·${toStateType.toTypeName()}::class\n")
-            implementationBuilder.append("··········}")
-            implementationBuilder.toString()
+            buildString {
+                append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
+                append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
+                append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+                append("··········}")
+            }
         }
 
         return transitionImplementations
