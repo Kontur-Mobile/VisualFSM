@@ -32,6 +32,10 @@ abstract class Transition<FROM : State, TO : State>() {
     @Suppress("PropertyName")
     var _toState: KClass<TO>? = null
 
+    /** This property is needed to use it in the generated code. Do not use it. */
+    @Suppress("PropertyName")
+    var _name: String? = null
+
     /**
      * A [state][State] that FSM had on [transition][Transition] start
      */
@@ -46,6 +50,15 @@ abstract class Transition<FROM : State, TO : State>() {
      */
     val toState: KClass<TO>
         get() = _toState ?: error(
+            "\nCode generation not configured or configured incorrectly.\n" +
+                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
+        )
+
+    /**
+     * [Transition][Transition] name
+     */
+    val name: String
+        get() = _name ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
                     "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
         )

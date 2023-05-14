@@ -161,21 +161,25 @@ class TransitionsFactoryFileSpecFactory {
             transitionTypeGenericTypes
         }
 
-        val transitionClassImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
-            val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
+        val transitionClassImplementations = transitionClassToSuperTypeGenericTypes.map { (transition, transactionGenericTypes) ->
+            val (fromStateType, toStateType) = transactionGenericTypes
+            val transactionName = transition.toClassName().simpleName
             buildString {
-                append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
+                append("··········action.$transactionName().apply·{\n")
                 append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
                 append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+                append("··············_name·=·\"$transactionName\"\n")
                 append("··········}")
             }
         }
-        val transactionPropertiesImplementations = transitionPropertiesToGenericTypes.map { (transitionImplementation, transactionPropertyGenericTypes) ->
-            val (fromStateType, toStateType) = transactionPropertyGenericTypes
+        val transactionPropertiesImplementations = transitionPropertiesToGenericTypes.map { (transition, transactionGenericTypes) ->
+            val (fromStateType, toStateType) = transactionGenericTypes
+            val transactionName = transition.getName()
             buildString {
-                append("··········action.${transitionImplementation.getName()}.apply·{\n")
+                append("··········action.$transactionName.apply·{\n")
                 append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
                 append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+                append("··············_name·=·\"${transactionName.replaceFirstChar { it.uppercase() }}\"\n")
                 append("··········}")
             }
         }
