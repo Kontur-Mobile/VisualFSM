@@ -128,7 +128,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Action must contains transitions as inner classes. The \"TestAction1(Test.kt:11)\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Action must contains transitions as inner classes or as properties. The \"TestAction1(Test.kt:11)\" does not meet this requirement."))
     }
 
     @Test

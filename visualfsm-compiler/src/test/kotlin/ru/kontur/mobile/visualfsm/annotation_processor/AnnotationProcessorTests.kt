@@ -64,10 +64,12 @@ internal class AnnotationProcessorTests {
                     "            action.Transition1().apply {\n" +
                     "                _fromState = TestState.TestState1::class\n" +
                     "                _toState = TestState.TestState2::class\n" +
+                    "                _name = \"Transition1\"\n" +
                     "            },\n" +
                     "            action.Transition2().apply {\n" +
                     "                _fromState = TestState.TestState2::class\n" +
                     "                _toState = TestState.TestState1::class\n" +
+                    "                _name = \"Transition2\"\n" +
                     "            },\n" +
                     "        )\n" +
                     "\n" +
@@ -133,10 +135,12 @@ internal class AnnotationProcessorTests {
                     "            action.Transition1().apply {\n" +
                     "                _fromState = TestState.TestState1::class\n" +
                     "                _toState = TestState.TestState2::class\n" +
+                    "                _name = \"Transition1\"\n" +
                     "            },\n" +
                     "            action.Transition2().apply {\n" +
                     "                _fromState = TestState.TestState2::class\n" +
                     "                _toState = TestState.TestState1::class\n" +
+                    "                _name = \"Transition2\"\n" +
                     "            },\n" +
                     "        )\n" +
                     "\n" +
