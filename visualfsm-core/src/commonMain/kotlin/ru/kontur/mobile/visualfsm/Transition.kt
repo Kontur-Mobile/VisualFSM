@@ -87,6 +87,11 @@ abstract class Transition<FROM : State, TO : State>() {
         this._transform = transform
     }
 
+    constructor(predicate: Boolean, transform: TO) : this() {
+        this._predicate = { predicate }
+        this._transform = { transform }
+    }
+
     constructor(predicate: Boolean, transform: (state: FROM) -> TO) : this() {
         this._predicate = { predicate }
         this._transform = transform
