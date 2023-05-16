@@ -7,10 +7,7 @@ import ru.kontur.mobile.visualfsm.testFSMs.extraStateReachability.ExtraStateReac
 
 class HandleLoaded : ExtraStateReachabilityFSMAction() {
 
-    inner class LoadingToLoadedTransition : Transition<Loading, Loaded>() {
-
-        override fun transform(state: Loading) = Loaded
-    }
+    inner class LoadingToLoadedTransition : Transition<Loading, Loaded>(transform = Loaded)
 
     inner class UpdatingToLoadedTransition : Transition<Updating, Loaded>() {
 

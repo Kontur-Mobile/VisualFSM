@@ -56,7 +56,7 @@ abstract class Action<STATE : State> {
 
         callbacks?.onTransitionSelected(this, selectedTransition, oldState)
 
-        val newState = selectedTransition.transform(oldState)
+        val newState = selectedTransition.transformInternal(oldState)
 
         callbacks?.onNewStateReduced(this, selectedTransition, oldState, newState)
 
@@ -64,12 +64,14 @@ abstract class Action<STATE : State> {
     }
 
     @Suppress("UNCHECKED_CAST", "DEPRECATION")
-    private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
-        (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
+    private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> {
+        return (getTransitions() as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
+    }
 
     private fun isCorrectTransition(
         transition: Transition<STATE, STATE>,
         oldState: STATE,
-    ): Boolean =
-        (transition.fromState == oldState::class) && transition.predicate(oldState)
+    ): Boolean {
+        return (transition.fromState == oldState::class) && transition.predicateInternal(oldState)
+    }
 }

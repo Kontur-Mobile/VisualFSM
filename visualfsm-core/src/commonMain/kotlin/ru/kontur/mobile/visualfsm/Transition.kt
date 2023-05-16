@@ -66,5 +66,39 @@ abstract class Transition<FROM : State, TO : State>() {
      * @param state current [state][State]
      * @return new [state][State]
      */
-    abstract fun transform(state: FROM): TO
+    open fun transform(state: FROM): TO {
+        TODO("Not implemented. Configure transform function in the Transition class by overriding fun transform(state: FROM): TO or set transform in Transition constructor")
+    }
+
+    private var _predicate: ((state: FROM) -> Boolean)? = null
+    private var _transform: ((state: FROM) -> TO)? = null
+
+    internal val transformInternal: (state: FROM) -> TO
+        get() = _transform ?: ::transform
+
+    internal val predicateInternal: (state: FROM) -> Boolean
+        get() = _predicate ?: ::predicate
+
+    constructor(transform: TO) : this() {
+        this._transform = { transform }
+    }
+
+    constructor(transform: (state: FROM) -> TO) : this() {
+        this._transform = transform
+    }
+
+    constructor(predicate: Boolean, transform: (state: FROM) -> TO) : this() {
+        this._predicate = { predicate }
+        this._transform = transform
+    }
+
+    constructor(predicate: (state: FROM) -> Boolean, transform: TO) : this() {
+        this._predicate = predicate
+        this._transform = { transform }
+    }
+
+    constructor(predicate: (state: FROM) -> Boolean, transform: (state: FROM) -> TO) : this() {
+        this._predicate = predicate
+        this._transform = transform
+    }
 }
