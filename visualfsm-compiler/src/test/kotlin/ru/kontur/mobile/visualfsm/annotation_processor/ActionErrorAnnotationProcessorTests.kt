@@ -94,7 +94,7 @@ internal class ActionErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Base action class must have subclasses. The \"TestState(Test.kt:4)\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Base action class must have subclasses. The \"TestAction(Test.kt:9)\" does not meet this requirement."))
     }
 
     @Test
