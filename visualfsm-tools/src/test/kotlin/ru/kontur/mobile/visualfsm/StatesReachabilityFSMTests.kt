@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMState
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.actions.AllStatesReachabilityFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
+import ru.kontur.mobile.visualfsm.tools.data.*
+import kotlin.reflect.full.isSubclassOf
 
 class StatesReachabilityFSMTests {
     @Test
@@ -14,6 +16,30 @@ class StatesReachabilityFSMTests {
                 AllStatesReachabilityFSMAction::class,
                 AllStatesReachabilityFSMState::class,
                 AllStatesReachabilityFSMState.Initial::class,
+                attributes = DotAttributes(
+                    nodeAttributes = { state ->
+                        when {
+                            state.isSubclassOf(AllStatesReachabilityFSMState.AsyncWorkState::class) -> {
+                                NodeAttributes(
+                                    shape = NodeShape.Oval,
+                                    color = Color.Blue
+                                )
+                            }
+
+                            else -> NodeAttributes(shape = NodeShape.Box)
+                        }
+                    },
+
+                    edgeAttributes = { from, to ->
+                        when (to) {
+                            is AllStatesReachabilityFSMState.AsyncWorkState -> EdgeAttributes(
+                                color = Color.Blue
+                            )
+
+                            else -> EdgeAttributes()
+                        }
+                    }
+                )
             )
         )
         assertTrue(true)

@@ -4,6 +4,7 @@ import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
+import ru.kontur.mobile.visualfsm.tools.data.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.internal.DOTGenerator
 import ru.kontur.mobile.visualfsm.tools.internal.GraphAnalyzer
 import ru.kontur.mobile.visualfsm.tools.internal.GraphGenerator
@@ -17,13 +18,15 @@ object VisualFSM {
      * @param baseAction base [action][Action] [class][KClass]
      * @param baseState base [state][State] [class][KClass]
      * @param initialState initial [state][State] [class][KClass]
+     * @param attributes DOT language attributes for visualization customization
      * @return a DOT graph for Graphviz
      */
     fun <STATE : State> generateDigraph(
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
-    ) = DOTGenerator.generate(baseAction, baseState, initialState, true)
+        attributes: DotAttributes<STATE> = DotAttributes(),
+    ) = DOTGenerator.generate(baseAction, baseState, initialState, true, attributes)
 
     /**
      * Generates a FSM DOT graph for Graphviz
