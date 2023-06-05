@@ -22,21 +22,15 @@ internal object DOTGenerator {
     ): String {
         val result = StringBuilder()
 
-        result.appendLine("\ndigraph ${baseState.simpleName}Transitions {")
+        result.appendLine("digraph ${baseState.simpleName}Transitions {")
+
+        if(attributes.graphAttributes.raw.isNotBlank()) {
+            result.append("${attributes.graphAttributes.raw}\n")
+        }
 
         result.append(getStatesWithAttributes(baseAction, baseState, initialState, attributes))
 
-        GraphGenerator.getEdgeListGraph(
-            baseAction,
-            useTransitionName
-        ).forEach { (fromStateName, toStateName, edgeName) ->
-            // Пробел перед названием action'а нужен для аккуратного отображения
-            result.appendLine(
-                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                    toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"]"
-            )
-        }
+        result.append(getTransitionsWithAttributes(baseAction, baseState, useTransitionName, attributes))
 
         result.appendLine("}\n")
 
@@ -69,11 +63,7 @@ internal object DOTGenerator {
             }]\n"
         )
 
-        stateKClassSetWithoutInitial.toSortedSet { kClass1, kClass2 ->
-            kClass1.qualifiedName!!.compareTo(
-                kClass2.qualifiedName!!
-            )
-        }.forEach { stateKClass ->
+        stateKClassSetWithoutInitial.forEach { stateKClass ->
             result.append("\"${stateKClass.simpleStateNameWithSealedName(baseState)}\"")
             result.append(
                 " [${
@@ -83,6 +73,29 @@ internal object DOTGenerator {
                         unreachableStatesSet
                     )
                 }]\n"
+            )
+        }
+
+        return result.toString()
+    }
+
+    private fun <STATE : State> getTransitionsWithAttributes(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+        useTransitionName: Boolean,
+        attributes: DotAttributes<STATE> = DotAttributes(),
+    ): String {
+        val result = StringBuilder()
+
+        GraphGenerator.getEdgeListGraph(
+            baseAction,
+            useTransitionName
+        ).forEach { (fromStateName, toStateName, edgeName) ->
+            // Пробел перед названием action'а нужен для аккуратного отображения
+            result.appendLine(
+                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
+                    toStateName.simpleStateNameWithSealedName(baseState)
+                }\" [label=\" ${edgeName}\"]"
             )
         }
 

@@ -107,7 +107,11 @@ internal object GraphGenerator {
      * @return the set of state classes
      */
     fun <STATE : State> getStateKClasses(stateKClass: KClass<out STATE>): Set<KClass<out STATE>> {
-        val stateKClassSet = HashSet<KClass<out STATE>>()
+        val stateKClassSet = TreeSet<KClass<out STATE>> { kClass1, kClass2 ->
+            kClass1.qualifiedName!!.compareTo(
+                kClass2.qualifiedName!!
+            )
+        }
         populateStateKClassSet(stateKClassSet, stateKClass)
         return stateKClassSet
     }
@@ -117,7 +121,7 @@ internal object GraphGenerator {
      * they could just combine and have those [State] classes as inheritors
      */
     private fun <STATE : State> populateStateKClassSet(
-        stateNames: HashSet<KClass<out STATE>>,
+        stateNames: TreeSet<KClass<out STATE>>,
         stateClass: KClass<out STATE>,
     ) {
         stateClass.sealedSubclasses.forEach { sealedSubclass ->
