@@ -13,6 +13,13 @@ import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.baseTests.rx.TestFSMAsyncWorkerRx
 import ru.kontur.mobile.visualfsm.baseTests.rx.TestFSMFeatureRx
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
+import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.EdgeAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.GraphAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.NodeAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 
 class StateMachineRxTests {
 
@@ -35,6 +42,61 @@ class StateMachineRxTests {
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther\"]\n" +
+                    "}\n" +
+                    "\n", digraph
+        )
+    }
+
+    @Test
+    fun generateDigraphWithAttributesTest() {
+        val digraph = VisualFSM.generateDigraph(
+            baseAction = TestFSMAction::class,
+            baseState = TestFSMState::class,
+            initialState = TestFSMState.Initial::class,
+            attributes = DotAttributes(
+                graphAttributes = GraphAttributes(raw = "rankdir=LR;\nsize=\"8,5\""),
+                nodeAttributes = { state ->
+                    if (state == TestFSMState.Async::class) {
+                        NodeAttributes(
+                            shape = NodeShape.Octagon,
+                            color = Color.Blue,
+                            fontColor = Color.White,
+                            raw = "style=filled"
+                        )
+                    } else {
+                        NodeAttributes(
+                            shape = NodeShape.Box,
+                            color = Color.Black,
+                            fontColor = Color.Black
+                        )
+                    }
+                },
+                edgeAttributes = { from, _ ->
+                    if (from == TestFSMState.Async::class) {
+                        EdgeAttributes(
+                            arrowHead = ArrowHead.Empty,
+                            color = Color.Blue,
+                            fontColor = Color.DarkGreen,
+                            raw = "color=darkgreen"
+                        )
+                    } else EdgeAttributes()
+                }
+            )
+        )
+
+        assertEquals(
+            "digraph TestFSMStateTransitions {\n" +
+                    "rankdir=LR;\n" +
+                    "size=\"8,5\"\n" +
+                    "\"Initial\" [ shape=box]\n" +
+                    "\"Async\" [ color=blue fontcolor=white shape=octagon style=filled]\n" +
+                    "\"Complete\" [ shape=box]\n" +
+                    "\"Error\" [ shape=box]\n" +
+                    "\"Async\" -> \"Initial\" [label=\" Cancel\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
+                    "\"Async\" -> \"Error\" [label=\" Error\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
+                    "\"Async\" -> \"Complete\" [label=\" Success\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
+                    "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
+                    "\"Async\" -> \"Async\" [label=\" StartOther\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
                     "}\n" +
                     "\n", digraph
         )
