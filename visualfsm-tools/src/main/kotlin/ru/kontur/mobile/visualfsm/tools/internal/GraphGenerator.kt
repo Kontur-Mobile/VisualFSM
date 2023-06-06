@@ -103,16 +103,16 @@ internal object GraphGenerator {
     /**
      * Returns the set of state classes
      *
-     * @param stateKClass [state][State] class
+     * @param baseState base [state][State] class
      * @return the set of state classes
      */
-    fun <STATE : State> getStateKClasses(stateKClass: KClass<out STATE>): Set<KClass<out STATE>> {
+    fun <STATE : State> getStateKClasses(baseState: KClass<out STATE>): Set<KClass<out STATE>> {
         val stateKClassSet = TreeSet<KClass<out STATE>> { kClass1, kClass2 ->
             kClass1.qualifiedName!!.compareTo(
                 kClass2.qualifiedName!!
             )
         }
-        populateStateKClassSet(stateKClassSet, stateKClass)
+        populateStateKClassSet(stateKClassSet, baseState)
         return stateKClassSet
     }
 

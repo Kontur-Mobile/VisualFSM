@@ -42,8 +42,7 @@ class StateMachineRxTests {
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther\"]\n" +
-                    "}\n" +
-                    "\n", digraph
+                    "}\n", digraph
         )
     }
 
@@ -97,8 +96,7 @@ class StateMachineRxTests {
                     "\"Async\" -> \"Complete\" [label=\" Success\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther\" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
-                    "}\n" +
-                    "\n", digraph
+                    "}\n", digraph
         )
     }
 

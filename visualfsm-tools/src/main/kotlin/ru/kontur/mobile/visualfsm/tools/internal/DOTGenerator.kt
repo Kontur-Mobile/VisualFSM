@@ -34,7 +34,7 @@ internal object DOTGenerator {
 
         result.append(getTransitionsWithAttributes(baseAction, baseState, useTransitionName, attributes))
 
-        result.appendLine("}\n")
+        result.appendLine("}")
 
         return result.toString()
     }

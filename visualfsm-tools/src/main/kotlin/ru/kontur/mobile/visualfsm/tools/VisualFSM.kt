@@ -18,7 +18,7 @@ object VisualFSM {
      * @param baseAction base [action][Action] [class][KClass]
      * @param baseState base [state][State] [class][KClass]
      * @param initialState initial [state][State] [class][KClass]
-     * @param attributes DOT language attributes for visualization customization
+     * @param attributes DOT language attributes for graph rendering customization
      * @return a DOT graph for Graphviz
      */
     fun <STATE : State> generateDigraph(
