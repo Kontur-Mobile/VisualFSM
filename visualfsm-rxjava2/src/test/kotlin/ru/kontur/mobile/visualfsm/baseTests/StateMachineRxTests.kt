@@ -26,10 +26,10 @@ class StateMachineRxTests {
 
         assertEquals(
                     "digraph TestFSMStateTransitions {\n" +
-                    "\"Initial\" [color=black, shape=oval]\n" +
-                    "\"Async\" [color=black, shape=oval]\n" +
-                    "\"Complete\" [color=black, shape=oval]\n" +
-                    "\"Error\" [color=black, shape=oval]\n" +
+                    "\"Initial\" []\n" +
+                    "\"Async\" []\n" +
+                    "\"Complete\" []\n" +
+                    "\"Error\" []\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel\"]\n" +
                     "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +

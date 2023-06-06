@@ -2,8 +2,10 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.tools.data.Color
-import ru.kontur.mobile.visualfsm.tools.data.DotAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
+import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 import kotlin.reflect.KClass
 
 internal object DOTGenerator {
@@ -24,7 +26,7 @@ internal object DOTGenerator {
 
         result.appendLine("digraph ${baseState.simpleName}Transitions {")
 
-        if(attributes.graphAttributes.raw.isNotBlank()) {
+        if (attributes.graphAttributes.raw.isNotBlank()) {
             result.append("${attributes.graphAttributes.raw}\n")
         }
 
@@ -91,11 +93,11 @@ internal object DOTGenerator {
             baseAction,
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
-            // Пробел перед названием action'а нужен для аккуратного отображения
+            // Пробел перед edgeName нужен для аккуратного отображения
             result.appendLine(
                 "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
                     toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"]"
+                }\" [label=\" ${edgeName}\"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
             )
         }
 
@@ -116,12 +118,47 @@ internal object DOTGenerator {
             nodeAttributes.color
         }
 
-        attributesBuilder.append("color=${color.name.lowercase()}, ")
+        if (color != Color.Black) {
+            attributesBuilder.append(" color=${color.name.lowercase()}")
+        }
 
-        attributesBuilder.append("shape=${nodeAttributes.shape.name.lowercase()}")
+        if (nodeAttributes.fontColor != Color.Black) {
+            attributesBuilder.append(" fontcolor=${nodeAttributes.fontColor.name.lowercase()}")
+        }
+
+        if (nodeAttributes.shape != NodeShape.Oval) {
+            attributesBuilder.append(" shape=${nodeAttributes.shape.dotString}")
+        }
 
         if (nodeAttributes.raw.isNotBlank()) {
-            attributesBuilder.append(",${nodeAttributes.raw}")
+            attributesBuilder.append(" ${nodeAttributes.raw}")
+        }
+
+        return attributesBuilder.toString()
+    }
+
+    private fun <STATE : State> getAttributesForEdge(
+        attributes: DotAttributes<STATE>,
+        fromState: KClass<out STATE>,
+        toState: KClass<out STATE>,
+    ): String {
+        val edgeAttributes = attributes.edgeAttributes(fromState, toState)
+        val attributesBuilder = StringBuilder()
+
+        if (edgeAttributes.color != Color.Black) {
+            attributesBuilder.append(" color=${edgeAttributes.color.name.lowercase()}")
+        }
+
+        if (edgeAttributes.fontColor != Color.Black) {
+            attributesBuilder.append(" fontcolor=${edgeAttributes.fontColor.name.lowercase()}")
+        }
+
+        if (edgeAttributes.arrowHead != ArrowHead.Normal) {
+            attributesBuilder.append(" arrowhead=${edgeAttributes.arrowHead.dotString}")
+        }
+
+        if (edgeAttributes.raw.isNotBlank()) {
+            attributesBuilder.append(" ${edgeAttributes.raw}")
         }
 
         return attributesBuilder.toString()

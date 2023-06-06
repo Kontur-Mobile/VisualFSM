@@ -1,4 +1,4 @@
-package ru.kontur.mobile.visualfsm.tools.data
+package ru.kontur.mobile.visualfsm.tools.graphviz.enums
 
 /**
 The enum of node shapes with string value for DOT language

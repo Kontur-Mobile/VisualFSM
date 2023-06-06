@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.AllStatesReachabilityFSMState
 import ru.kontur.mobile.visualfsm.testFSMs.allStatesReachability.actions.AllStatesReachabilityFSMAction
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
-import ru.kontur.mobile.visualfsm.tools.data.*
+import ru.kontur.mobile.visualfsm.tools.graphviz.*
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 import kotlin.reflect.full.isSubclassOf
 
 class StatesReachabilityFSMTests {
@@ -22,7 +25,8 @@ class StatesReachabilityFSMTests {
                             state.isSubclassOf(AllStatesReachabilityFSMState.AsyncWorkState::class) -> {
                                 NodeAttributes(
                                     shape = NodeShape.Oval,
-                                    color = Color.Blue
+                                    color = Color.Blue,
+                                    fontColor = Color.Blue
                                 )
                             }
 
@@ -31,9 +35,17 @@ class StatesReachabilityFSMTests {
                     },
 
                     edgeAttributes = { from, to ->
-                        when (to) {
-                            is AllStatesReachabilityFSMState.AsyncWorkState -> EdgeAttributes(
-                                color = Color.Blue
+                        when {
+                            to.isSubclassOf(AllStatesReachabilityFSMState.AsyncWorkState::class) -> EdgeAttributes(
+                                arrowHead = ArrowHead.Vee,
+                                color = Color.Blue,
+                                fontColor = Color.Blue,
+                            )
+
+                            from.isSubclassOf(AllStatesReachabilityFSMState.AsyncWorkState::class) -> EdgeAttributes(
+                                arrowHead = ArrowHead.Normal,
+                                color = Color.DarkGreen,
+                                fontColor = Color.DarkGreen,
                             )
 
                             else -> EdgeAttributes()

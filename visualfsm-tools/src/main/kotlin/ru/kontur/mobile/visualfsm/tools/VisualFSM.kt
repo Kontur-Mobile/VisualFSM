@@ -4,7 +4,7 @@ import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.tools.data.DotAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.internal.DOTGenerator
 import ru.kontur.mobile.visualfsm.tools.internal.GraphAnalyzer
 import ru.kontur.mobile.visualfsm.tools.internal.GraphGenerator
