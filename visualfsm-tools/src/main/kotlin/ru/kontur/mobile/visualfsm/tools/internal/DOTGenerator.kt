@@ -93,11 +93,11 @@ internal object DOTGenerator {
             baseAction,
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
-            // Пробел перед edgeName нужен для аккуратного отображения
+            // A space before and after edgeName is needed to improve rendering
             result.appendLine(
                 "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
                     toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
+                }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
             )
         }
 

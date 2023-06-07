@@ -81,6 +81,14 @@ for _debugging_, _adding new features_, and _refactoring old ones_.
 
 A simplified FSM graph sample of user authorization and registration.
 
+### Visualization customization
+
+To increase the readability of the graph, you can control the rendering rules using the 'DotAttributes' object when generating the graph.
+
+<img src="./docs/img/graph_with_attributes.png" alt="graph with attributes" width="800"/>
+
+[Sample of usage DotAttributes](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android/blob/main/app/src/test/java/ru/kontur/mobile/visualfsm/sample_android/AuthFSMTests.kt)
+
 ### Analysis
 
 Validation on reachability for all states, on set of terminal states and lack of unexpected dead-end
@@ -177,7 +185,9 @@ no `Transition`s or multiple `Transition`s available.
 
 ### Tools of VisualFSM
 
-- `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for visualization in Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ in browser), use the `useTransitionName` argument to set the `Transition` or `Action` class name as the edge name, or the `@Edge("name")` annotation on the `Transition` class to set a custom edge name
+- `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for visualization in Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ in browser).
+`Transition` class name used as the edge name, you can use the `@Edge("name")` annotation on the `Transition` class to set a custom edge name.
+For customization entire graph, colors and shapes of nodes or edges you can use the `attributes` argument to graph rendering customization. 
 
 - `VisualFSM.getUnreachableStates(...): List<KClass<out STATE>>` - get all unreachable states from initial state 
 
