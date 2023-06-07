@@ -20,7 +20,8 @@ class DotAttributes<STATE : State>(
 
 /**
  * DOT language attributes for the entire graph rendering customization
- * @property raw - raw DOT language string for additional attributes
+ * @property raw - raw DOT language string for additional attributes (see )
+ * @see <a href="https://graphviz.org/docs/graph/">Documentation</a>
  */
 data class GraphAttributes(
     val raw: String = "",
@@ -32,6 +33,7 @@ data class GraphAttributes(
  * @property color - node color
  * @property fontColor - font color
  * @property raw - raw DOT language string for additional attributes
+ * @see <a href="https://graphviz.org/docs/nodes/">Documentation</a>
  */
 data class NodeAttributes(
     val shape: NodeShape = NodeShape.Oval,
@@ -46,6 +48,7 @@ data class NodeAttributes(
  * @property color - node color
  * @property fontColor - font color
  * @property raw - raw DOT language string for additional attributes
+ * @see <a href="https://graphviz.org/docs/edges/">Documentation</a>
  */
 data class EdgeAttributes(
     val arrowHead: ArrowHead = ArrowHead.Normal,
