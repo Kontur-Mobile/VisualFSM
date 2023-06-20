@@ -54,29 +54,47 @@ internal object DOTGenerator {
             initialState
         )
 
-        result.append("\"${initialState.simpleStateNameWithSealedName(baseState)}\"")
+        result.append(
+            getNodeWithAttributes(
+                attributes = attributes,
+                state = initialState,
+                unreachableStatesSet = unreachableStatesSet,
+                baseState = baseState
+            )
+        )
+
+        stateKClassSetWithoutInitial.forEach { stateKClass ->
+            result.append(
+                getNodeWithAttributes(
+                    attributes = attributes,
+                    state = stateKClass,
+                    unreachableStatesSet = unreachableStatesSet,
+                    baseState = baseState
+                )
+            )
+        }
+
+        return result.toString()
+    }
+
+    private fun <STATE : State> getNodeWithAttributes(
+        attributes: DotAttributes<STATE>,
+        state: KClass<out STATE>,
+        unreachableStatesSet: Set<KClass<out STATE>>,
+        baseState: KClass<STATE>,
+    ): String {
+        val result = StringBuilder()
+
+        result.append("\"${state.simpleStateNameWithSealedName(baseState)}\"")
         result.append(
             " [${
                 getAttributesForNode(
                     attributes,
-                    initialState,
+                    state,
                     unreachableStatesSet
                 )
             }]\n"
         )
-
-        stateKClassSetWithoutInitial.forEach { stateKClass ->
-            result.append("\"${stateKClass.simpleStateNameWithSealedName(baseState)}\"")
-            result.append(
-                " [${
-                    getAttributesForNode(
-                        attributes,
-                        stateKClass,
-                        unreachableStatesSet
-                    )
-                }]\n"
-            )
-        }
 
         return result.toString()
     }

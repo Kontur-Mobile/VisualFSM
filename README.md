@@ -77,13 +77,15 @@ See in [Quickstart](docs/Quickstart.md)
 Visualization lets you spend less time on understanding complex business process and makes it easier
 for _debugging_, _adding new features_, and _refactoring old ones_.
 
-<img src="docs/img/graph.png" alt="graph" width="600"/>
+<img src="docs/img/graph.png" alt="graph" width="800"/>
 
 A simplified FSM graph sample of user authorization and registration.
 
 ### Visualization customization
 
 To increase the readability of the graph, you can control the rendering rules using the 'DotAttributes' object when generating the graph.
+You can use 'DotAttributesDefaultPreset' class or create own preset for your project.
+
 
 <img src="./docs/img/graph_with_attributes.png" alt="graph with attributes" width="800"/>
 

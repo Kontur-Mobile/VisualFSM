@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  * @property nodeAttributes - function, returns attributes for node
  * @property edgeAttributes - function, returns attributes for edge
  */
-class DotAttributes<STATE : State>(
+open class DotAttributes<STATE : State>(
     val graphAttributes: GraphAttributes = GraphAttributes(),
     val nodeAttributes: (state: KClass<out STATE>) -> NodeAttributes = { _ -> NodeAttributes() },
     val edgeAttributes: (from: KClass<out STATE>, to: KClass<out STATE>) -> EdgeAttributes = { _, _ -> EdgeAttributes() },
