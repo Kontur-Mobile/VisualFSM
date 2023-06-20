@@ -14,8 +14,8 @@ import kotlin.reflect.full.isSubclassOf
  * DOT language attributes preset, use this or create your own preset for your project
  * Displays static states as a black square,
  * states that are handled in AsyncWorker as a blue oval,
- * transitions to states for handling in AsyncWorker as blue arrows with vee head,
- * transitions that return the result of AsyncWorker task as dark green arrows with diamond head
+ * transitions to states for handling in AsyncWorker as blue arrows with ONormal head,
+ * transitions that return the result of AsyncWorker task as dark green arrows with Normal head
  * @param asyncWorkState - base KClass for states handled in AsyncWorker
  */
 class DotAttributesDefaultPreset<STATE : State>(
@@ -38,18 +38,20 @@ class DotAttributesDefaultPreset<STATE : State>(
     edgeAttributes = { from, to ->
         when {
             to.isSubclassOf(asyncWorkState) -> EdgeAttributes(
-                arrowHead = ArrowHead.Vee,
+                arrowHead = ArrowHead.ONormal,
                 color = Color.Blue,
                 fontColor = Color.Blue,
             )
 
             from.isSubclassOf(asyncWorkState) -> EdgeAttributes(
-                arrowHead = ArrowHead.Diamond,
+                arrowHead = ArrowHead.Normal,
                 color = Color.DarkGreen,
                 fontColor = Color.DarkGreen,
             )
 
-            else -> EdgeAttributes()
+            else -> EdgeAttributes(
+                arrowHead = ArrowHead.Vee,
+            )
         }
     }
 )

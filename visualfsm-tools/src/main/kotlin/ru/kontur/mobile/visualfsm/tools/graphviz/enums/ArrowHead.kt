@@ -5,6 +5,7 @@ The enum of types for arrow head with string value for DOT language
  */
 enum class ArrowHead(val dotString: String) {
     Normal("normal"),
+    ONormal("onormal"),
     Inv("inv"),
     Dot("dot"),
     InvDot("invdot"),
