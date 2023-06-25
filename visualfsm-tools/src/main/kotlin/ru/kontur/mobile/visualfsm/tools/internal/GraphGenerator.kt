@@ -66,13 +66,11 @@ internal object GraphGenerator {
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
     ): Map<KClass<out STATE>, List<KClass<out STATE>>> {
-        val stateNames = HashSet<KClass<out STATE>>()
+        val stateClassSet = getStateKClasses(baseState)
         val actions = baseAction.sealedSubclasses
         val graph = mutableMapOf<KClass<out STATE>, MutableList<KClass<out STATE>>>()
 
-        populateStateNamesSet(stateNames, baseState)
-
-        graph.putAll(stateNames.map { it to LinkedList() })
+        graph.putAll(stateClassSet.map { it to LinkedList() })
 
         actions.forEach { actionClass: KClass<out Action<*>> ->
             val transactions =
@@ -103,18 +101,34 @@ internal object GraphGenerator {
     }
 
     /**
+     * Returns the set of state classes
+     *
+     * @param baseState base [state][State] class
+     * @return the set of state classes
+     */
+    fun <STATE : State> getStateKClasses(baseState: KClass<out STATE>): Set<KClass<out STATE>> {
+        val stateKClassSet = TreeSet<KClass<out STATE>> { kClass1, kClass2 ->
+            kClass1.qualifiedName!!.compareTo(
+                kClass2.qualifiedName!!
+            )
+        }
+        populateStateKClassSet(stateKClassSet, baseState)
+        return stateKClassSet
+    }
+
+    /**
      * Recursively fills a set with graph states. Every [State] class might not be a state,
      * they could just combine and have those [State] classes as inheritors
      */
-    private fun <STATE : State> populateStateNamesSet(
-        stateNames: HashSet<KClass<out STATE>>,
+    private fun <STATE : State> populateStateKClassSet(
+        stateNames: TreeSet<KClass<out STATE>>,
         stateClass: KClass<out STATE>,
     ) {
         stateClass.sealedSubclasses.forEach { sealedSubclass ->
             if (sealedSubclass.sealedSubclasses.isEmpty()) {
                 stateNames.add(sealedSubclass)
             } else {
-                populateStateNamesSet(stateNames, sealedSubclass)
+                populateStateKClassSet(stateNames, sealedSubclass)
             }
         }
     }

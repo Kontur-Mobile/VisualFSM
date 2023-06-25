@@ -2,6 +2,10 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
+import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 import kotlin.reflect.KClass
 
 internal object DOTGenerator {
@@ -16,36 +20,166 @@ internal object DOTGenerator {
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
         useTransitionName: Boolean = true,
+        attributes: DotAttributes<STATE> = DotAttributes(),
     ): String {
         val result = StringBuilder()
 
-        result.appendLine("\ndigraph ${baseState.simpleName}Transitions {")
+        result.appendLine("digraph ${baseState.simpleName}Transitions {")
 
-        result.appendLine("\"${initialState.qualifiedName!!.substringAfterLast("${baseState.simpleName}.")}\"")
+        if (attributes.graphAttributes.raw.isNotBlank()) {
+            result.append("${attributes.graphAttributes.raw}\n")
+        }
+
+        result.append(getStatesWithAttributes(baseAction, baseState, initialState, attributes))
+
+        result.append(getTransitionsWithAttributes(baseAction, baseState, useTransitionName, attributes))
+
+        result.appendLine("}")
+
+        return result.toString()
+    }
+
+    private fun <STATE : State> getStatesWithAttributes(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+        initialState: KClass<out STATE>,
+        attributes: DotAttributes<STATE> = DotAttributes(),
+    ): String {
+        val result = StringBuilder()
+
+        val stateKClassSetWithoutInitial = GraphGenerator.getStateKClasses(baseState).minus(initialState)
+        val unreachableStatesSet = GraphAnalyzer.getUnreachableStatesSet(
+            baseAction,
+            baseState,
+            initialState
+        )
+
+        result.append(
+            getNodeWithAttributes(
+                attributes = attributes,
+                state = initialState,
+                unreachableStatesSet = unreachableStatesSet,
+                baseState = baseState
+            )
+        )
+
+        stateKClassSetWithoutInitial.forEach { stateKClass ->
+            result.append(
+                getNodeWithAttributes(
+                    attributes = attributes,
+                    state = stateKClass,
+                    unreachableStatesSet = unreachableStatesSet,
+                    baseState = baseState
+                )
+            )
+        }
+
+        return result.toString()
+    }
+
+    private fun <STATE : State> getNodeWithAttributes(
+        attributes: DotAttributes<STATE>,
+        state: KClass<out STATE>,
+        unreachableStatesSet: Set<KClass<out STATE>>,
+        baseState: KClass<STATE>,
+    ): String {
+        val result = StringBuilder()
+
+        result.append("\"${state.simpleStateNameWithSealedName(baseState)}\"")
+        result.append(
+            " [${
+                getAttributesForNode(
+                    attributes,
+                    state,
+                    unreachableStatesSet
+                )
+            }]\n"
+        )
+
+        return result.toString()
+    }
+
+    private fun <STATE : State> getTransitionsWithAttributes(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+        useTransitionName: Boolean,
+        attributes: DotAttributes<STATE> = DotAttributes(),
+    ): String {
+        val result = StringBuilder()
 
         GraphGenerator.getEdgeListGraph(
             baseAction,
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
-            // Пробел перед названием action'а нужен для аккуратного отображения
+            // A space before and after edgeName is needed to improve rendering
             result.appendLine(
                 "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
                     toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName}\"]"
+                }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
             )
         }
 
-        GraphAnalyzer.getUnreachableStates(
-            baseAction,
-            baseState,
-            initialState
-        ).forEach {
-            result.appendLine("\"${it.simpleStateNameWithSealedName(baseState)}\" [color=\"red\"]")
+        return result.toString()
+    }
+
+    private fun <STATE : State> getAttributesForNode(
+        attributes: DotAttributes<STATE>,
+        state: KClass<out STATE>,
+        unreachableStatesSet: Set<KClass<out STATE>>
+    ): String {
+        val nodeAttributes = attributes.nodeAttributes(state)
+        val attributesBuilder = StringBuilder()
+
+        val color = if (unreachableStatesSet.contains(state)) {
+            Color.Red
+        } else {
+            nodeAttributes.color
         }
 
-        result.appendLine("}\n")
+        if (color != Color.Black) {
+            attributesBuilder.append(" color=${color.name.lowercase()}")
+        }
 
-        return result.toString()
+        if (nodeAttributes.fontColor != Color.Black) {
+            attributesBuilder.append(" fontcolor=${nodeAttributes.fontColor.name.lowercase()}")
+        }
+
+        if (nodeAttributes.shape != NodeShape.Oval) {
+            attributesBuilder.append(" shape=${nodeAttributes.shape.dotString}")
+        }
+
+        if (nodeAttributes.raw.isNotBlank()) {
+            attributesBuilder.append(" ${nodeAttributes.raw}")
+        }
+
+        return attributesBuilder.toString()
+    }
+
+    private fun <STATE : State> getAttributesForEdge(
+        attributes: DotAttributes<STATE>,
+        fromState: KClass<out STATE>,
+        toState: KClass<out STATE>,
+    ): String {
+        val edgeAttributes = attributes.edgeAttributes(fromState, toState)
+        val attributesBuilder = StringBuilder()
+
+        if (edgeAttributes.color != Color.Black) {
+            attributesBuilder.append(" color=${edgeAttributes.color.name.lowercase()}")
+        }
+
+        if (edgeAttributes.fontColor != Color.Black) {
+            attributesBuilder.append(" fontcolor=${edgeAttributes.fontColor.name.lowercase()}")
+        }
+
+        if (edgeAttributes.arrowHead != ArrowHead.Normal) {
+            attributesBuilder.append(" arrowhead=${edgeAttributes.arrowHead.dotString}")
+        }
+
+        if (edgeAttributes.raw.isNotBlank()) {
+            attributesBuilder.append(" ${edgeAttributes.raw}")
+        }
+
+        return attributesBuilder.toString()
     }
 
     private fun <STATE : State> KClass<out STATE>.simpleStateNameWithSealedName(fsmName: KClass<out STATE>): String {

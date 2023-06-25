@@ -17,7 +17,20 @@ internal object GraphAnalyzer {
         baseState: KClass<STATE>,
         initialState: KClass<out STATE>,
     ): List<KClass<out STATE>> {
-        val result = mutableListOf<KClass<out STATE>>()
+        return getUnreachableStatesSet(baseAction, baseState, initialState).toList()
+    }
+
+    /**
+     * Checks all the states for reachability
+     *
+     * @return a set of unreachable states for a disconnected graph, and an empty set for a connected one
+     */
+    fun <STATE : State> getUnreachableStatesSet(
+        baseAction: KClass<out Action<STATE>>,
+        baseState: KClass<STATE>,
+        initialState: KClass<out STATE>,
+    ): Set<KClass<out STATE>> {
+        val result = hashSetOf<KClass<out STATE>>()
         val stateToVisited = mutableMapOf<KClass<out STATE>, Boolean>()
         val queue = LinkedList<KClass<out STATE>>()
 

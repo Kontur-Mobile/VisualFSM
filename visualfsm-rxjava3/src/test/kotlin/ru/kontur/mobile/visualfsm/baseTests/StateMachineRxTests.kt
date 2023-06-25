@@ -25,16 +25,17 @@ class StateMachineRxTests {
         )
 
         assertEquals(
-            "\n" +
                     "digraph TestFSMStateTransitions {\n" +
-                    "\"Initial\"\n" +
-                    "\"Async\" -> \"Initial\" [label=\" Cancel\"]\n" +
-                    "\"Async\" -> \"Error\" [label=\" Error\"]\n" +
-                    "\"Async\" -> \"Complete\" [label=\" Success\"]\n" +
-                    "\"Initial\" -> \"Async\" [label=\" Start\"]\n" +
-                    "\"Async\" -> \"Async\" [label=\" StartOther\"]\n" +
-                    "}\n" +
-                    "\n", digraph
+                    "\"Initial\" []\n" +
+                    "\"Async\" []\n" +
+                    "\"Complete\" []\n" +
+                    "\"Error\" []\n" +
+                    "\"Async\" -> \"Initial\" [label=\" Cancel \"]\n" +
+                    "\"Async\" -> \"Error\" [label=\" Error \"]\n" +
+                    "\"Async\" -> \"Complete\" [label=\" Success \"]\n" +
+                    "\"Initial\" -> \"Async\" [label=\" Start \"]\n" +
+                    "\"Async\" -> \"Async\" [label=\" StartOther \"]\n" +
+                    "}\n", digraph
         )
     }
 
