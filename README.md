@@ -211,7 +211,7 @@ registration: [AuthFSMTests.kt](https://github.com/Kontur-Mobile/VisualFSM-Sampl
 The DOT visualization graph for graphviz is being generated using the `VisualFSM.generateDigraph(...)` method.
 
 For CI visualization use [graphviz](https://graphviz.org/doc/info/command.html), for the local visualization (on your
-PC) use [webgraphviz](http://www.webgraphviz.com/).
+PC) use [edotor](https://edotor.net/), [webgraphviz](http://www.webgraphviz.com/), or other DOT graph visualization tool.
 
 <h3 id="AuthFeature.kt">AuthFeature.kt</h3>
 
