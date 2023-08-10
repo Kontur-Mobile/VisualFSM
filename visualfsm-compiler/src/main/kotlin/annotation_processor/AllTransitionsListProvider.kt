@@ -26,10 +26,10 @@ object AllTransitionsListProvider {
                 ?.value
                 ?.toString()
                 ?: transitionWrapper.transitionClassDeclaration.toClassName().simpleName
-            val toStateName = transitionWrapper.toState.simpleStateNameWithSealedName(baseStateClassDeclaration)
             val fromStateName = transitionWrapper.fromState.simpleStateNameWithSealedName(baseStateClassDeclaration)
+            val toStateName = transitionWrapper.toState.simpleStateNameWithSealedName(baseStateClassDeclaration)
             result.add(
-                "$edgeName,$toStateName,$fromStateName"
+                "$edgeName,$fromStateName,$toStateName"
             )
         }
         return result.joinToString("\n")
