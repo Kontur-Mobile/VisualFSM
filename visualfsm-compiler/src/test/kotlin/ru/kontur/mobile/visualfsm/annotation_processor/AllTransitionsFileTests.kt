@@ -69,13 +69,12 @@ internal class AllTransitionsFileTests {
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
             kspArgs = mutableMapOf(
                 "generateAllTransitionsFiles" to "true",
-                "allTransitionsFilesPackage" to "testPackage",
             )
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("testPackage/TestStateAllTransitions.txt") }
+        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.txt") }
         println(generatedAllTransitionsFile.readText())
         Assertions.assertEquals(
             "TestState\n" +

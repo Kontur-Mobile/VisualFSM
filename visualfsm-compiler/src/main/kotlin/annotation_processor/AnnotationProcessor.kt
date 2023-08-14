@@ -72,7 +72,7 @@ class AnnotationProcessor(
         writeToFile(generatedTransitionsFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionsFactoryFileSpec)
 
         if (options["generateAllTransitionsFiles"] == "true") {
-            val packageName = options["allTransitionsFilesPackage"] ?: featureClassDeclaration.packageName.asString()
+            val packageName = featureClassDeclaration.packageName.asString()
             writeAllTransitionsFile(packageName, baseStateClassDeclaration, actionsWithTransitions)
         }
     }
