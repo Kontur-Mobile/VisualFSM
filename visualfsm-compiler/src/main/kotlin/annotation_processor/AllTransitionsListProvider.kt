@@ -14,8 +14,8 @@ object AllTransitionsListProvider {
         transitionWrappers: List<TransitionKSClassDeclarationWrapper>,
     ): String {
         val result = mutableListOf(
-            baseStateClassDeclaration.toClassName().simpleName,
-            baseStateClassDeclaration.getAllNestedSealedSubclasses().first().simpleStateNameWithSealedName(baseStateClassDeclaration),
+            "${baseStateClassDeclaration.toClassName().simpleName},,",
+            "${baseStateClassDeclaration.getAllNestedSealedSubclasses().first().simpleStateNameWithSealedName(baseStateClassDeclaration)},,",
         )
         transitionWrappers.forEach { transitionWrapper ->
             val edgeName = transitionWrapper.transitionClassDeclaration

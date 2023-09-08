@@ -68,17 +68,17 @@ internal class AllTransitionsFileTests {
             sources = TestUtil.getVisualFSMSources() + testFSMSource
             symbolProcessorProviders = listOf(AnnotationProcessorProvider())
             kspArgs = mutableMapOf(
-                "generateAllTransitionsFiles" to "true",
+                "generateAllTransitionsCsvFiles" to "true",
             )
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.txt") }
+        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
         println(generatedAllTransitionsFile.readText())
         Assertions.assertEquals(
-            "TestState\n" +
-                    "TestState1\n" +
+            "TestState,,\n" +
+                    "TestState1,,\n" +
                     "Transition11,TestState1,TestState2\n" +
                     "Transition12,TestState2,TestState1\n" +
                     "Transition21,TestState1,TestState2\n" +

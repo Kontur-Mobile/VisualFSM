@@ -71,7 +71,7 @@ class AnnotationProcessor(
 
         writeToFile(generatedTransitionsFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionsFactoryFileSpec)
 
-        if (options["generateAllTransitionsFiles"] == "true") {
+        if (options["generateAllTransitionsCsvFiles"] == "true") {
             val packageName = featureClassDeclaration.packageName.asString()
             writeAllTransitionsFile(packageName, baseStateClassDeclaration, actionsWithTransitions)
         }
@@ -123,7 +123,7 @@ class AnnotationProcessor(
             dependencies = Dependencies(false),
             packageName = packageName,
             fileName = "${baseStateClassDeclaration.simpleName.asString()}AllTransitions",
-            extensionName = "txt"
+            extensionName = "csv"
         )
 
         val allTransitionsList = AllTransitionsListProvider.provide(baseStateClassDeclaration, actionsWithTransitions.values.flatten())
