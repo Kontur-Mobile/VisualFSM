@@ -187,6 +187,8 @@ no `Transition`s or multiple `Transition`s available.
 
 ### Tools of VisualFSM
 
+#### Статические инструменты для построения и проверки графа
+
 - `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for visualization in Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ in browser).
 `Transition` class name used as the edge name, you can use the `@Edge("name")` annotation on the `Transition` class to set a custom edge name.
 For customization entire graph, colors and shapes of nodes or edges you can use the `attributes` argument to graph rendering customization. 
@@ -198,6 +200,31 @@ For customization entire graph, colors and shapes of nodes or edges you can use 
 - `VisualFSM.getEdgeListGraph(...): List<Triple<KClass<out STATE>, KClass<out STATE>, String>>` - builds an Edge List
 
 - `VisualFSM.getAdjacencyMap(...): Map<KClass<out STATE>, List<KClass<out STATE>>>` - builds an Adjacency Map of states
+
+#### Code generation tools
+
+##### File with all transitions
+
+To analyze FSM using third-party tools, it is possible to generate a csv file with all transitions.
+To generate a file, you need to pass the `generateAllTransitionsCsvFiles` parameter with the value `true` to the ksp parameters.
+
+```groovy
+ksp {
+    arg("generateAllTransitionsCsvFiles", "true")
+}
+```
+
+In the package that contains the `Feature`, a file called `[Base State Name]AllTransitions.csv` will be generated with the following content:
+
+```
+[Name of base State],,
+[Name of the first non-abstract State (can be used as a graph node)],,
+[Name of the first transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
+...
+[Name of the last transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
+```
+
+[Пример](#authfsmstatealltransitions.csv)
 
 ## Samples of usage
 #### [Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
@@ -396,6 +423,15 @@ class AuthFSMTests {
 }
 ```
 
+### AuthFSMStateAllTransitions.csv
+
+```
+AuthFSMState,,
+Login,,
+Success,AsyncWorkState.Registering,Login
+BadCredential,AsyncWorkState.Registering,Registration
+ConnectionFailed,AsyncWorkState.Registering,Registration
+```
 
 ## What is MVI
 
