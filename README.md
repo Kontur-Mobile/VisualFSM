@@ -187,7 +187,7 @@ no `Transition`s or multiple `Transition`s available.
 
 ### Tools of VisualFSM
 
-#### Статические инструменты для построения и проверки графа
+#### Static tools for graph construction and verification
 
 - `VisualFSM.generateDigraph(...): String` - generate a FSM DOT graph for visualization in Graphviz (graphviz cli on CI or http://www.webgraphviz.com/ in browser).
 `Transition` class name used as the edge name, you can use the `@Edge("name")` annotation on the `Transition` class to set a custom edge name.
