@@ -220,7 +220,7 @@ ksp {
 [Имя последнего перехода],[Имя State из котого происходит переход],[Имя State в который происходит переход]
 ```
 
-[Пример](#authfsmstatealltransitions.csv)
+[Пример](#authfsmstatealltransitionscsv)
 
 ## Примеры использования
 

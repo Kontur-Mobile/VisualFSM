@@ -224,7 +224,7 @@ In the package that contains the `Feature`, a file called `[Base State Name]AllT
 [Name of the last transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
 ```
 
-[Пример](#authfsmstatealltransitions.csv)
+[Example](#authfsmstatealltransitionscsv)
 
 ## Samples of usage
 #### [Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
