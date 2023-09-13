@@ -5,6 +5,7 @@ import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.toClassName
+import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionsFactory
 
 internal class TransitionsFactoryFileSpecFactory {
@@ -51,6 +52,18 @@ internal class TransitionsFactoryFileSpecFactory {
                         .build()
                 )
                 .addParameter("action", baseActionClassDeclaration.toClassName())
+                .returns(
+                    List::class.asClassName().parameterizedBy(
+                        Transition::class.asClassName().parameterizedBy(
+                            WildcardTypeName.producerOf(
+                                baseStateClassDeclaration.toClassName()
+                            ),
+                            WildcardTypeName.producerOf(
+                                baseStateClassDeclaration.toClassName()
+                            )
+                        )
+                    )
+                )
                 .addStatement(createFunctionCodeBuilder.toString())
                 .build()
         )

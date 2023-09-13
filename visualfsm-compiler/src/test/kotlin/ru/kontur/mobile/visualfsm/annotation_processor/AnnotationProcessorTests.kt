@@ -55,11 +55,14 @@ internal class AnnotationProcessorTests {
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
             "import kotlin.Suppress\n" +
+                    "import kotlin.collections.List\n" +
+                    "import ru.kontur.mobile.visualfsm.Transition\n" +
                     "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
                     "\n" +
                     "public class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
                     "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\")\n" +
-                    "  public override fun create(action: TestAction) = when (action) {\n" +
+                    "  override fun create(action: TestAction): List<Transition<out TestState, out TestState>> =\n" +
+                    "      when (action) {\n" +
                     "        is TestAction1 -> listOf(\n" +
                     "            action.Transition1().apply {\n" +
                     "                _fromState = TestState.TestState1::class\n" +
@@ -124,11 +127,14 @@ internal class AnnotationProcessorTests {
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
             "import kotlin.Suppress\n" +
+                    "import kotlin.collections.List\n" +
+                    "import ru.kontur.mobile.visualfsm.Transition\n" +
                     "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
                     "\n" +
                     "internal class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
                     "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\")\n" +
-                    "  public override fun create(action: TestAction) = when (action) {\n" +
+                    "  override fun create(action: TestAction): List<Transition<out TestState, out TestState>> =\n" +
+                    "      when (action) {\n" +
                     "        is TestAction1 -> listOf(\n" +
                     "            action.Transition1().apply {\n" +
                     "                _fromState = TestState.TestState1::class\n" +
