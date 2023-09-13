@@ -23,6 +23,7 @@ import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 class AnnotationProcessor(
     private val logger: KSPLogger,
     private val codeGenerator: CodeGenerator,
+    private val options: Map<String, String>,
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -59,13 +60,21 @@ class AnnotationProcessor(
 
         val generatedTransitionsFactoryClassName = "Generated${featureClassDeclaration.toClassName().simpleName}TransitionsFactory"
 
+        val actionsWithTransitions = ActionsWithTransitionsProvider.provide(baseActionClassDeclaration)
+
         val generatedTransitionsFactoryFileSpec = TransitionsFactoryFileSpecFactory().create(
             baseActionClassDeclaration = baseActionClassDeclaration,
             baseStateClassDeclaration = baseStateClassDeclaration,
             className = generatedTransitionsFactoryClassName,
+            actionsWithTransitions = actionsWithTransitions,
         )
 
         writeToFile(generatedTransitionsFactoryClassName, featureClassDeclaration.packageName.asString(), generatedTransitionsFactoryFileSpec)
+
+        if (options["generateAllTransitionsCsvFiles"] == "true") {
+            val packageName = featureClassDeclaration.packageName.asString()
+            writeAllTransitionsFile(packageName, baseStateClassDeclaration, actionsWithTransitions)
+        }
     }
 
     private fun getBaseStateAndBaseActionClassDeclaration(featureClassDeclaration: KSClassDeclaration): Pair<KSClassDeclaration, KSClassDeclaration> {
@@ -102,6 +111,26 @@ class AnnotationProcessor(
             ?: error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
 
         return baseStateClassDeclaration to baseActionClassDeclaration
+    }
+
+    private fun writeAllTransitionsFile(
+        packageName: String,
+        baseStateClassDeclaration: KSClassDeclaration,
+        actionsWithTransitions: Map<KSClassDeclaration, List<TransitionKSClassDeclarationWrapper>>,
+    ) {
+
+        val stream = codeGenerator.createNewFile(
+            dependencies = Dependencies(false),
+            packageName = packageName,
+            fileName = "${baseStateClassDeclaration.simpleName.asString()}AllTransitions",
+            extensionName = "csv"
+        )
+
+        val allTransitionsList = AllTransitionsListProvider.provide(baseStateClassDeclaration, actionsWithTransitions.values.flatten())
+
+        stream.bufferedWriter().use {
+            it.write(allTransitionsList)
+        }
     }
 
     private fun writeToFile(className: String, packageName: String, fileSpec: TypeSpec) {

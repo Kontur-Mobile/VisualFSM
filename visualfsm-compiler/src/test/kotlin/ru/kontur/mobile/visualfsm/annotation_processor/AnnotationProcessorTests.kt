@@ -6,7 +6,7 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspGeneratedSources
+import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspCodeGeneratedSources
 
 internal class AnnotationProcessorTests {
     @Test
@@ -50,7 +50,7 @@ internal class AnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspGeneratedSources()
+        val kspGeneratedSources = result.getKspCodeGeneratedSources()
         val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(
@@ -119,7 +119,7 @@ internal class AnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspGeneratedSources()
+        val kspGeneratedSources = result.getKspCodeGeneratedSources()
         val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         println(generatedTestStateTransitionsFactory.readText())
         Assertions.assertEquals(

@@ -21,6 +21,10 @@ dependencies {
     testImplementation project(':visualfsm-tools')
 }
 
+ksp {
+    arg("generateAllTransitionsCsvFiles", "true")
+}
+
 kotlin {
     sourceSets {
         main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'

@@ -1,9 +1,6 @@
 package annotation_processor.functions
 
-import com.google.devtools.ksp.symbol.FileLocation
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.Location
-import com.google.devtools.ksp.symbol.Modifier
+import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import kotlin.reflect.KClass
@@ -35,7 +32,11 @@ internal object KSClassDeclarationFunctions {
         }
     }
 
-    fun KSClassDeclaration.getCanonicalClassNameAndLink(): String {
+    internal fun KSDeclaration.simpleStateNameWithSealedName(baseStateClassDeclaration: KSClassDeclaration): String {
+        return this.qualifiedName!!.asString().substringAfterLast("${baseStateClassDeclaration.simpleName.asString()}.")
+    }
+
+    internal fun KSClassDeclaration.getCanonicalClassNameAndLink(): String {
         return "${toClassName().canonicalName}${getLinkOrEmptyString(location)}"
     }
 

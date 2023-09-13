@@ -7,9 +7,11 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 class AnnotationProcessorProvider : SymbolProcessorProvider {
 
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
+        environment.options
         return AnnotationProcessor(
             logger = environment.logger,
-            codeGenerator = environment.codeGenerator
+            codeGenerator = environment.codeGenerator,
+            options = environment.options,
         )
     }
 }

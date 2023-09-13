@@ -15,12 +15,21 @@ object TestUtil {
         getSource(State::class),
         getSource(Feature::class),
         getSource(GenerateTransitionsFactory::class),
+        getSource(Edge::class)
     )
 
-    fun KotlinCompilation.Result.getKspGeneratedSources(): List<File> {
-        val kspWorkingDir = getWorkingDir().resolve("ksp")
+    fun KotlinCompilation.Result.getKspCodeGeneratedSources(): List<File> {
+        return getKspGeneratedSources(this, "kotlin")
+    }
+
+    fun KotlinCompilation.Result.getKspNoCodeGeneratedSources(): List<File> {
+        return getKspGeneratedSources(this, "resources")
+    }
+
+    private fun getKspGeneratedSources(result: KotlinCompilation.Result, dirName: String): List<File> {
+        val kspWorkingDir = result.getWorkingDir().resolve("ksp")
         val kspGeneratedDir = kspWorkingDir.resolve("sources")
-        val kotlinGeneratedDir = kspGeneratedDir.resolve("kotlin")
+        val kotlinGeneratedDir = kspGeneratedDir.resolve(dirName)
         return kotlinGeneratedDir.walkTopDown().toList() - kotlinGeneratedDir
     }
 

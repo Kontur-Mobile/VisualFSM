@@ -1,28 +1,19 @@
 package annotation_processor
 
-import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
-import annotation_processor.functions.KSClassDeclarationFunctions.getCanonicalClassNameAndLink
-import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
-import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
-import com.google.devtools.ksp.closestClassDeclaration
-import com.google.devtools.ksp.getDeclaredFunctions
-import com.google.devtools.ksp.innerArguments
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.toTypeName
-import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionsFactory
 
-class TransitionsFactoryFileSpecFactory {
+internal class TransitionsFactoryFileSpecFactory {
 
     internal fun create(
         baseActionClassDeclaration: KSClassDeclaration,
         baseStateClassDeclaration: KSClassDeclaration,
         className: String,
+        actionsWithTransitions: Map<KSClassDeclaration, List<TransitionKSClassDeclarationWrapper>>,
     ): TypeSpec {
         val classBuilder = TypeSpec.classBuilder(className)
 
@@ -33,20 +24,6 @@ class TransitionsFactoryFileSpecFactory {
             )
         )
 
-        val actionSealedSubclasses = baseActionClassDeclaration.getAllNestedSealedSubclasses()
-
-        if (!actionSealedSubclasses.iterator().hasNext()) {
-            error("Base action class must have subclasses. The \"${baseStateClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-        }
-
-        actionSealedSubclasses.forEach { actionSealedSubclass ->
-            actionSealedSubclass.getDeclaredFunctions().forEach {
-                if (it.modifiers.contains(Modifier.OVERRIDE) && it.simpleName.asString() == "getTransitions") {
-                    error("Action must not override getTransitions function. The \"${actionSealedSubclass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-                }
-            }
-        }
-
         if (Modifier.INTERNAL in baseActionClassDeclaration.modifiers) {
             classBuilder.addModifiers(KModifier.INTERNAL)
         }
@@ -54,8 +31,8 @@ class TransitionsFactoryFileSpecFactory {
         val createFunctionCodeBuilder = StringBuilder()
 
         createFunctionCodeBuilder.append("return·when·(action)·{\n")
-        actionSealedSubclasses.forEach { actionSubclassDeclaration ->
-            val transactionImplementations = getTransitionImplementationsForAction(actionSubclassDeclaration)
+        actionsWithTransitions.forEach { (actionSubclassDeclaration, transitions) ->
+            val transactionImplementations = getTransitionImplementationsForAction(transitions)
             createFunctionCodeBuilder.append("······is·${actionSubclassDeclaration.toClassName()}·->·listOf(\n")
             transactionImplementations.forEach {
                 createFunctionCodeBuilder.append("${it},\n")
@@ -81,55 +58,13 @@ class TransitionsFactoryFileSpecFactory {
         return classBuilder.build()
     }
 
-    private fun getTransitionImplementationsForAction(actionClassDeclaration: KSClassDeclaration): List<String> {
+    private fun getTransitionImplementationsForAction(transitions: List<TransitionKSClassDeclarationWrapper>): List<String> {
 
-        val transitionClasses = actionClassDeclaration.declarations.filterIsInstance<KSClassDeclaration>().filter {
-            it.classKind == ClassKind.CLASS && it.isSubclassOf(Transition::class)
-        }
-
-        if (!transitionClasses.iterator().hasNext()) {
-            error("Action must contains transitions as inner classes. The \"${actionClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-        }
-
-        transitionClasses.forEach { transitionClass ->
-            if (!transitionClass.modifiers.contains(Modifier.INNER)) {
-                error("Transition must have \"inner\" modifier. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-            }
-            if (Modifier.ABSTRACT in transitionClass.modifiers) {
-                error("Transition must not have \"abstract\" modifier. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-            }
-            if (transitionClass.primaryConstructor!!.parameters.isNotEmpty()) {
-                error("Transition must not have constructor parameters. The \"${transitionClass.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
-            }
-        }
-
-        val transitionClassToSuperTypeGenericTypes = transitionClasses.associateWith { transitionClass ->
-            val transitionSuperType = transitionClass.superTypes.map { it.resolve() }.first {
-                val superClassDeclaration = it.declaration.closestClassDeclaration()
-                superClassDeclaration != null && superClassDeclaration.isClassOrSubclassOf(Transition::class)
-            }
-            val transitionSuperTypeGenericTypes = transitionSuperType.innerArguments
-            if (transitionSuperTypeGenericTypes.size != 2) {
-                val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
-                        "But the super class of \"${transitionClass.getCanonicalClassNameAndLink()}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
-                error(errorMessage)
-            }
-            transitionSuperTypeGenericTypes.forEach { transitionSuperTypeGenericType ->
-                try {
-                    transitionSuperTypeGenericType.toTypeName()
-                } catch (e: IllegalArgumentException) {
-                    error("Super class of \"${transitionClass.getCanonicalClassNameAndLink()}\" contains generic parameter with invalid class name.")
-                }
-            }
-            transitionSuperTypeGenericTypes
-        }
-
-        val transitionImplementations = transitionClassToSuperTypeGenericTypes.map { (transitionImplementation, transitionSuperTypeGenericTypes) ->
-            val (fromStateType, toStateType) = transitionSuperTypeGenericTypes
+        val transitionImplementations = transitions.map { transition ->
             val implementationBuilder = StringBuilder()
-            implementationBuilder.append("··········action.${transitionImplementation.toClassName().simpleName}().apply·{\n")
-            implementationBuilder.append("··············_fromState·=·${fromStateType.toTypeName()}::class\n")
-            implementationBuilder.append("··············_toState·=·${toStateType.toTypeName()}::class\n")
+            implementationBuilder.append("··········action.${transition.transitionClassDeclaration.toClassName().simpleName}().apply·{\n")
+            implementationBuilder.append("··············_fromState·=·${transition.fromState.qualifiedName!!.asString()}::class\n")
+            implementationBuilder.append("··············_toState·=·${transition.toState.qualifiedName!!.asString()}::class\n")
             implementationBuilder.append("··········}")
             implementationBuilder.toString()
         }
