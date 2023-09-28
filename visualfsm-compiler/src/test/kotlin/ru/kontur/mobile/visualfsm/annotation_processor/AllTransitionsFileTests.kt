@@ -1,7 +1,10 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
 import annotation_processor.AnnotationProcessorProvider
-import com.tschuchort.compiletesting.*
+import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.kspArgs
+import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspNoCodeGeneratedSources
@@ -77,9 +80,7 @@ internal class AllTransitionsFileTests {
         val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
         println(generatedAllTransitionsFile.readText())
         Assertions.assertEquals(
-            "TestState,,\n" +
-                    "TestState1,,\n" +
-                    "Transition11,TestState1,TestState2\n" +
+            "Transition11,TestState1,TestState2\n" +
                     "Transition12,TestState2,TestState1\n" +
                     "Transition21,TestState1,TestState2\n" +
                     "Transition22,TestState2,TestState1\n" +
