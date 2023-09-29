@@ -210,14 +210,10 @@ ksp {
 }
 ```
 
-В пакет, в котором находится `Feature` сгенерируется файл с именем `[Имя базового State]AllTransitions.csv` со следующим содержимым:
+В пакет, в котором находится `Feature` сгенерируется файл с именем `[Имя базового State]AllTransitions.csv` со строками следующего вида:
 
 ```
-[Имя базового State],,
-[Имя первого не абстрактного State (может использоваться в качестве ноды графа)],,
-[Имя первого перехода],[Имя State из котого происходит переход],[Имя State в который происходит переход]
-...
-[Имя последнего перехода],[Имя State из котого происходит переход],[Имя State в который происходит переход]
+[Имя перехода],[Имя State из котого происходит переход],[Имя State в который происходит переход]
 ```
 
 [Пример](#authfsmstatealltransitionscsv)
@@ -421,8 +417,6 @@ class AuthFSMTests {
 ### AuthFSMStateAllTransitions.csv
 
 ```
-AuthFSMState,,
-Login,,
 Success,AsyncWorkState.Registering,Login
 BadCredential,AsyncWorkState.Registering,Registration
 ConnectionFailed,AsyncWorkState.Registering,Registration

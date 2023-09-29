@@ -214,14 +214,10 @@ ksp {
 }
 ```
 
-In the package that contains the `Feature`, a file called `[Base State Name]AllTransitions.csv` will be generated with the following content:
+In the package that contains the `Feature`, a file called `[Base State Name]AllTransitions.csv` will be generated with lines in the manner:
 
 ```
-[Name of base State],,
-[Name of the first non-abstract State (can be used as a graph node)],,
-[Name of the first transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
-...
-[Name of the last transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
+[Name of the transition],[Name of the State from which the transition executes],[Name of the State to which the transition executes]
 ```
 
 [Example](#authfsmstatealltransitionscsv)
@@ -426,8 +422,6 @@ class AuthFSMTests {
 ### AuthFSMStateAllTransitions.csv
 
 ```
-AuthFSMState,,
-Login,,
 Success,AsyncWorkState.Registering,Login
 BadCredential,AsyncWorkState.Registering,Registration
 ConnectionFailed,AsyncWorkState.Registering,Registration
