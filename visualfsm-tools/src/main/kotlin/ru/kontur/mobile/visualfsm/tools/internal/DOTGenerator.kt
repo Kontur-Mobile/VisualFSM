@@ -2,9 +2,9 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
 import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 import kotlin.reflect.KClass
 
@@ -84,7 +84,6 @@ internal object DOTGenerator {
         baseState: KClass<STATE>,
     ): String {
         val result = StringBuilder()
-
         result.append("\"${state.simpleStateNameWithSealedName(baseState)}\"")
         result.append(
             " [${
@@ -112,20 +111,30 @@ internal object DOTGenerator {
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // A space before and after edgeName is needed to improve rendering
-            result.appendLine(
-                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                    toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
-            )
+            fromStateName.getAllNestedClasses().forEach { fromStateNestedClass ->
+                result.appendLine(
+                    "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
+                        toStateName.simpleStateNameWithSealedName(baseState)
+                    }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateNestedClass, toStateName)}]"
+                )
+            }
         }
 
         return result.toString()
     }
 
+    private fun <STATE : State> KClass<STATE>.getAllNestedClasses(): List<KClass<STATE>> {
+        val filteredClasses = nestedClasses.filterIsInstance<KClass<STATE>>()
+        if (filteredClasses.isEmpty()) return listOf(this)
+        return filteredClasses.map { nestedClass ->
+            nestedClass.getAllNestedClasses()
+        }.flatten()
+    }
+
     private fun <STATE : State> getAttributesForNode(
         attributes: DotAttributes<STATE>,
         state: KClass<out STATE>,
-        unreachableStatesSet: Set<KClass<out STATE>>
+        unreachableStatesSet: Set<KClass<out STATE>>,
     ): String {
         val nodeAttributes = attributes.nodeAttributes(state)
         val attributesBuilder = StringBuilder()

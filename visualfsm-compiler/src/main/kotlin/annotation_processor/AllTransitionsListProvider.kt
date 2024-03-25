@@ -1,5 +1,6 @@
 package annotation_processor
 
+import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
 import annotation_processor.functions.KSClassDeclarationFunctions.simpleStateNameWithSealedName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.asClassName
@@ -22,9 +23,12 @@ object AllTransitionsListProvider {
                 ?.value
                 ?.toString()
                 ?: transitionWrapper.transitionClassDeclaration.toClassName().simpleName
-            val fromStateName = transitionWrapper.fromState.simpleStateNameWithSealedName(baseStateClassDeclaration)
+            val fromStates = transitionWrapper.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transitionWrapper.fromState) }
             val toStateName = transitionWrapper.toState.simpleStateNameWithSealedName(baseStateClassDeclaration)
-            result.add("$edgeName,$fromStateName,$toStateName")
+            fromStates.forEach { fromStateClass ->
+                val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                result.add("$edgeName,$fromStateName,$toStateName")
+            }
         }
         return result.joinToString("\n")
     }
