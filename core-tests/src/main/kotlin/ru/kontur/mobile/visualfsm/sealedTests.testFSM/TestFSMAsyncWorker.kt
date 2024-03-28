@@ -16,7 +16,7 @@ class TestFSMAsyncWorker(coroutineDispatcher: CoroutineContext) : AsyncWorker<Te
             }
 
             is TestFSMState.NavigationState.DialogState,
-            TestFSMState.Initial,
+            is TestFSMState.Initial,
             -> AsyncWorkerTask.Cancel()
         }
     }

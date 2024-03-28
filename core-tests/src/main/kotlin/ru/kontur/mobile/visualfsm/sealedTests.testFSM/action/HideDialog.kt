@@ -9,7 +9,7 @@ class HideDialog : TestFSMAction() {
     @Edge("HideDialog")
     inner class FromShow : Transition<TestFSMState.NavigationState.DialogState.Show, TestFSMState.NavigationState.DialogState.Hide>() {
         override fun transform(state: TestFSMState.NavigationState.DialogState.Show): TestFSMState.NavigationState.DialogState.Hide {
-            return TestFSMState.NavigationState.DialogState.Hide
+            return TestFSMState.NavigationState.DialogState.Hide(count = state.count)
         }
     }
 }

@@ -81,20 +81,29 @@ internal class TransitionsFactoryFileSpecFactory {
         val transitionImplementations = mutableListOf<String>()
         transitions.forEach { transition ->
             val fromStates = transition.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.fromState) }
+            val toStates = transition.toState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.toState) }
             fromStates.forEach { fromStateNestedClass ->
-                val castString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
+                val fromStateCastString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
                     ""
                 } else {
                     "·as·${KClass::class.asClassName()}<${transition.fromState.qualifiedName!!.asString()}>"
                 }
-                transitionImplementations.add(
-                    buildString {
-                        append("··········action.${transition.transitionClassDeclaration.toClassName().simpleName}().apply·{\n")
-                        append("··············_fromState·=·${fromStateNestedClass.qualifiedName!!.asString()}::class$castString\n")
-                        append("··············_toState·=·${transition.toState.qualifiedName!!.asString()}::class\n")
-                        append("··········}")
+                toStates.forEach { toStateNestedClass ->
+                    val toStateCastString = if (toStateNestedClass.qualifiedName == transition.toState.qualifiedName) {
+                        ""
+                    } else {
+                        "·as·${KClass::class.asClassName()}<${transition.toState.qualifiedName!!.asString()}>"
                     }
-                )
+                    transitionImplementations.add(
+                        buildString {
+                            append("··········action.${transition.transitionClassDeclaration.toClassName().simpleName}().apply·{\n")
+                            append("··············_fromState·=·${fromStateNestedClass.qualifiedName!!.asString()}::class$fromStateCastString\n")
+                            append("··············_toState·=·${toStateNestedClass.qualifiedName!!.asString()}::class$toStateCastString\n")
+                            append("··········}")
+                        }
+                    )
+                }
+
             }
         }
 

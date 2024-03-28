@@ -9,7 +9,7 @@ class ShowDialog : TestFSMAction() {
     @Edge("ShowDialog")
     inner class FromInitial : Transition<TestFSMState.Initial, TestFSMState.NavigationState.DialogState.Show>() {
         override fun transform(state: TestFSMState.Initial): TestFSMState.NavigationState.DialogState.Show {
-            return TestFSMState.NavigationState.DialogState.Show
+            return TestFSMState.NavigationState.DialogState.Show(count = state.count)
         }
     }
 }

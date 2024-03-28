@@ -9,7 +9,7 @@ class NavigateCompleted : TestFSMAction() {
     @Edge("NavigateCompleted")
     inner class FromNavigateStateBack : Transition<TestFSMState.NavigationState, TestFSMState.Initial>() {
         override fun transform(state: TestFSMState.NavigationState): TestFSMState.Initial {
-            return TestFSMState.Initial
+            return TestFSMState.Initial(count = state.count)
         }
     }
 }

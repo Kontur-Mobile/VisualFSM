@@ -112,11 +112,14 @@ internal object DOTGenerator {
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // A space before and after edgeName is needed to improve rendering
             fromStateName.getAllNestedClasses().forEach { fromStateNestedClass ->
-                result.appendLine(
-                    "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                        toStateName.simpleStateNameWithSealedName(baseState)
-                    }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateNestedClass, toStateName)}]"
-                )
+                toStateName.getAllNestedClasses().forEach { toStateNestedClass ->
+                    result.appendLine(
+                        "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
+                            toStateNestedClass.simpleStateNameWithSealedName(baseState)
+                        }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateNestedClass, toStateNestedClass)}]"
+                    )
+                }
+
             }
         }
 

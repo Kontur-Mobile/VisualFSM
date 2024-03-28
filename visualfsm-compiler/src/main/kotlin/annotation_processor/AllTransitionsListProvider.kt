@@ -23,11 +23,18 @@ object AllTransitionsListProvider {
                 ?.value
                 ?.toString()
                 ?: transitionWrapper.transitionClassDeclaration.toClassName().simpleName
-            val fromStates = transitionWrapper.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transitionWrapper.fromState) }
-            val toStateName = transitionWrapper.toState.simpleStateNameWithSealedName(baseStateClassDeclaration)
+            val fromStates = transitionWrapper.fromState.getAllNestedSealedSubclasses().ifEmpty {
+                sequenceOf(transitionWrapper.fromState)
+            }
+            val toStates = transitionWrapper.toState.getAllNestedSealedSubclasses().ifEmpty {
+                sequenceOf(transitionWrapper.toState)
+            }
             fromStates.forEach { fromStateClass ->
                 val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                result.add("$edgeName,$fromStateName,$toStateName")
+                toStates.forEach { toStateClass ->
+                    val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                    result.add("$edgeName,$fromStateName,$toStateName")
+                }
             }
         }
         return result.joinToString("\n")
