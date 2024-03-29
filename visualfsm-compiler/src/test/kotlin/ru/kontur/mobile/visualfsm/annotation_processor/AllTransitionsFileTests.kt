@@ -174,6 +174,10 @@ internal class AllTransitionsFileTests {
                     sealed class SealedTest1: TestState(){
                         data object TestState2:  SealedTest1()                      
                         data object TestState3:  SealedTest1()
+
+                        companion object{
+                            fun initial(): TestState2 = TestState2()
+                        }
                     }
                 }
                 

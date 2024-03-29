@@ -87,7 +87,13 @@ internal object GraphGenerator {
 
     private fun <STATE : State> KClass<STATE>.getAllNestedClasses(): List<KClass<STATE>> {
         val filteredClasses = nestedClasses.filterIsInstance<KClass<STATE>>()
-        if (filteredClasses.isEmpty()) return listOf(this)
+        if (filteredClasses.isEmpty()) {
+            return if (this.isCompanion) {
+                listOf()
+            } else {
+                listOf(this)
+            }
+        }
         return filteredClasses.map { nestedClass ->
             nestedClass.getAllNestedClasses()
         }.flatten()

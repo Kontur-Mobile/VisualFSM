@@ -31,6 +31,10 @@ sealed class TestFSMState : State {
                 override val count: Int,
             ) : DialogState()
 
+            companion object {
+                fun initial(): Show = Show(0)
+            }
+
             fun copySealed(
                 count: Int,
             ): DialogState {
