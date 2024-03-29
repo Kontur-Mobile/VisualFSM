@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm.sealedTests.testFSM.action
 
 import ru.kontur.mobile.visualfsm.Edge
+import ru.kontur.mobile.visualfsm.OneToOneSealedTransition
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.sealedTests.testFSM.TestFSMState
 
@@ -16,7 +17,7 @@ class ObserveChange(
     }
 
     @Edge("ObserveChange")
-    inner class FromDialogState : Transition<TestFSMState.NavigationState.DialogState, TestFSMState.NavigationState.DialogState>() {
+    inner class FromDialogState : OneToOneSealedTransition<TestFSMState.NavigationState.DialogState, TestFSMState.NavigationState.DialogState>() {
         override fun transform(state: TestFSMState.NavigationState.DialogState): TestFSMState.NavigationState.DialogState {
             return state.copySealed(count = count)
         }

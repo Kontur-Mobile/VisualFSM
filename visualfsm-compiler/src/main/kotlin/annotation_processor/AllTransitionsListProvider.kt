@@ -1,11 +1,14 @@
 package annotation_processor
 
 import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
+import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.simpleStateNameWithSealedName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import ru.kontur.mobile.visualfsm.Edge
+import ru.kontur.mobile.visualfsm.ManyToManySealedTransition
+import ru.kontur.mobile.visualfsm.OneToOneSealedTransition
 
 object AllTransitionsListProvider {
 
@@ -29,10 +32,31 @@ object AllTransitionsListProvider {
             val toStates = transitionWrapper.toState.getAllNestedSealedSubclasses().ifEmpty {
                 sequenceOf(transitionWrapper.toState)
             }
-            fromStates.forEach { fromStateClass ->
-                val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                toStates.forEach { toStateClass ->
-                    val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+            val transitionClassDeclaration = transitionWrapper.transitionClassDeclaration
+            when {
+                transitionClassDeclaration.isClassOrSubclassOf(OneToOneSealedTransition::class) -> {
+                    fromStates.forEach { fromStateClass ->
+                        val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                        toStates.filter { it == fromStateClass }.forEach { toStateClass ->
+                            val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                            result.add("$edgeName,$fromStateName,$toStateName")
+                        }
+                    }
+                }
+
+                transitionClassDeclaration.isClassOrSubclassOf(ManyToManySealedTransition::class) -> {
+                    fromStates.forEach { fromStateClass ->
+                        val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                        toStates.forEach { toStateClass ->
+                            val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                            result.add("$edgeName,$fromStateName,$toStateName")
+                        }
+                    }
+                }
+
+                else -> {
+                    val fromStateName = transitionWrapper.fromState.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                    val toStateName = transitionWrapper.toState.simpleStateNameWithSealedName(baseStateClassDeclaration)
                     result.add("$edgeName,$fromStateName,$toStateName")
                 }
             }

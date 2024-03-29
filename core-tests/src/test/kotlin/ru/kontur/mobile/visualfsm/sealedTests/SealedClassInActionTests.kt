@@ -107,8 +107,6 @@ class SealedClassInActionTests {
                 "\"Initial\" -> \"NavigationState.Screen.Back\" [label=\" NavigateBack \"]\n" +
                 "\"Initial\" -> \"NavigationState.Screen.Next\" [label=\" NavigateNext \"]\n" +
                 "\"NavigationState.DialogState.Hide\" -> \"NavigationState.DialogState.Hide\" [label=\" ObserveChange \"]\n" +
-                "\"NavigationState.DialogState.Hide\" -> \"NavigationState.DialogState.Show\" [label=\" ObserveChange \"]\n" +
-                "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Hide\" [label=\" ObserveChange \"]\n" +
                 "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Show\" [label=\" ObserveChange \"]\n" +
                 "\"Initial\" -> \"Initial\" [label=\" ObserveChange \"]\n" +
                 "\"Initial\" -> \"NavigationState.DialogState.Show\" [label=\" ShowDialog \"]\n" +

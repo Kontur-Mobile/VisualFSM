@@ -3,6 +3,28 @@ package ru.kontur.mobile.visualfsm
 import kotlin.reflect.KClass
 
 /**
+ * Describes the transition rule between states. Using a one-to-one strategy.
+ *
+ * The one-to-one strategy implies that there will be transitions only between identical final sealed classes
+ *
+ * In generic contains [initial state][fromState] and [destination state][toState].
+ * Defines [predicate] and [transform] functions
+ * @property FROM must be sealed class
+ * @property TO must be sealed class
+ */
+abstract class OneToOneSealedTransition<FROM : State, TO : State>() : Transition<FROM, TO>()
+
+/**
+ * Describes the transition rule between states. Using a many-to-many strategy.
+ *
+ * In generic contains [initial state][fromState] and [destination state][toState].
+ * Defines [predicate] and [transform] functions
+ *
+ * At least one generic must contain a sealed class
+ */
+abstract class ManyToManySealedTransition<FROM : State, TO : State>() : Transition<FROM, TO>()
+
+/**
  * Describes the transition rule between states.
  * In generic contains [initial state][fromState] and [destination state][toState].
  * Defines [predicate] and [transform] functions
@@ -15,8 +37,8 @@ abstract class Transition<FROM : State, TO : State>() {
      */
     @Deprecated(
         message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionsFactory).\n" +
-                "Code generation not configured or configured incorrectly.\n" +
-                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
+            "Code generation not configured or configured incorrectly.\n" +
+            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
         replaceWith = ReplaceWith("Constructor without parameters")
     )
     constructor(fromState: KClass<FROM>, toState: KClass<TO>) : this() {
@@ -38,7 +60,7 @@ abstract class Transition<FROM : State, TO : State>() {
     val fromState: KClass<FROM>
         get() = _fromState ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
         )
 
     /**
@@ -47,7 +69,7 @@ abstract class Transition<FROM : State, TO : State>() {
     val toState: KClass<TO>
         get() = _toState ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
         )
 
     /**

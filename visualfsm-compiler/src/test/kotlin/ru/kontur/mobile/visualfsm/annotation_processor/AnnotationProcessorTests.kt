@@ -183,7 +183,7 @@ internal class AnnotationProcessorTests {
                         override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
                     }
                     
-                    inner class Transition3: Transition<TestState.TestNavigation, TestState.TestState1>() {
+                    inner class Transition3: ManyToManySealedTransition<TestState.TestNavigation, TestState.TestState1>() {
                         override fun transform(state: TestState.TestNavigation): TestState.TestState1 = TestState.TestState1()
                     }
                 }
@@ -231,6 +231,174 @@ internal class AnnotationProcessorTests {
                 "            action.Transition3().apply {\n" +
                 "                _fromState = TestState.TestNavigation.NavigateToNext::class as kotlin.reflect.KClass<TestState.TestNavigation>\n" +
                 "                _toState = TestState.TestState1::class\n" +
+                "            },\n" +
+                "        )\n" +
+                "\n" +
+                "        else -> error(\"Code generation error. Not all actions were processed in the when block.\")\n" +
+                "    }\n" +
+                "}\n",
+            generatedTestStateTransitionsFactory.readText()
+        )
+    }
+
+    @Test
+    fun testBaseActionWithOneToOneSealedClassStrategy() {
+        val testFSMSource = SourceFile.kotlin(
+            name = "Test.kt",
+            contents = """
+                import ru.kontur.mobile.visualfsm.*
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                
+                sealed class TestState: State {
+                    class TestState1: TestState()
+                    class TestState2: TestState()
+                        
+                    sealed class SealedClassState: TestState(){
+                        data object SealedState1: SealedClassState()
+                        data object SealedState2: SealedClassState()
+                    }
+                }
+                
+                internal sealed class TestAction: Action<TestState>()
+                
+                class TestAction1(val parameter1: String): TestAction() {
+                
+                    inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
+                        override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
+                    }
+
+                    inner class Transition2: OneToOneSealedTransition<TestState.SealedClassState, TestState.SealedClassState>() {
+                        override fun transform(state: TestState.SealedClassState): TestState.SealedClassState = state
+                    }
+                }
+                
+                @GenerateTransitionsFactory
+                class TestFeature: Feature<TestState, TestAction>(
+                    initialState = TestState.TestState1(),
+                    transitionsFactory = provideTransitionsFactory(),
+                )
+                """
+        )
+
+        val compilation = KotlinCompilation().apply {
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
+            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
+        }
+        val result = compilation.compile()
+        Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        val kspGeneratedSources = result.getKspCodeGeneratedSources()
+        val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
+        println(generatedTestStateTransitionsFactory.readText())
+        Assertions.assertEquals(
+            "import kotlin.Suppress\n" +
+                "import kotlin.collections.List\n" +
+                "import ru.kontur.mobile.visualfsm.Transition\n" +
+                "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
+                "\n" +
+                "internal class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
+                "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\",\"UNCHECKED_CAST\")\n" +
+                "  override fun create(action: TestAction): List<Transition<out TestState, out TestState>> =\n" +
+                "      when (action) {\n" +
+                "        is TestAction1 -> listOf(\n" +
+                "            action.Transition1().apply {\n" +
+                "                _fromState = TestState.TestState1::class\n" +
+                "                _toState = TestState.TestState2::class\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "            },\n" +
+                "        )\n" +
+                "\n" +
+                "        else -> error(\"Code generation error. Not all actions were processed in the when block.\")\n" +
+                "    }\n" +
+                "}\n",
+            generatedTestStateTransitionsFactory.readText()
+        )
+    }
+
+    @Test
+    fun testBaseActionWitManyToManySealedClassStrategyWithTwoSealed() {
+        val testFSMSource = SourceFile.kotlin(
+            name = "Test.kt",
+            contents = """
+                import ru.kontur.mobile.visualfsm.*
+                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                
+                sealed class TestState: State {
+                    class TestState1: TestState()
+                    class TestState2: TestState()
+                        
+                    sealed class SealedClassState: TestState(){
+                        data object SealedState1: SealedClassState()
+                        data object SealedState2: SealedClassState()
+                    }
+                }
+                
+                internal sealed class TestAction: Action<TestState>()
+                
+                class TestAction1(val parameter1: String): TestAction() {
+                
+                    inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
+                        override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
+                    }
+
+                    inner class Transition2: ManyToManySealedTransition<TestState.SealedClassState, TestState.SealedClassState>() {
+                        override fun transform(state: TestState.SealedClassState): TestState.SealedClassState = state
+                    }
+                }
+                
+                @GenerateTransitionsFactory
+                class TestFeature: Feature<TestState, TestAction>(
+                    initialState = TestState.TestState1(),
+                    transitionsFactory = provideTransitionsFactory(),
+                )
+                """
+        )
+
+        val compilation = KotlinCompilation().apply {
+            sources = TestUtil.getVisualFSMSources() + testFSMSource
+            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
+        }
+        val result = compilation.compile()
+        Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        val kspGeneratedSources = result.getKspCodeGeneratedSources()
+        val generatedTestStateTransitionsFactory = kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
+        println(generatedTestStateTransitionsFactory.readText())
+        Assertions.assertEquals(
+            "import kotlin.Suppress\n" +
+                "import kotlin.collections.List\n" +
+                "import ru.kontur.mobile.visualfsm.Transition\n" +
+                "import ru.kontur.mobile.visualfsm.TransitionsFactory\n" +
+                "\n" +
+                "internal class GeneratedTestFeatureTransitionsFactory : TransitionsFactory<TestState, TestAction> {\n" +
+                "  @Suppress(\"REDUNDANT_ELSE_IN_WHEN\",\"UNCHECKED_CAST\")\n" +
+                "  override fun create(action: TestAction): List<Transition<out TestState, out TestState>> =\n" +
+                "      when (action) {\n" +
+                "        is TestAction1 -> listOf(\n" +
+                "            action.Transition1().apply {\n" +
+                "                _fromState = TestState.TestState1::class\n" +
+                "                _toState = TestState.TestState2::class\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState1::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "            },\n" +
+                "            action.Transition2().apply {\n" +
+                "                _fromState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
+                "                _toState = TestState.SealedClassState.SealedState2::class as kotlin.reflect.KClass<TestState.SealedClassState>\n" +
                 "            },\n" +
                 "        )\n" +
                 "\n" +

@@ -2,14 +2,21 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
+import ru.kontur.mobile.visualfsm.ManyToManySealedTransition
+import ru.kontur.mobile.visualfsm.OneToOneSealedTransition
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSubclassOf
 
 internal object GraphGenerator {
+
+    private enum class TransitionStrategy {
+        Simple, OneToOne, ManyToMany
+    }
 
     /**
      * Builds an Edge list
@@ -26,35 +33,80 @@ internal object GraphGenerator {
         val actions = baseAction.sealedSubclasses
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
-            val transactions =
-                actionClass.nestedClasses
-                    .filter { it.allSuperclasses.contains(Transition::class) }
-                    .map { it as KClass<Transition<out STATE, out STATE>> }
+            val transactions = actionClass.nestedClasses
+                .filter { it.allSuperclasses.contains(Transition::class) }
+                .map { it as KClass<Transition<out STATE, out STATE>> }
 
             transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments
+                val genericFromState = transitionKClass.supertypes.first().arguments
                     .first().type?.classifier as KClass<out STATE>
-                val toState = transitionKClass.supertypes.first().arguments
+                val genericToState = transitionKClass.supertypes.first().arguments
                     .last().type?.classifier as KClass<out STATE>
 
+                val transitionStrategy = getTransitionStrategy(transitionKClass = transitionKClass)
+                val (fromStates, toStates) = when (transitionStrategy) {
+                    TransitionStrategy.ManyToMany,
+                    TransitionStrategy.OneToOne,
+                    -> {
+                        genericFromState.getAllNestedClasses() to genericToState.getAllNestedClasses()
+                    }
+
+                    TransitionStrategy.Simple -> {
+                        listOf(genericFromState) to listOf(genericToState)
+                    }
+                }
                 val edgeName = if (useTransitionName) {
                     getEdgeName(transitionKClass)
                 } else {
                     getEdgeNameByActionName(transitionKClass, actionClass)
                 }
+                when (transitionStrategy) {
+                    TransitionStrategy.ManyToMany,
+                    TransitionStrategy.Simple,
+                    -> {
+                        fromStates.forEach { fromState ->
+                            toStates.forEach { toState ->
+                                edgeList.add(Triple(fromState, toState, edgeName))
+                            }
+                        }
+                    }
 
-                edgeList.add(
-                    Triple(
-                        fromState,
-                        toState,
-                        edgeName
-                    )
-                )
+                    TransitionStrategy.OneToOne -> {
+                        fromStates.forEach { fromState ->
+                            toStates.filter { it == fromState }.forEach { toState ->
+                                edgeList.add(Triple(fromState, toState, edgeName))
+                            }
+                        }
+                    }
+                }
             }
         }
 
         return edgeList
     }
+
+    private fun <STATE : State> KClass<STATE>.getAllNestedClasses(): List<KClass<STATE>> {
+        val filteredClasses = nestedClasses.filterIsInstance<KClass<STATE>>()
+        if (filteredClasses.isEmpty()) return listOf(this)
+        return filteredClasses.map { nestedClass ->
+            nestedClass.getAllNestedClasses()
+        }.flatten()
+    }
+
+    private fun <STATE : State> getTransitionStrategy(transitionKClass: KClass<Transition<out STATE, out STATE>>) =
+        when {
+            transitionKClass.isSubclassOf(OneToOneSealedTransition::class) -> {
+                TransitionStrategy.OneToOne
+            }
+
+            transitionKClass.isSubclassOf(ManyToManySealedTransition::class) -> {
+                TransitionStrategy.ManyToMany
+            }
+
+            else -> {
+                TransitionStrategy.Simple
+            }
+        }
 
     /**
      * Builds an Adjacency Map of states

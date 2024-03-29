@@ -111,27 +111,14 @@ internal object DOTGenerator {
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // A space before and after edgeName is needed to improve rendering
-            fromStateName.getAllNestedClasses().forEach { fromStateNestedClass ->
-                toStateName.getAllNestedClasses().forEach { toStateNestedClass ->
-                    result.appendLine(
-                        "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                            toStateNestedClass.simpleStateNameWithSealedName(baseState)
-                        }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateNestedClass, toStateNestedClass)}]"
-                    )
-                }
-
-            }
+            result.appendLine(
+                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
+                    toStateName.simpleStateNameWithSealedName(baseState)
+                }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
+            )
         }
 
         return result.toString()
-    }
-
-    private fun <STATE : State> KClass<STATE>.getAllNestedClasses(): List<KClass<STATE>> {
-        val filteredClasses = nestedClasses.filterIsInstance<KClass<STATE>>()
-        if (filteredClasses.isEmpty()) return listOf(this)
-        return filteredClasses.map { nestedClass ->
-            nestedClass.getAllNestedClasses()
-        }.flatten()
     }
 
     private fun <STATE : State> getAttributesForNode(
