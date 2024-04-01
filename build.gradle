@@ -7,15 +7,15 @@ ext {
          MINOR version when you add functionality in a backwards compatible manner, and
          PATCH version when you make backwards compatible bug fixes.
     */
-    artifactsBuildVersion = '1.5.1'
+    artifactsBuildVersion = '2.0.0'
     artifactsGroup = 'ru.kontur.mobile.visualfsm'
 }
 
 buildscript {
     ext {
-        kotlinVersion = '1.8.20'
-        dokkaVersion = '1.8.20'
-        atomicfuVersion = '0.21.0'
+        kotlinVersion = '1.9.22'
+        dokkaVersion = '1.9.20'
+        atomicfuVersion = '0.23.2'
     }
 
     repositories {
@@ -32,12 +32,12 @@ buildscript {
 
 subprojects {
     ext {
-        coroutinesVersion = '1.7.3'
+        coroutinesVersion = '1.8.0'
         rxJava2Version = '2.2.21'
-        rxJava3Version = '3.1.7'
-        junitJupiterVersion = '5.10.0'
-        kspVersion = '1.8.20-1.0.11'
-        kotlinPoetVersion = '1.14.2'
+        rxJava3Version = '3.1.8'
+        junitJupiterVersion = '5.10.2'
+        kspVersion = '1.9.22-1.0.17'
+        kotlinPoetVersion = '1.16.0'
         kotlinCompileTestingVersion = '1.5.0'
     }
 }
