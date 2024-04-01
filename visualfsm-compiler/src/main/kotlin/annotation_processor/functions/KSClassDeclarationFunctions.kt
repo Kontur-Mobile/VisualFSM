@@ -1,6 +1,10 @@
 package annotation_processor.functions
 
-import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.FileLocation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.Location
+import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import kotlin.reflect.KClass

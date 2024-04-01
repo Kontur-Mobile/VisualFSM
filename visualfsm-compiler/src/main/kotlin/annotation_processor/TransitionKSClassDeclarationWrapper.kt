@@ -6,6 +6,7 @@ import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.innerArguments
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ksp.toTypeName
+import ru.kontur.mobile.visualfsm.SelfTransition
 import ru.kontur.mobile.visualfsm.Transition
 
 data class TransitionKSClassDeclarationWrapper(val transitionClassDeclaration: KSClassDeclaration) {
@@ -16,11 +17,21 @@ data class TransitionKSClassDeclarationWrapper(val transitionClassDeclaration: K
             superClassDeclaration != null && superClassDeclaration.isClassOrSubclassOf(Transition::class)
         }
         val transitionSuperTypeGenericTypes = transitionSuperType.innerArguments
-        if (transitionSuperTypeGenericTypes.size != 2) {
-            val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
+        val classDeclaration = transitionSuperType.declaration.closestClassDeclaration()
+        val isSelfTransition = classDeclaration?.isClassOrSubclassOf(SelfTransition::class) == true
+        when{
+            isSelfTransition && transitionSuperTypeGenericTypes.size != 1 -> {
+                val errorMessage = "Super class of self transition must have exactly one generic type. " +
                     "But the super class of \"${transitionClassDeclaration.getCanonicalClassNameAndLink()}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
-            error(errorMessage)
+                error(errorMessage)
+            }
+            !isSelfTransition && transitionSuperTypeGenericTypes.size != 2 ->{
+                val errorMessage = "Super class of transition must have exactly two generic types (fromState and toState). " +
+                    "But the super class of \"${transitionClassDeclaration.getCanonicalClassNameAndLink()}\" have ${transitionSuperTypeGenericTypes.size}: ${transitionSuperTypeGenericTypes.map { it.toTypeName() }}"
+                error(errorMessage)
+            }
         }
+
         transitionSuperTypeGenericTypes.forEach { transitionSuperTypeGenericType ->
             try {
                 transitionSuperTypeGenericType.toTypeName()
@@ -28,10 +39,14 @@ data class TransitionKSClassDeclarationWrapper(val transitionClassDeclaration: K
                 error("Super class of \"${transitionClassDeclaration.getCanonicalClassNameAndLink()}\" contains generic parameter with invalid class name.")
             }
         }
-        transitionSuperTypeGenericTypes
+        if (isSelfTransition) {
+            transitionSuperTypeGenericTypes + transitionSuperTypeGenericTypes
+        } else {
+            transitionSuperTypeGenericTypes
+        }
     }
 
-    val fromState by lazy { fromStateAndToState[0].type!!.resolve().declaration }
+    val fromState by lazy { fromStateAndToState[0].type!!.resolve().declaration as KSClassDeclaration }
 
-    val toState by lazy { fromStateAndToState[1].type!!.resolve().declaration }
+    val toState by lazy { fromStateAndToState[1].type!!.resolve().declaration as KSClassDeclaration }
 }

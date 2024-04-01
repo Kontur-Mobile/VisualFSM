@@ -2,14 +2,22 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.Edge
+import ru.kontur.mobile.visualfsm.SelfTransition
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
+import ru.kontur.mobile.visualfsm.tools.internal.GraphGenerator.TransitionStrategy.*
+import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedClasses
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSubclassOf
 
 internal object GraphGenerator {
+
+    private enum class TransitionStrategy {
+        Default, Self
+    }
 
     /**
      * Builds an Edge list
@@ -26,35 +34,54 @@ internal object GraphGenerator {
         val actions = baseAction.sealedSubclasses
 
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
-            val transactions =
-                actionClass.nestedClasses
-                    .filter { it.allSuperclasses.contains(Transition::class) }
-                    .map { it as KClass<Transition<out STATE, out STATE>> }
+            val transactions = actionClass.nestedClasses
+                .filter { it.allSuperclasses.contains(Transition::class) }
+                .map { it as KClass<Transition<out STATE, out STATE>> }
 
             transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments
+                val genericFromState = transitionKClass.supertypes.first().arguments
                     .first().type?.classifier as KClass<out STATE>
-                val toState = transitionKClass.supertypes.first().arguments
+                val genericToState = transitionKClass.supertypes.first().arguments
                     .last().type?.classifier as KClass<out STATE>
+
+                val transitionStrategy = getTransitionStrategy(transitionKClass = transitionKClass)
+                val fromStates = genericFromState.getAllNestedClasses()
+                val toStates = genericToState.getAllNestedClasses()
 
                 val edgeName = if (useTransitionName) {
                     getEdgeName(transitionKClass)
                 } else {
                     getEdgeNameByActionName(transitionKClass, actionClass)
                 }
+                when (transitionStrategy) {
+                    Default,
+                    -> {
+                        fromStates.forEach { fromState ->
+                            toStates.forEach { toState ->
+                                edgeList.add(Triple(fromState, toState, edgeName))
+                            }
+                        }
+                    }
 
-                edgeList.add(
-                    Triple(
-                        fromState,
-                        toState,
-                        edgeName
-                    )
-                )
+                    Self -> {
+                        fromStates.forEach { fromState ->
+                            toStates.filter { it == fromState }.forEach { toState ->
+                                edgeList.add(Triple(fromState, toState, edgeName))
+                            }
+                        }
+                    }
+                }
             }
         }
 
         return edgeList
     }
+
+    private fun <STATE : State> getTransitionStrategy(transitionKClass: KClass<Transition<out STATE, out STATE>>) =
+        when {
+            transitionKClass.isSubclassOf(SelfTransition::class) -> Self
+            else -> Default
+        }
 
     /**
      * Builds an Adjacency Map of states
@@ -72,17 +99,37 @@ internal object GraphGenerator {
 
         graph.putAll(stateClassSet.map { it to LinkedList() })
 
-        actions.forEach { actionClass: KClass<out Action<*>> ->
-            val transactions =
-                actionClass.nestedClasses.filter { it.allSuperclasses.contains(Transition::class) }
+        actions.forEach { actionClass: KClass<out Action<STATE>> ->
+            val transactions = actionClass.nestedClasses
+                .filter { it.allSuperclasses.contains(Transition::class) }
+                .map { it as KClass<Transition<out STATE, out STATE>> }
 
             transactions.forEach { transitionKClass ->
-                val fromState = transitionKClass.supertypes.first().arguments
+                val fromStateGeneric = transitionKClass.supertypes.first().arguments
                     .first().type!!.classifier as KClass<out STATE>
-                val toState = transitionKClass.supertypes.first().arguments
+                val toStateGeneric = transitionKClass.supertypes.first().arguments
                     .last().type!!.classifier as KClass<out STATE>
+                val transitionStrategy = getTransitionStrategy(transitionKClass = transitionKClass)
+                val fromStates = fromStateGeneric.getAllNestedClasses()
+                val toStates = toStateGeneric.getAllNestedClasses()
+                when (transitionStrategy) {
+                    Default -> {
+                        fromStates.forEach { fromState ->
+                            toStates.forEach { toState ->
+                                graph[fromState]?.add(toState)
+                            }
+                        }
+                    }
 
-                graph[fromState]?.add(toState)
+                    Self -> {
+                        fromStates.forEach { fromState ->
+                            toStates.filter { fromState == it }.forEach { toState ->
+                                graph[fromState]?.add(toState)
+                            }
+                        }
+                    }
+                }
+
             }
         }
 
