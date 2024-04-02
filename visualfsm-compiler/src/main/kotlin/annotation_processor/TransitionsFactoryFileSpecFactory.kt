@@ -83,61 +83,35 @@ internal class TransitionsFactoryFileSpecFactory {
     private fun getTransitionImplementationsForAction(transitions: List<TransitionKSClassDeclarationWrapper>): List<String> {
         val transitionImplementations = mutableListOf<String>()
         transitions.forEach { transition ->
-            when {
-                transition.transitionClassDeclaration.isSubclassOf(SelfTransition::class) -> {
-                    val fromStates = transition.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.fromState) }
-                    val toStates = transition.toState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.toState) }
-                    fromStates.forEach { fromStateNestedClass ->
-                        val fromStateCastString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
-                            ""
-                        } else {
-                            "·as·${KClass::class.asClassName()}<${transition.fromState.qualifiedName!!.asString()}>"
-                        }
-                        toStates.filter { fromStateNestedClass == it }.forEach { toStateNestedClass ->
-                            val toStateCastString = if (toStateNestedClass.qualifiedName == transition.toState.qualifiedName) {
-                                ""
-                            } else {
-                                "·as·${KClass::class.asClassName()}<${transition.toState.qualifiedName!!.asString()}>"
-                            }
-                            transitionImplementations.add(
-                                getApplyActionString(
-                                    transitionClassDeclaration = transition.transitionClassDeclaration,
-                                    fromState = fromStateNestedClass,
-                                    toState = toStateNestedClass,
-                                    fromCastString = fromStateCastString,
-                                    toCastString = toStateCastString
-                                )
-                            )
-                        }
-                    }
+            val fromStates = transition.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.fromState) }
+            val toStates = transition.toState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.toState) }
+            fromStates.forEach { fromStateNestedClass ->
+                val fromStateCastString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
+                    ""
+                } else {
+                    "·as·${KClass::class.asClassName()}<${transition.fromState.qualifiedName!!.asString()}>"
                 }
-
-                else -> {
-                    val fromStates = transition.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.fromState) }
-                    val toStates = transition.toState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.toState) }
-                    fromStates.forEach { fromStateNestedClass ->
-                        val fromStateCastString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
-                            ""
-                        } else {
-                            "·as·${KClass::class.asClassName()}<${transition.fromState.qualifiedName!!.asString()}>"
-                        }
-                        toStates.forEach { toStateNestedClass ->
-                            val toStateCastString = if (toStateNestedClass.qualifiedName == transition.toState.qualifiedName) {
-                                ""
-                            } else {
-                                "·as·${KClass::class.asClassName()}<${transition.toState.qualifiedName!!.asString()}>"
-                            }
-                            transitionImplementations.add(
-                                getApplyActionString(
-                                    transitionClassDeclaration = transition.transitionClassDeclaration,
-                                    fromState = fromStateNestedClass,
-                                    toState = toStateNestedClass,
-                                    fromCastString = fromStateCastString,
-                                    toCastString = toStateCastString
-                                )
-                            )
-                        }
+                val isSelfTransition = transition.transitionClassDeclaration.isSubclassOf(SelfTransition::class)
+                val filteredToStates = if (isSelfTransition) {
+                    toStates.filter { fromStateNestedClass == it }
+                } else {
+                    toStates
+                }
+                filteredToStates.forEach { toStateNestedClass ->
+                    val toStateCastString = if (toStateNestedClass.qualifiedName == transition.toState.qualifiedName) {
+                        ""
+                    } else {
+                        "·as·${KClass::class.asClassName()}<${transition.toState.qualifiedName!!.asString()}>"
                     }
+                    transitionImplementations.add(
+                        getApplyActionString(
+                            transitionClassDeclaration = transition.transitionClassDeclaration,
+                            fromState = fromStateNestedClass,
+                            toState = toStateNestedClass,
+                            fromCastString = fromStateCastString,
+                            toCastString = toStateCastString
+                        )
+                    )
                 }
             }
         }

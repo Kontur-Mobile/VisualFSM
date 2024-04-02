@@ -5,7 +5,6 @@ import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.SelfTransition
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.tools.internal.GraphGenerator.TransitionStrategy.*
 import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedClasses
 import java.util.*
 import kotlin.reflect.KClass
@@ -14,10 +13,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 
 internal object GraphGenerator {
-
-    private enum class TransitionStrategy {
-        Default, Self
-    }
 
     /**
      * Builds an Edge list
@@ -44,7 +39,6 @@ internal object GraphGenerator {
                 val genericToState = transitionKClass.supertypes.first().arguments
                     .last().type?.classifier as KClass<out STATE>
 
-                val transitionStrategy = getTransitionStrategy(transitionKClass = transitionKClass)
                 val fromStates = genericFromState.getAllNestedClasses()
                 val toStates = genericToState.getAllNestedClasses()
 
@@ -53,22 +47,15 @@ internal object GraphGenerator {
                 } else {
                     getEdgeNameByActionName(transitionKClass, actionClass)
                 }
-                when (transitionStrategy) {
-                    Default,
-                    -> {
-                        fromStates.forEach { fromState ->
-                            toStates.forEach { toState ->
-                                edgeList.add(Triple(fromState, toState, edgeName))
-                            }
-                        }
+                val isSelfTransition = transitionKClass.isSubclassOf(SelfTransition::class)
+                fromStates.forEach { fromState ->
+                    val filteredToStates = if (isSelfTransition) {
+                        toStates.filter { it == fromState }
+                    } else {
+                        toStates
                     }
-
-                    Self -> {
-                        fromStates.forEach { fromState ->
-                            toStates.filter { it == fromState }.forEach { toState ->
-                                edgeList.add(Triple(fromState, toState, edgeName))
-                            }
-                        }
+                    filteredToStates.forEach { toState ->
+                        edgeList.add(Triple(fromState, toState, edgeName))
                     }
                 }
             }
@@ -76,12 +63,6 @@ internal object GraphGenerator {
 
         return edgeList
     }
-
-    private fun <STATE : State> getTransitionStrategy(transitionKClass: KClass<Transition<out STATE, out STATE>>) =
-        when {
-            transitionKClass.isSubclassOf(SelfTransition::class) -> Self
-            else -> Default
-        }
 
     /**
      * Builds an Adjacency Map of states
@@ -109,27 +90,19 @@ internal object GraphGenerator {
                     .first().type!!.classifier as KClass<out STATE>
                 val toStateGeneric = transitionKClass.supertypes.first().arguments
                     .last().type!!.classifier as KClass<out STATE>
-                val transitionStrategy = getTransitionStrategy(transitionKClass = transitionKClass)
                 val fromStates = fromStateGeneric.getAllNestedClasses()
                 val toStates = toStateGeneric.getAllNestedClasses()
-                when (transitionStrategy) {
-                    Default -> {
-                        fromStates.forEach { fromState ->
-                            toStates.forEach { toState ->
-                                graph[fromState]?.add(toState)
-                            }
-                        }
+                val isSelfTransition = transitionKClass.isSubclassOf(SelfTransition::class)
+                fromStates.forEach { fromState ->
+                    val filteredToStates = if (isSelfTransition) {
+                        toStates.filter { it == fromState }
+                    } else {
+                        toStates
                     }
-
-                    Self -> {
-                        fromStates.forEach { fromState ->
-                            toStates.filter { fromState == it }.forEach { toState ->
-                                graph[fromState]?.add(toState)
-                            }
-                        }
+                    filteredToStates.forEach { toState ->
+                        graph[fromState]?.add(toState)
                     }
                 }
-
             }
         }
 

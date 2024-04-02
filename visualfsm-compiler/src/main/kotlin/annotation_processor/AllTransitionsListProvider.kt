@@ -32,25 +32,17 @@ object AllTransitionsListProvider {
                 sequenceOf(transitionWrapper.toState)
             }
             val transitionClassDeclaration = transitionWrapper.transitionClassDeclaration
-            when {
-                transitionClassDeclaration.isClassOrSubclassOf(SelfTransition::class) -> {
-                    fromStates.forEach { fromStateClass ->
-                        val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                        toStates.filter { it == fromStateClass }.forEach { toStateClass ->
-                            val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                            result.add("$edgeName,$fromStateName,$toStateName")
-                        }
-                    }
+            val isSelfTransition = transitionClassDeclaration.isClassOrSubclassOf(SelfTransition::class)
+            fromStates.forEach { fromStateClass ->
+                val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                val filteredToStates = if (isSelfTransition) {
+                    toStates.filter { it == fromStateClass }
+                } else {
+                    toStates
                 }
-
-                else -> {
-                    fromStates.forEach { fromStateClass ->
-                        val fromStateName = fromStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                        toStates.forEach { toStateClass ->
-                            val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
-                            result.add("$edgeName,$fromStateName,$toStateName")
-                        }
-                    }
+                filteredToStates.forEach { toStateClass ->
+                    val toStateName = toStateClass.simpleStateNameWithSealedName(baseStateClassDeclaration)
+                    result.add("$edgeName,$fromStateName,$toStateName")
                 }
             }
         }
