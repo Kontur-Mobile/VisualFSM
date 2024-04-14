@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.multiplatform)
-    id("kotlinx-atomicfu")
+    id(libs.plugins.atomicfu.get().pluginId)
 }
 apply(from = "../publish.gradle")
 

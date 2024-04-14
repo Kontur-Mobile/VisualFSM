@@ -29,10 +29,11 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version = "" 
 rxJava2 = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxJava2" }
 rxJava3 = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxJava3" }
 
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 atomicfu-gradle-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
-kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+dokka = { id = "org.jetbrains.dokka", version.ref  = "dokka" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref  = "kotlin" }
+atomicfu = { id = "kotlinx-atomicfu" }
