@@ -1,6 +1,5 @@
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 if (!project.tasks.findByName('sourcesJar')) {
     task sourcesJar(type: Jar) {
@@ -91,8 +90,15 @@ afterEvaluate {
         }
     }
 
-    signing {
-        if (rootProject.file('secure.properties').exists()) {
+    if (rootProject.file('secure.properties').exists()) {
+        plugins.apply('signing')
+        def signingTasks = tasks.withType(Sign)
+        // Workaround for https://github.com/gradle/gradle/issues/26091 and https://youtrack.jetbrains.com/issue/KT-46466
+        tasks.withType(AbstractPublishToMaven).configureEach {
+            dependsOn(signingTasks)
+        }
+
+        signing {
             if (pluginManager.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
                 publishing.publications.all {
                     sign it
