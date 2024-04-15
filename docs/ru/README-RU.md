@@ -147,7 +147,7 @@ _поиск ошибок_, _добавление нового функциона
 `Transition` - базовый тип Transition. В качестве generic параметров может принимать `State` или набор `State` в виде sealed класса
 
 <details>
-    <summary>Логика формирования переходов для Transition</summary>
+    <summary>Логика формирования переходов для `Transition`</summary>
     Рассмотрим на примере
 
 ```kotlin
@@ -214,10 +214,10 @@ inner class Transition : Transition<AsyncWorkerState, Loaded>() {
 
 </details>
 
-`SelfTransition` - тип Transition, который реализует переход из `State` в `State` с таким же типом. В качестве generic параметра может принимать `State` или набор `State` в виде sealed класса
+`SelfTransition` - тип `Transition`, который реализует переход из `State` в `State` с таким же типом. В качестве generic параметра может принимать `State` или набор `State` в виде sealed класса
 
 <details>
-    <summary>Логика формирования переходов для SelfTransition</summary>
+    <summary>Логика формирования переходов для `SelfTransition`</summary>
     Рассмотрим на примере
 
 ```kotlin
