@@ -142,6 +142,124 @@ _поиск ошибок_, _добавление нового функциона
   нескольких `Transition` с совпадающим стартовым `State`, `predicate` можно не переопределять
 * `transform` конструирует новое состояние для выполнения перехода.
 
+#### Виды Transition
+
+`Transition` - базовый тип Transition. В качестве generic параметров может принимать `State` или набор `State` в виде sealed класса
+
+<details>
+    <summary>Логика формирования переходов для `Transition`</summary>
+    Рассмотрим на примере
+
+```kotlin
+sealed class FSMState : State {
+    data object Initial : FSMState()
+
+    sealed class AsyncWorkerState : FSMState() {
+        data object LoadingRemote : AsyncWorkerState()
+        data object LoadingCache : AsyncWorkerState()
+    }
+
+    data object Loaded : FSMState()
+}
+```
+
+Если в generic параметр передать `data object Initial` и `data object Loaded`
+```kotlin
+inner class Transition : Transition<Initial, Loaded>() {
+    override fun transform(state: Initial): Loaded {
+        // ...
+    }
+}
+```
+В FSM появится возможность следующих переходов:
+- `Initial` -> `Loaded`
+
+Если в generic параметр передать `data object Initial` и `sealed class AsyncWorkerState`
+```kotlin
+inner class Transition : Transition<Initial, AsyncWorkerState>() {
+    override fun transform(state: Initial): AsyncWorkerState {
+        // ...
+    }
+}
+```
+В FSM появится возможность следующих переходов:
+- `Initial` -> `AsyncWorkerState.LoadingRemote`
+- `Initial` -> `AsyncWorkerState.LoadingCache`
+
+Если в generic параметр передать `sealed class AsyncWorkerState` и `sealed class AsyncWorkerState`
+```kotlin
+inner class Transition : Transition<AsyncWorkerState, AsyncWorkerState>() {
+    override fun transform(state: AsyncWorkerState): AsyncWorkerState {
+        // ...
+    }
+}
+```
+В FSM появится возможность следующих переходов:
+- `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingRemote`
+- `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingCache`
+- `AsyncWorkerState.LoadingCache` -> `AsyncWorkerState.LoadingCache`
+- `AsyncWorkerState.LoadingCache` -> `AsyncWorkerState.LoadingRemote`
+
+Если в generic параметр передать `sealed class AsyncWorkerState` и `data object Loaded`
+```kotlin
+inner class Transition : Transition<AsyncWorkerState, Loaded>() {
+    override fun transform(state: AsyncWorkerState): Loaded {
+        // ...
+    }
+}
+```
+В FSM появится возможность следующих переходов:
+- `AsyncWorkerState.LoadingRemote` -> `Loaded`
+- `AsyncWorkerState.LoadingCache` -> `Loaded`
+
+</details>
+
+`SelfTransition` - тип `Transition`, который реализует переход из `State` в `State` с таким же типом. В качестве generic параметра может принимать `State` или набор `State` в виде sealed класса
+
+<details>
+    <summary>Логика формирования переходов для `SelfTransition`</summary>
+    Рассмотрим на примере
+
+```kotlin
+sealed class FSMState : State {
+    data object Initial : FSMState()
+
+    sealed class AsyncWorkerState : FSMState() {
+        data object LoadingRemote : AsyncWorkerState()
+        data object LoadingCache : AsyncWorkerState()
+    }
+
+    data object Loaded : FSMState()
+}
+```
+
+Если в generic параметр передать `data object Initial`
+```kotlin
+inner class Transition : SelfTransition<Initial>() {
+    override fun transform(state: Initial): Initial {
+        // ...
+    }
+}
+```
+
+В FSM появится возможность следующих переходов:
+- `Initial` -> `Initial`
+
+Если в generic параметр передать `sealed class AsyncWorkerState`
+```kotlin
+inner class Transition : SelfTransition<AsyncWorkerState>() {
+    override fun transform(state: AsyncWorkerState): AsyncWorkerState {
+        // ...
+    }
+}
+```
+
+В FSM появится возможность следующих переходов:
+- `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingRemote`
+- `AsyncWorkerState.LoadingCache` -> `AsyncWorkerState.LoadingCache`
+
+</details>
+
 ### AsyncWorker в VisualFSM
 
 ![AsyncWorker](../img/asyncworker.png)
