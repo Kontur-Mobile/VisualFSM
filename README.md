@@ -146,10 +146,10 @@ with similar start `State`s.
 
 #### Types of Transition
 
-`Transition` is a basic type of Transition. It can accept the following generic parameters: `State` or a set of `State` as a sealed class
+`Transition` is a basic type of `Transition`. It can accept the following generic parameters: `State` or a set of `State` as a sealed class
 
 <details>
-    <summary>Transits forming logic for Transition</summary>
+    <summary>Transitions forming for `Transition`</summary>
     Let's take a look at the example
 
 ```kotlin
@@ -173,7 +173,7 @@ inner class Transition : Transition<Initial, Loaded>() {
     }
 }
 ```
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `Initial` -> `Loaded`
 
 If`data object Initial` and `sealed class AsyncWorkerState` are passed to the generic parameter
@@ -184,7 +184,7 @@ inner class Transition : Transition<Initial, AsyncWorkerState>() {
     }
 }
 ```
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `Initial` -> `AsyncWorkerState.LoadingRemote`
 - `Initial` -> `AsyncWorkerState.LoadingCache`
 
@@ -196,7 +196,7 @@ inner class Transition : Transition<AsyncWorkerState, AsyncWorkerState>() {
     }
 }
 ```
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingRemote`
 - `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingCache`
 - `AsyncWorkerState.LoadingCache` -> `AsyncWorkerState.LoadingCache`
@@ -210,16 +210,16 @@ inner class Transition : Transition<AsyncWorkerState, Loaded>() {
     }
 }
 ```
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `AsyncWorkerState.LoadingRemote` -> `Loaded`
 - `AsyncWorkerState.LoadingCache` -> `Loaded`
 
 </details>
 
-`SelfTransition` is a type of Transition that implements a transit from `State` to `State` with the same type. It can accept the following generic parameters: `State` or a set of `State` as a sealed class
+`SelfTransition` is a type of `Transition` that implements a transition from `State` to `State` with the same type. It can accept the following generic parameters: `State` or a set of `State` as a sealed class
 
 <details>
-    <summary>Transits forming logic for SelfTransition</summary>
+    <summary>Transitions forming for `SelfTransition`</summary>
     Let's take a look at the example
 
 ```kotlin
@@ -244,7 +244,7 @@ inner class Transition : SelfTransition<Initial>() {
 }
 ```
 
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `Initial` -> `Initial`
 
 If `sealed class AsyncWorkerState` is passed to the generic parameter
@@ -256,7 +256,7 @@ inner class Transition : SelfTransition<AsyncWorkerState>() {
 }
 ```
 
-A possibility of the following transits appears in the FSM:
+A possibility of the following transitions appears in the FSM:
 - `AsyncWorkerState.LoadingRemote` -> `AsyncWorkerState.LoadingRemote`
 - `AsyncWorkerState.LoadingCache` -> `AsyncWorkerState.LoadingCache`
 
