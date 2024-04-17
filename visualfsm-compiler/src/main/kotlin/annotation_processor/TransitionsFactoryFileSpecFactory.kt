@@ -1,12 +1,22 @@
 package annotation_processor
 
+import annotation_processor.functions.KSClassDeclarationFunctions.getAllNestedSealedSubclasses
+import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.Modifier
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.WildcardTypeName
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
+import ru.kontur.mobile.visualfsm.SelfTransition
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionsFactory
+import kotlin.reflect.KClass
 
 internal class TransitionsFactoryFileSpecFactory {
 
@@ -48,7 +58,7 @@ internal class TransitionsFactoryFileSpecFactory {
                 .addAnnotation(
                     AnnotationSpec
                         .builder(Suppress::class)
-                        .addMember("%S", "REDUNDANT_ELSE_IN_WHEN")
+                        .addMember("%S,%S", "REDUNDANT_ELSE_IN_WHEN", "UNCHECKED_CAST")
                         .build()
                 )
                 .addParameter("action", baseActionClassDeclaration.toClassName())
@@ -67,21 +77,60 @@ internal class TransitionsFactoryFileSpecFactory {
                 .addStatement(createFunctionCodeBuilder.toString())
                 .build()
         )
-
         return classBuilder.build()
     }
 
     private fun getTransitionImplementationsForAction(transitions: List<TransitionKSClassDeclarationWrapper>): List<String> {
-
-        val transitionImplementations = transitions.map { transition ->
-            val implementationBuilder = StringBuilder()
-            implementationBuilder.append("··········action.${transition.transitionClassDeclaration.toClassName().simpleName}().apply·{\n")
-            implementationBuilder.append("··············_fromState·=·${transition.fromState.qualifiedName!!.asString()}::class\n")
-            implementationBuilder.append("··············_toState·=·${transition.toState.qualifiedName!!.asString()}::class\n")
-            implementationBuilder.append("··········}")
-            implementationBuilder.toString()
+        val transitionImplementations = mutableListOf<String>()
+        transitions.forEach { transition ->
+            val fromStates = transition.fromState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.fromState) }
+            val toStates = transition.toState.getAllNestedSealedSubclasses().ifEmpty { sequenceOf(transition.toState) }
+            fromStates.forEach { fromStateNestedClass ->
+                val fromStateCastString = if (fromStateNestedClass.qualifiedName == transition.fromState.qualifiedName) {
+                    ""
+                } else {
+                    "·as·${KClass::class.asClassName()}<${transition.fromState.qualifiedName!!.asString()}>"
+                }
+                val isSelfTransition = transition.transitionClassDeclaration.isSubclassOf(SelfTransition::class)
+                val filteredToStates = if (isSelfTransition) {
+                    toStates.filter { fromStateNestedClass == it }
+                } else {
+                    toStates
+                }
+                filteredToStates.forEach { toStateNestedClass ->
+                    val toStateCastString = if (toStateNestedClass.qualifiedName == transition.toState.qualifiedName) {
+                        ""
+                    } else {
+                        "·as·${KClass::class.asClassName()}<${transition.toState.qualifiedName!!.asString()}>"
+                    }
+                    transitionImplementations.add(
+                        getApplyActionString(
+                            transitionClassDeclaration = transition.transitionClassDeclaration,
+                            fromState = fromStateNestedClass,
+                            toState = toStateNestedClass,
+                            fromCastString = fromStateCastString,
+                            toCastString = toStateCastString
+                        )
+                    )
+                }
+            }
         }
 
         return transitionImplementations
+    }
+
+    private fun getApplyActionString(
+        transitionClassDeclaration: KSClassDeclaration,
+        fromState: KSDeclaration,
+        toState: KSDeclaration,
+        fromCastString: String = "",
+        toCastString: String = "",
+    ): String {
+        return buildString {
+            append("··········action.${transitionClassDeclaration.toClassName().simpleName}().apply·{\n")
+            append("··············_fromState·=·${fromState.qualifiedName!!.asString()}::class$fromCastString\n")
+            append("··············_toState·=·${toState.qualifiedName!!.asString()}::class$toCastString\n")
+            append("··········}")
+        }
     }
 }

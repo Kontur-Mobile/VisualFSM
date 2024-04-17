@@ -2,10 +2,11 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
 import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
+import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
+import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedClasses
 import kotlin.reflect.KClass
 
 internal object DOTGenerator {
@@ -112,11 +113,16 @@ internal object DOTGenerator {
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // A space before and after edgeName is needed to improve rendering
-            result.appendLine(
-                "\"${fromStateName.simpleStateNameWithSealedName(baseState)}\" -> \"${
-                    toStateName.simpleStateNameWithSealedName(baseState)
-                }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateName, toStateName)}]"
-            )
+            fromStateName.getAllNestedClasses().forEach { fromStateNestedClass ->
+                toStateName.getAllNestedClasses().forEach { toStateNestedClass ->
+                    result.appendLine(
+                        "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
+                            toStateNestedClass.simpleStateNameWithSealedName(baseState)
+                        }\" [label=\" ${edgeName} \"${getAttributesForEdge(attributes, fromStateNestedClass, toStateNestedClass)}]"
+                    )
+                }
+
+            }
         }
 
         return result.toString()
@@ -125,7 +131,7 @@ internal object DOTGenerator {
     private fun <STATE : State> getAttributesForNode(
         attributes: DotAttributes<STATE>,
         state: KClass<out STATE>,
-        unreachableStatesSet: Set<KClass<out STATE>>
+        unreachableStatesSet: Set<KClass<out STATE>>,
     ): String {
         val nodeAttributes = attributes.nodeAttributes(state)
         val attributesBuilder = StringBuilder()
