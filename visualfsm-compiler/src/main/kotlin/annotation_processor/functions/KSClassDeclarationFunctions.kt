@@ -14,7 +14,10 @@ internal object KSClassDeclarationFunctions {
     internal fun KSClassDeclaration.isClassOrSubclassOf(kClass: KClass<out Any>): Boolean {
         if (kClass.asClassName() == this.toClassName()) return true
         return superTypes
-            .mapNotNull { it.resolve().declaration as? KSClassDeclaration }
+            .mapNotNull {
+                val test = it.resolve()
+                test.declaration as? KSClassDeclaration
+            }
             .any {
                 if (kClass.asClassName() == it.toClassName()) return@any true
                 it.isSubclassOf(kClass)
