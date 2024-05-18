@@ -8,49 +8,23 @@ import ru.kontur.mobile.visualfsm.*
  * and [proceed] method to execute [actions][Action]
  *
  * @param initialState initial [state][State]
+ * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list for the action
  */
-open class FeatureRx<STATE : State, ACTION : Action<STATE>>
-@Deprecated(
-    message = "Deprecated, because it not support code generation.\n" +
-            "Code generation not configured or configured incorrectly.\n" +
-            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
-    replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
-) constructor(
+open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     initialState: STATE,
+    asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
+    transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
+    stateKeeper: IStateKeeperRx<STATE> = OwnStateKeeperRx(initialState)
 ) : BaseFeature<STATE, ACTION>() {
 
-    /**
-     * @param initialState initial [state][State]
-     * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
-     * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
-     * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
-     */
-    @Suppress("DEPRECATION")
-    constructor(
-        initialState: STATE,
-        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
-        transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
-        this.transitionsFactory = transitionsFactory
-        asyncWorker?.bind(this)
-    }
+    private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    /**
-     * @param initialState initial [state][State]
-     * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
-     * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
-     * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list for the action
-     */
-    @Suppress("DEPRECATION")
-    constructor(
-        initialState: STATE,
-        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
-        transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    ) : this(initialState, transitionCallbacks) {
+    private val store = StoreRx<STATE, ACTION>(stateKeeper, transitionCallbacks)
+
+    init {
         this.transitionsFactory = transitionsFactory(this)
         asyncWorker?.bind(this)
     }
@@ -59,25 +33,15 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>
      * @param initialState initial [state][State]
      * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+     * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
      */
-    @Deprecated(
-        message = "Deprecated, because it not support code generation.\n" +
-                "Code generation not configured or configured incorrectly.\n" +
-                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
-        replaceWith = ReplaceWith("Constructor with transitionsFactory parameter.")
-    )
-    @Suppress("DEPRECATION")
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
-    ) : this(initialState, transitionCallbacks) {
-        asyncWorker?.bind(this)
-    }
-
-    private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
-
-    private val store = StoreRx<STATE, ACTION>(initialState, transitionCallbacks)
+        transitionsFactory: TransitionsFactory<STATE, ACTION>,
+        stateKeeper: IStateKeeperRx<STATE> = OwnStateKeeperRx(initialState)
+    ) : this(initialState, asyncWorker, transitionCallbacks, { transitionsFactory }, stateKeeper)
 
     /**
      * Provides a [observable][Observable] of [states][State]
