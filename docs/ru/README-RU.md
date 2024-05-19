@@ -43,12 +43,6 @@ implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 ```
 
-Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
-```
-
 Кодогенерация
 
 ```kotlin

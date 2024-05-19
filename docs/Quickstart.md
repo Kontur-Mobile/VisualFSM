@@ -23,10 +23,7 @@ dependencies {
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
     implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion"
-
-    // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion"
-
+    
     // Code generation
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion"
 
@@ -54,10 +51,7 @@ dependencies {
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
     implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
-
-    // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
-
+    
     // Code generation
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 
@@ -175,10 +169,7 @@ dependencies {
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
     implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion"
-
-    // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation "ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion"
-
+    
     // Code generation
     ksp "ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion"
 
@@ -216,10 +207,7 @@ dependencies {
 
     // Optional - Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
     implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
-
-    // Optional - Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-    implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
-
+    
     // Code generation
     ksp("ru.kontur.mobile.visualfsm:visualfsm-compiler:$visualfsmVersion")
 

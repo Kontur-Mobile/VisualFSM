@@ -1,7 +1,6 @@
 [versions]
 kotlin = "1.9.22"
 coroutines = "1.8.0"
-rxJava2 = "2.2.21"
 rxJava3 = "3.1.8"
 junitJupiter = "5.10.2"
 ksp = "1.9.22-1.0.17"
@@ -26,7 +25,6 @@ kotlin-compile-testing = { module = "com.github.tschuchortdev:kotlin-compile-tes
 kotlin-compile-testing-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kotlinCompileTesting" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version = "" }
 
-rxJava2 = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxJava2" }
 rxJava3 = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxJava3" }
 
 atomicfu-gradle-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }

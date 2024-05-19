@@ -42,12 +42,6 @@ Support of RxJava 3 (FeatureRx, AsyncWorkerRx and dependent classes)
 implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
 ```
 
-Support of RxJava 2 (FeatureRx, AsyncWorkerRx and dependent classes)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
-```
-
 Code generation
 
 ```kotlin
