@@ -4,9 +4,9 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.kontur.mobile.visualfsm.State
 
-internal class OwnStateKeeperRx<STATE : State>(
+internal class RootStateSourceRx<STATE : State>(
     initialState: STATE,
-) : IStateKeeperRx<STATE> {
+) : IStateSourceRx<STATE> {
 
     @Volatile
     private var currentState = initialState

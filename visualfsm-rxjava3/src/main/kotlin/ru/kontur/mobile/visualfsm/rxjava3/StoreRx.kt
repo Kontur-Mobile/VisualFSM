@@ -9,10 +9,13 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  * Stores current [state][State] and provides subscription on [state][State] updates.
  * It is the core of the state machine, takes an [action][Action] as input and returns [states][State] as output
  *
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls
+ * (like logging, debugging, or metrics) (optional)
+ * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
+ * can be external to implement a common state tree between parent and child state machines (optional)
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
-    private val stateKeeper: IStateKeeperRx<STATE>,
+    private val stateSource: IStateSourceRx<STATE>,
     private val transitionCallbacks: TransitionCallbacks<STATE>?,
 ) {
 
@@ -22,7 +25,7 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
      * @return a [observable][Observable] of [states][State]
      */
     internal fun observeState(): Observable<STATE> {
-        return stateKeeper.observeState()
+        return stateSource.observeState()
     }
 
     /**
@@ -31,7 +34,7 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
      * @return current [state][State]
      */
     internal fun getCurrentState(): STATE {
-        return stateKeeper.getCurrentState()
+        return stateSource.getCurrentState()
     }
 
     /**
@@ -42,7 +45,7 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     internal fun proceed(action: ACTION) {
         val currentState = getCurrentState()
         val newState = reduce(action, currentState)
-        stateKeeper.updateState(newState)
+        stateSource.updateState(newState)
     }
 
     /**

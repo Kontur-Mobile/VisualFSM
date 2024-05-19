@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm.rxjava3
 import io.reactivex.rxjava3.core.Observable
 import ru.kontur.mobile.visualfsm.State
 
-interface IStateKeeperRx<STATE : State> {
+interface IStateSourceRx<STATE : State> {
     /**
      * Provides a [observable][Observable] of [states][State]
      *
@@ -21,7 +21,7 @@ interface IStateKeeperRx<STATE : State> {
     /**
      * Update current state
      *
-     * @param state [State] for update
+     * @param newState [State] for update
      */
-    fun updateState(state: STATE)
+    fun updateState(newState: STATE)
 }
