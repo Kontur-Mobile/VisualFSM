@@ -12,7 +12,7 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls
  * (like logging, debugging, or metrics) (optional)
  * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
- * can be external to implement a common state tree between parent and child state machines (optional)
+ * can be external to implement a common state tree between parent and child state machines
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IStateSourceRx<STATE>,

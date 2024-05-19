@@ -7,29 +7,28 @@ import ru.kontur.mobile.visualfsm.*
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
  * and [proceed] method to execute [actions][Action]
  *
- * @param initialState initial [state][State]
- * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls
- * (like logging, debugging, or metrics) (optional)
- * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
- * for the action
  * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
  * can be external to implement a common state tree between parent and child state machines (optional)
+ * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
+ * on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
+ * for the action
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE,
+    stateSource: IStateSourceRx<STATE>,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
     transitionCallbacks: TransitionCallbacks<STATE>? = null,
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    stateSource: IStateSourceRx<STATE> = RootStateSourceRx(initialState)
 ) : BaseFeature<STATE, ACTION>() {
 
     private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    private val store = StoreRx<STATE, ACTION>(stateSource, transitionCallbacks)
+    private val store: StoreRx<STATE, ACTION>
 
     init {
         this.transitionsFactory = transitionsFactory(this)
+        store = StoreRx(stateSource, transitionCallbacks)
         asyncWorker?.bind(this)
     }
 
@@ -39,16 +38,43 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
-     * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
-     * can be external to implement a common state tree between parent and child state machines (optional)
      */
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
         transitionCallbacks: TransitionCallbacks<STATE>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-        stateSource: IStateSourceRx<STATE> = RootStateSourceRx(initialState)
-    ) : this(initialState, asyncWorker, transitionCallbacks, { transitionsFactory }, stateSource)
+    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
+
+    /**
+     * @param initialState initial [state][State]
+     * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
+     * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
+     * on provided event calls (like logging, debugging, or metrics) (optional)
+     * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
+     * for the action
+     */
+    constructor(
+        initialState: STATE,
+        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
+    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
+
+    /**
+     * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
+     * can be external to implement a common state tree between parent and child state machines (optional)
+     * @param asyncWorker [AsyncWorkerRx] instance for manage state-based asynchronous tasks (optional)
+     * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
+     * on provided event calls (like logging, debugging, or metrics) (optional)
+     * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     */
+    constructor(
+        stateSource: IStateSourceRx<STATE>,
+        asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionsFactory: TransitionsFactory<STATE, ACTION>,
+    ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
 
     /**
      * Provides a [observable][Observable] of [states][State]
