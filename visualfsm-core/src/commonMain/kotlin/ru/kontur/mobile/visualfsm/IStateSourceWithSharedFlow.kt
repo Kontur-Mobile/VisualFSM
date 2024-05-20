@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
-interface IStateSourceWithSharedFlow<STATE : State> : IStateSource<STATE> {
+internal interface IStateSourceWithSharedFlow<STATE : State> : IStateSource<STATE> {
 
     /**
      * Provides a [flow][StateFlow] of [states][State]
