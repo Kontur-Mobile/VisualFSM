@@ -6,7 +6,7 @@ plugins{
 }
 
 group = "ru.kontur.mobile.visualfsm"
-version = "2.99.0"
+version = "3.0.0-alpha"
 
 buildscript {
     dependencies{

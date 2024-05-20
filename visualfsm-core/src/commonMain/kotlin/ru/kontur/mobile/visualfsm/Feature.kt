@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
  * and [proceed] method to execute [actions][Action]
  *
  * @param stateSource the [state source][IStateSource] for storing and subscribing to state,
- * can be external to implement a common state tree between parent and child state machines (optional)
+ * can be external to implement a common state tree between parent and child state machines
  * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
  * on provided event calls (like logging, debugging, or metrics) (optional)
@@ -66,7 +66,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
 
     /**
      * @param stateSource the [state source][IStateSource] for storing and subscribing to state,
-     * can be external to implement a common state tree between parent and child state machines (optional)
+     * can be external to implement a common state tree between parent and child state machines
      * @param asyncWorker [AsyncWorker] instance for manage state-based asynchronous tasks (optional)
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
      * on provided event calls (like logging, debugging, or metrics) (optional)
