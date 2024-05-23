@@ -2,10 +2,14 @@ package ru.kontur.mobile.visualfsm
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.tools.VisualFSM
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState
-import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.*
+import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.AsyncWorkState
+import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.Error
+import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.FinalInitialState
+import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.FinalState
+import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.DemoFSMState.Initial
 import ru.kontur.mobile.visualfsm.testFSMs.demoFSM.actions.DemoFSMAction
+import ru.kontur.mobile.visualfsm.tools.VisualFSM
 
 class FSMTestUtilsTests {
     companion object {
@@ -43,7 +47,6 @@ class FSMTestUtilsTests {
                 baseAction = DemoFSMAction::class,
                 baseState = DemoFSMState::class,
                 initialState = Initial::class,
-                true
             )
         )
 
@@ -75,20 +78,10 @@ class FSMTestUtilsTests {
     fun getEdgeListGraphTest() {
         val edgeListWithTransitionName = VisualFSM.getEdgeListGraph(
             baseAction = DemoFSMAction::class,
-            useTransitionName = true
-        )
-
-        val edgeListWithoutTransitionName = VisualFSM.getEdgeListGraph(
-            baseAction = DemoFSMAction::class,
-            useTransitionName = false
         )
 
         Assertions.assertTrue(
             edgeListWithTransitionName.containsAll(expectedEdgesWithTransitionName) && edgeListWithTransitionName.size == expectedEdgesWithTransitionName.size
-        )
-
-        Assertions.assertTrue(
-            edgeListWithoutTransitionName.containsAll(expectedEdgesWithActionName) && edgeListWithoutTransitionName.size == expectedEdgesWithActionName.size
         )
     }
 }
