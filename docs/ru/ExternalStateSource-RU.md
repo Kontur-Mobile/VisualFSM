@@ -4,7 +4,7 @@
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Channel&color=0088CC)](https://t.me/visualfsm)
 [![Telegram](https://img.shields.io/static/v1?label=Telegram&message=Chat&color=0088CC)](https://t.me/visualfsm_support)
 
-[ENG](../ExternalStateSources.md) | RUS
+[ENG](../ExternalStateSource.md) | RUS
 
 ### Внешние источники состояний (опционально)
 Возможность взаимодействия между Feature через общий источник состояний является опциональной,
