@@ -22,6 +22,8 @@ separate module that would allow it to be connected to testing environment.
 
 [Quickstart](#quickstart)
 
+[External state source](#external-state-source)
+
 [VisualFSM Pros](#visualfsm-pros)
 
 [Structure of VisualFSM](#structure-of-visualfsm)
@@ -63,6 +65,10 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion
 ## Quickstart
 
 See in [Quickstart](docs/Quickstart.md)
+
+## External state source
+
+See in [External state source (optional)](docs/ExternalStateSource.md)
 
 ## VisualFSM Pros
 
