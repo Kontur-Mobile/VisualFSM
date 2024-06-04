@@ -47,7 +47,7 @@ internal class FeatureErrorAnnotationProcessorTests {
         }
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
-        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx or class ru.kontur.mobile.visualfsm.rxjava2.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.GenerateTransitionsFactory. The \"TestFeature(Test.kt:24)\" does not meet this requirement."))
+        Assertions.assertTrue(result.messages.contains("Only class inherited from class ru.kontur.mobile.visualfsm.Feature or class ru.kontur.mobile.visualfsm.rxjava3.FeatureRx can be annotated with @ru.kontur.mobile.visualfsm.GenerateTransitionsFactory. The \"TestFeature(Test.kt:24)\" does not meet this requirement."))
     }
 
     @Test

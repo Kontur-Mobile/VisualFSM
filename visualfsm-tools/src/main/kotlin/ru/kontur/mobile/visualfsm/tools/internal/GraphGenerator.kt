@@ -5,7 +5,7 @@ import ru.kontur.mobile.visualfsm.Edge
 import ru.kontur.mobile.visualfsm.SelfTransition
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedClasses
+import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedStateClasses
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
@@ -39,8 +39,8 @@ internal object GraphGenerator {
                 val genericToState = transitionKClass.supertypes.first().arguments
                     .last().type?.classifier as KClass<out STATE>
 
-                val fromStates = genericFromState.getAllNestedClasses()
-                val toStates = genericToState.getAllNestedClasses()
+                val fromStates = genericFromState.getAllNestedStateClasses()
+                val toStates = genericToState.getAllNestedStateClasses()
 
                 val edgeName = if (useTransitionName) {
                     getEdgeName(transitionKClass)
@@ -90,8 +90,8 @@ internal object GraphGenerator {
                     .first().type!!.classifier as KClass<out STATE>
                 val toStateGeneric = transitionKClass.supertypes.first().arguments
                     .last().type!!.classifier as KClass<out STATE>
-                val fromStates = fromStateGeneric.getAllNestedClasses()
-                val toStates = toStateGeneric.getAllNestedClasses()
+                val fromStates = fromStateGeneric.getAllNestedStateClasses()
+                val toStates = toStateGeneric.getAllNestedStateClasses()
                 val isSelfTransition = transitionKClass.isSubclassOf(SelfTransition::class)
                 fromStates.forEach { fromState ->
                     val filteredToStates = if (isSelfTransition) {

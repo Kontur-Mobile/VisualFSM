@@ -29,26 +29,6 @@ object VisualFSM {
     ) = DOTGenerator.generate(baseAction, baseState, initialState, true, attributes)
 
     /**
-     * Generates a FSM DOT graph for Graphviz
-     *
-     * @param baseAction base [action][Action] [class][KClass]
-     * @param baseState base [state][State] [class][KClass]
-     * @param initialState initial [state][State] [class][KClass]
-     * @param useTransitionName use [transition][Transition] [class][KClass] name or [Edge("")][Edge] annotation for edge name getting
-     * @return a DOT graph for Graphviz
-     */
-    @Deprecated(
-        message = "Deprecated, because generate edge name by action class is deprecated.",
-        replaceWith = ReplaceWith("generateDigraph function without useTransitionName argument.")
-    )
-    fun <STATE : State> generateDigraph(
-        baseAction: KClass<out Action<STATE>>,
-        baseState: KClass<STATE>,
-        initialState: KClass<out STATE>,
-        useTransitionName: Boolean,
-    ) = DOTGenerator.generate(baseAction, baseState, initialState, useTransitionName)
-
-    /**
      * Builds an Edge list
      *
      * @param baseAction base [action][Action] [class][KClass]
@@ -57,22 +37,6 @@ object VisualFSM {
     fun <STATE : State> getEdgeListGraph(
         baseAction: KClass<out Action<STATE>>,
     ) = GraphGenerator.getEdgeListGraph(baseAction, true)
-
-    /**
-     * Builds an Edge list
-     *
-     * @param baseAction base [action][Action] [class][KClass]
-     * @param useTransitionName use [transition][Transition] class name or [Edge("")][Edge] annotation for edge name getting
-     * @return a list of edges in following order [(initial state, final state, edge name), ...]
-     */
-    @Deprecated(
-        message = "Deprecated, because generate edge name by action class is deprecated.",
-        replaceWith = ReplaceWith("getEdgeListGraph function without useTransitionName argument.")
-    )
-    fun <STATE : State> getEdgeListGraph(
-        baseAction: KClass<out Action<STATE>>,
-        useTransitionName: Boolean,
-    ) = GraphGenerator.getEdgeListGraph(baseAction, useTransitionName)
 
     /**
      * Builds an Adjacency Map of states

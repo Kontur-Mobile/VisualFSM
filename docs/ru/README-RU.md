@@ -23,6 +23,8 @@
 
 [Первичная настройка библиотеки](#первичная-настройка-библиотеки)
 
+[Внешние источники состояний](#внешние-источники-состояний)
+
 [Преимущества VisualFSM](#преимущества-visualfsm)
 
 [Структура VisualFSM](#структура-visualfsm)
@@ -41,12 +43,6 @@ implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
 
 ```kotlin
 implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava3:$visualfsmVersion")
-```
-
-Поддержка RxJava 2 (FeatureRx, AsyncWorkerRx и их зависимости)
-
-```kotlin
-implementation("ru.kontur.mobile.visualfsm:visualfsm-rxjava2:$visualfsmVersion")
 ```
 
 Кодогенерация
@@ -70,6 +66,10 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion
 ## Первичная настройка библиотеки
 
 Смотрите [здесь](Quickstart-RU.md)
+
+## Внешние источники состояний
+
+Смотрите [здесь](ExternalStateSource-RU.md)
 
 ## Преимущества VisualFSM
 

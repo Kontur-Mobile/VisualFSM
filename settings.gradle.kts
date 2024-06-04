@@ -16,7 +16,6 @@ dependencyResolutionManagement {
 }
 
 include(":visualfsm-core")
-include(":visualfsm-rxjava2")
 include(":visualfsm-rxjava3")
 include(":visualfsm-compiler")
 include(":visualfsm-tools")

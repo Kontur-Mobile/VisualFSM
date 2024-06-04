@@ -140,6 +140,6 @@ class AnnotationProcessor(
     }
 
     companion object {
-        private val featureClasses = setOf(Feature::class, FeatureRx::class, ru.kontur.mobile.visualfsm.rxjava2.FeatureRx::class)
+        private val featureClasses = setOf(Feature::class, FeatureRx::class)
     }
 }

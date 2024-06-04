@@ -6,7 +6,7 @@ import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.ArrowHead
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.Color
 import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
-import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedClasses
+import ru.kontur.mobile.visualfsm.tools.internal.KClassFunctions.getAllNestedStateClasses
 import kotlin.reflect.KClass
 
 internal object DOTGenerator {
@@ -113,8 +113,8 @@ internal object DOTGenerator {
             useTransitionName
         ).forEach { (fromStateName, toStateName, edgeName) ->
             // A space before and after edgeName is needed to improve rendering
-            fromStateName.getAllNestedClasses().forEach { fromStateNestedClass ->
-                toStateName.getAllNestedClasses().forEach { toStateNestedClass ->
+            fromStateName.getAllNestedStateClasses().forEach { fromStateNestedClass ->
+                toStateName.getAllNestedStateClasses().forEach { toStateNestedClass ->
                     result.appendLine(
                         "\"${fromStateNestedClass.simpleStateNameWithSealedName(baseState)}\" -> \"${
                             toStateNestedClass.simpleStateNameWithSealedName(baseState)

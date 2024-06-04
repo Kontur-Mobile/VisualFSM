@@ -1,25 +1,20 @@
 package ru.kontur.mobile.visualfsm
 
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
  * It is the core of the state machine, takes an [action][Action] as input and returns [states][State] as output
  *
- * @param initialState initial [state][State]
- * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic on provided event calls (like logging, debugging, or metrics) (optional)
+ * @param stateSource the [state source][IStateSource] for storing and subscribing to state,
+ * can be external to implement a common state tree between parent and child state machines
+ * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
+ * on provided event calls (like logging, debugging, or metrics) (optional)
  */
 internal class Store<STATE : State, ACTION : Action<STATE>>(
-    initialState: STATE, private val transitionCallbacks: TransitionCallbacks<STATE>?
+    private val stateSource: IStateSourceWithSharedFlow<STATE>,
+    private val transitionCallbacks: TransitionCallbacks<STATE>?
 ) {
-
-    private val sharedFlow = MutableSharedFlow<STATE>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    private val stateFlow = MutableStateFlow(initialState)
-
-    init {
-        sharedFlow.tryEmit(initialState)
-    }
 
     /**
      * Provides a [flow][StateFlow] of [states][State]
@@ -27,7 +22,7 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      * @return a [flow][StateFlow] of [states][State]
      */
     internal fun observeState(): StateFlow<STATE> {
-        return stateFlow.asStateFlow()
+        return stateSource.observeState()
     }
 
     /**
@@ -36,7 +31,7 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      * @return a [flow][SharedFlow] of [states][State]
      */
     internal fun observeAllStates(): SharedFlow<STATE> {
-        return sharedFlow.asSharedFlow()
+        return stateSource.observeAllStates()
     }
 
     /**
@@ -45,7 +40,7 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      * @return current [state][State]
      */
     internal fun getCurrentState(): STATE {
-        return stateFlow.value
+        return stateSource.getCurrentState()
     }
 
     /**
@@ -55,8 +50,7 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun proceed(action: ACTION) {
         val newState = reduce(action, getCurrentState())
-        stateFlow.value = newState
-        sharedFlow.tryEmit(newState)
+        stateSource.updateState(newState)
     }
 
     /**

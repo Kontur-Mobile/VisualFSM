@@ -15,7 +15,13 @@ sealed class TestFSMState : State {
 
             data class Back(
                 override val count: Int,
-            ) : Screen()
+            ) : Screen() {
+                sealed class Foo {
+                    data class Bar(val t: String) : Foo()
+                }
+
+                data class Bar(val t: String) : Foo()
+            }
 
             data class Next(
                 override val count: Int,

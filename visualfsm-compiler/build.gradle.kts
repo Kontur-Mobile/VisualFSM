@@ -8,7 +8,6 @@ version = rootProject.version
 
 dependencies {
     implementation(projects.visualfsmCore)
-    implementation(projects.visualfsmRxjava2)
     implementation(projects.visualfsmRxjava3)
 
     implementation(libs.ksp.symbol.processing.api)
