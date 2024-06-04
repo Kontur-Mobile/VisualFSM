@@ -46,38 +46,13 @@ interface IStateSource<STATE : State> {
 }
 ```
 
-```kotlin
-interface IStateSourceRx<STATE : State> {
-    /**
-     * Provides a [observable][Observable] of [states][State]
-     *
-     * @return a [observable][Observable] of [states][State]
-     */
-    fun observeState(): Observable<STATE>
-
-    /**
-     * Returns current state
-     *
-     * @return current [state][State]
-     */
-    fun getCurrentState(): STATE
-
-    /**
-     * Update current state
-     *
-     * @param newState [State] for update
-     */
-    fun updateState(newState: STATE)
-}
-```
-
-Пример реализации IStateSourceRx
+Пример реализации IStateSource
 ```kotlin
 class ChildStateSource @Inject constructor(
     private val parentFeature: ParentFeature,
-) : IStateSourceRx<ChildFSMState> {
+) : IStateSource<ChildFSMState> {
 
-    override fun observeState(): Observable<ChildFSMState> {
+    override fun observeState(): StateFlow<ChildFSMState> {
         return parentFeature.observeState().mapNotNull { (it as? ParentFSMState.StateWithChildStateField)?.childState }
     }
 
