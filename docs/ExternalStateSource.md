@@ -50,7 +50,7 @@ Example implementation of IStateSource
 ```kotlin
 class ChildStateSource @Inject constructor(
     private val parentFeature: ParentFeature,
-) : IStateSourceRx<ChildFSMState> {
+) : IStateSource<ChildFSMState> {
 
     override fun observeState(): StateFlow<ChildFSMState> {
         return parentFeature.observeState().mapNotNull { (it as? ParentFSMState.StateWithChildStateField)?.childState }
