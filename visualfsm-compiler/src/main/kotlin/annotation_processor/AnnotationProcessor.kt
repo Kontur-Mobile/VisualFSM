@@ -3,6 +3,7 @@ package annotation_processor
 import annotation_processor.functions.KSClassDeclarationFunctions.getCanonicalClassNameAndLink
 import annotation_processor.functions.KSClassDeclarationFunctions.isClassOrSubclassOf
 import annotation_processor.functions.KSClassDeclarationFunctions.isSubclassOf
+import annotation_processor.transition_wrapper.TransitionWrapper
 import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.innerArguments
 import com.google.devtools.ksp.processing.*
@@ -15,6 +16,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import ru.kontur.mobile.visualfsm.Action
+import ru.kontur.mobile.visualfsm.DslAction
 import ru.kontur.mobile.visualfsm.Feature
 import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.State
@@ -107,7 +109,9 @@ class AnnotationProcessor(
         val baseStateClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(State::class) }
             ?: error("Super class of feature must have base state as one of two generic types. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
 
-        val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull { it.isClassOrSubclassOf(Action::class) }
+        val baseActionClassDeclaration = featureSuperTypeClassDeclarations.firstOrNull {
+            it.isClassOrSubclassOf(Action::class) || it.isClassOrSubclassOf(DslAction::class)
+        }
             ?: error("Super class of feature must have base action as one of two generic types. The \"${featureClassDeclaration.getCanonicalClassNameAndLink()}\" does not meet this requirement.")
 
         return baseStateClassDeclaration to baseActionClassDeclaration
@@ -116,7 +120,7 @@ class AnnotationProcessor(
     private fun writeAllTransitionsFile(
         packageName: String,
         baseStateClassDeclaration: KSClassDeclaration,
-        actionsWithTransitions: Map<KSClassDeclaration, List<TransitionKSClassDeclarationWrapper>>,
+        actionsWithTransitions: Map<KSClassDeclaration, List<TransitionWrapper>>,
     ) {
 
         val stream = codeGenerator.createNewFile(

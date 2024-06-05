@@ -1,5 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
+import kotlin.reflect.KClass
+
 /**
  * Is an input object for the State machine.
  * The [action][Action] chooses [transition][Transition] and performs it
@@ -20,13 +22,13 @@ abstract class Action<STATE : State> {
      */
     @Deprecated(
         message = "Deprecated, because now the list of transitions is formed in the generated code (of TransitionsFactory).\n" +
-                "Code generation not configured or configured incorrectly.\n" +
-                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
+            "Code generation not configured or configured incorrectly.\n" +
+            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
     )
     open fun getTransitions(): List<Transition<out STATE, out STATE>> {
         return transitions ?: error(
             "\nCode generation not configured or configured incorrectly.\n" +
-                    "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
+                "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).\n"
         )
     }
 
@@ -72,4 +74,107 @@ abstract class Action<STATE : State> {
         oldState: STATE,
     ): Boolean =
         (transition.fromState == oldState::class) && transition.predicate(oldState)
+}
+
+abstract class DslAction<STATE : State> : Action<STATE>(), DslTransitionAction<STATE>, DslSelfTransitionAction<STATE>
+
+interface DslSelfTransitionAction<STATE : State> {
+
+    infix fun <TRANSITION_STATE : STATE> KClass<TRANSITION_STATE>.selfTransition(
+        function: (TRANSITION_STATE) -> TRANSITION_STATE,
+    ): SelfTransition<TRANSITION_STATE> {
+        return object : SelfTransition<TRANSITION_STATE>() {
+            override fun transform(state: TRANSITION_STATE): TRANSITION_STATE {
+                return function(state)
+            }
+        }
+    }
+
+    fun <TRANSITION_STATE : STATE> selfTransition(): Builder<TRANSITION_STATE> {
+        return Builder()
+    }
+
+    fun <TRANSITION_STATE : STATE> selfTransition(
+        predicate: (TRANSITION_STATE) -> Boolean = { true },
+        transform: (TRANSITION_STATE) -> TRANSITION_STATE,
+    ): SelfTransition<TRANSITION_STATE> {
+        return object : SelfTransition<TRANSITION_STATE>() {
+            override fun predicate(state: TRANSITION_STATE) = predicate(state)
+            override fun transform(state: TRANSITION_STATE) = transform(state)
+        }
+    }
+
+    fun <TRANSITION_STATE : STATE> selfTransition(
+        predicate: Boolean,
+        transform: (TRANSITION_STATE) -> TRANSITION_STATE,
+    ): Transition<TRANSITION_STATE, TRANSITION_STATE> = selfTransition(predicate = { predicate }, transform = transform)
+
+    class Builder<STATE : State> {
+        var predicate: (STATE) -> Boolean = { true }
+
+        infix fun predicate(
+            function: (STATE) -> Boolean,
+        ): Builder<STATE> {
+            return this.apply { predicate = function }
+        }
+
+        infix fun transform(
+            function: (STATE) -> STATE,
+        ): SelfTransition<STATE> {
+            return object : SelfTransition<STATE>() {
+                override fun predicate(state: STATE): Boolean {
+                    return this@Builder.predicate(state)
+                }
+
+                override fun transform(state: STATE): STATE {
+                    return function(state)
+                }
+            }
+        }
+    }
+}
+
+interface DslTransitionAction<STATE : State> {
+    fun <FROM : STATE, TO : STATE> transition(): Builder<FROM, TO> {
+        return Builder()
+    }
+
+    fun <FROM : STATE, TO : STATE> transition(
+        predicate: (FROM) -> Boolean = { true },
+        transform: (FROM) -> TO,
+    ): Transition<FROM, TO> {
+        return object : Transition<FROM, TO>() {
+            override fun predicate(state: FROM) = predicate(state)
+            override fun transform(state: FROM) = transform(state)
+        }
+    }
+
+    fun <FROM : STATE, TO : STATE> transition(
+        predicate: Boolean,
+        transform: (FROM) -> TO,
+    ): Transition<FROM, TO> = transition(predicate = { predicate }, transform = transform)
+
+    infix fun <FROM : STATE, TO : STATE> KClass<FROM>.transition(to: KClass<TO>): Builder<FROM, TO> {
+        return Builder()
+    }
+
+    class Builder<FROM : State, TO : State> {
+        var predicate: (FROM) -> Boolean = { true }
+
+        infix fun predicate(function: (FROM) -> Boolean): Builder<FROM, TO> {
+            return this.apply { predicate = function }
+        }
+
+        infix fun transform(function: (FROM) -> TO): Transition<FROM, TO> {
+            return object : Transition<FROM, TO>() {
+                override fun predicate(state: FROM): Boolean {
+                    return this@Builder.predicate(state)
+                }
+
+                override fun transform(state: FROM): TO {
+                    return function(state)
+                }
+            }
+        }
+    }
 }
