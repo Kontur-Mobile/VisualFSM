@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.multiplatform)
-    id(libs.plugins.atomicfu.get().pluginId)
+    alias(libs.plugins.atomicfu)
 }
 apply(from = "../publish.gradle")
 
@@ -8,8 +8,8 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
+    jvmToolchain(17)
     jvm {
-        jvmToolchain(17)
         withJava()
         testRuns.named("test") {
             executionTask.configure {

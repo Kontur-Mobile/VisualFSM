@@ -4,10 +4,12 @@ import annotation_processor.AnnotationProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspCodeGeneratedSources
 
+@OptIn(ExperimentalCompilerApi::class)
 internal class AnnotationProcessorTests {
     @Test
     fun testBaseActionWithoutInternalModifier() {
