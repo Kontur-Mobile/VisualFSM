@@ -19,6 +19,10 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     private val transitionCallbacks: TransitionCallbacks<STATE>?,
 ) {
 
+    init {
+        transitionCallbacks?.onInitialStateReceived(stateSource.getCurrentState())
+    }
+
     /**
      * Provides a [observable][Observable] of [states][State]
      *

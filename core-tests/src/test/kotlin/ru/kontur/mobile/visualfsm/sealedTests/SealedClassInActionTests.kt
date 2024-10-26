@@ -52,6 +52,9 @@ class SealedClassInActionTests {
                     override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
 
                     }
+
+                    override fun onInitialStateReceived(initialState: TestFSMState) {
+                    }
                 })
 
         }
@@ -94,23 +97,23 @@ class SealedClassInActionTests {
         println(digraph)
         assertEquals(
             "digraph TestFSMStateTransitions {\n" +
-                "\"Initial\" []\n" +
-                "\"NavigationState.DialogState.Hide\" []\n" +
-                "\"NavigationState.DialogState.Show\" []\n" +
-                "\"NavigationState.Screen.Back\" []\n" +
-                "\"NavigationState.Screen.Next\" []\n" +
-                "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Hide\" [label=\" HideDialog \"]\n" +
-                "\"NavigationState.DialogState.Hide\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
-                "\"NavigationState.DialogState.Show\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
-                "\"NavigationState.Screen.Back\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
-                "\"NavigationState.Screen.Next\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
-                "\"Initial\" -> \"NavigationState.Screen.Back\" [label=\" NavigateBack \"]\n" +
-                "\"Initial\" -> \"NavigationState.Screen.Next\" [label=\" NavigateNext \"]\n" +
-                "\"NavigationState.DialogState.Hide\" -> \"NavigationState.DialogState.Hide\" [label=\" ObserveChange \"]\n" +
-                "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Show\" [label=\" ObserveChange \"]\n" +
-                "\"Initial\" -> \"Initial\" [label=\" ObserveChange \"]\n" +
-                "\"Initial\" -> \"NavigationState.DialogState.Show\" [label=\" ShowDialog \"]\n" +
-                "}\n", digraph
+                    "\"Initial\" []\n" +
+                    "\"NavigationState.DialogState.Hide\" []\n" +
+                    "\"NavigationState.DialogState.Show\" []\n" +
+                    "\"NavigationState.Screen.Back\" []\n" +
+                    "\"NavigationState.Screen.Next\" []\n" +
+                    "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Hide\" [label=\" HideDialog \"]\n" +
+                    "\"NavigationState.Screen.Back\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
+                    "\"NavigationState.Screen.Next\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
+                    "\"NavigationState.DialogState.Show\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
+                    "\"NavigationState.DialogState.Hide\" -> \"Initial\" [label=\" NavigateCompleted \"]\n" +
+                    "\"Initial\" -> \"NavigationState.Screen.Back\" [label=\" NavigateBack \"]\n" +
+                    "\"Initial\" -> \"NavigationState.Screen.Next\" [label=\" NavigateNext \"]\n" +
+                    "\"Initial\" -> \"Initial\" [label=\" ObserveChange \"]\n" +
+                    "\"NavigationState.DialogState.Show\" -> \"NavigationState.DialogState.Show\" [label=\" ObserveChange \"]\n" +
+                    "\"NavigationState.DialogState.Hide\" -> \"NavigationState.DialogState.Hide\" [label=\" ObserveChange \"]\n" +
+                    "\"Initial\" -> \"NavigationState.DialogState.Show\" [label=\" ShowDialog \"]\n" +
+                    "}\n", digraph
         )
     }
 }

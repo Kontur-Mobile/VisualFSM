@@ -6,6 +6,15 @@ package ru.kontur.mobile.visualfsm
 interface TransitionCallbacks<STATE : State> {
 
     /**
+     * Is called when the [Feature] is initialized
+     *
+     * @param initialState the [state][STATE] with which the Feature is initialized
+     */
+    fun onInitialStateReceived(
+        initialState: STATE
+    )
+
+    /**
      * Is called when [Action] is being launched
      *
      * @param action [Action] that is being launched

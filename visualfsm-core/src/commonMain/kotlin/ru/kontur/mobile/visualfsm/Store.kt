@@ -16,6 +16,10 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
     private val transitionCallbacks: TransitionCallbacks<STATE>?
 ) {
 
+    init {
+        transitionCallbacks?.onInitialStateReceived(stateSource.getCurrentState())
+    }
+
     /**
      * Provides a [flow][StateFlow] of [states][State]
      *

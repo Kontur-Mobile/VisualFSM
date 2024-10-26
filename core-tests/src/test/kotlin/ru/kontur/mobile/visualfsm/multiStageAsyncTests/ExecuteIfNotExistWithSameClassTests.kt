@@ -47,6 +47,9 @@ class ExecuteIfNotExistWithSameClassTests {
                     override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
                         throw IllegalStateException("onMultipleTransitionError $action $currentState")
                     }
+
+                    override fun onInitialStateReceived(initialState: TestFSMState) {
+                    }
                 })
 
         }

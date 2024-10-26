@@ -48,8 +48,8 @@ class StateMachineTests {
                     "\"Complete\" []\n" +
                     "\"Error\" []\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel \"]\n" +
-                    "\"Async\" -> \"Error\" [label=\" Error \"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success \"]\n" +
+                    "\"Async\" -> \"Error\" [label=\" Error \"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start \"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther \"]\n" +
                     "}\n", digraph
@@ -102,8 +102,8 @@ class StateMachineTests {
                     "\"Complete\" [ shape=box]\n" +
                     "\"Error\" [ shape=box]\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel \" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
-                    "\"Async\" -> \"Error\" [label=\" Error \" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success \" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
+                    "\"Async\" -> \"Error\" [label=\" Error \" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start \"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther \" color=blue fontcolor=darkgreen arrowhead=empty color=darkgreen]\n" +
                     "}\n", digraph
@@ -342,6 +342,9 @@ class StateMachineTests {
 
                 override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
                     throw IllegalStateException("onMultipleTransitionError $action $currentState")
+                }
+
+                override fun onInitialStateReceived(initialState: TestFSMState) {
                 }
             })
 

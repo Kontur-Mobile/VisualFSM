@@ -25,14 +25,14 @@ class StateMachineRxTests {
         )
 
         assertEquals(
-                    "digraph TestFSMStateTransitions {\n" +
+            "digraph TestFSMStateTransitions {\n" +
                     "\"Initial\" []\n" +
                     "\"Async\" []\n" +
                     "\"Complete\" []\n" +
                     "\"Error\" []\n" +
                     "\"Async\" -> \"Initial\" [label=\" Cancel \"]\n" +
-                    "\"Async\" -> \"Error\" [label=\" Error \"]\n" +
                     "\"Async\" -> \"Complete\" [label=\" Success \"]\n" +
+                    "\"Async\" -> \"Error\" [label=\" Error \"]\n" +
                     "\"Initial\" -> \"Async\" [label=\" Start \"]\n" +
                     "\"Async\" -> \"Async\" [label=\" StartOther \"]\n" +
                     "}\n", digraph
@@ -224,6 +224,9 @@ class StateMachineRxTests {
 
                 override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
                     throw IllegalStateException("onMultipleTransitionError $action $currentState")
+                }
+
+                override fun onInitialStateReceived(initialState: TestFSMState) {
                 }
             })
 
