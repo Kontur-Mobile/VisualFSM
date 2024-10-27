@@ -23,32 +23,32 @@ abstract class Action<STATE : State> {
      * @param callbacks [transition callbacks][TransitionCallbacks]
      * @return [new state][State]
      */
-    internal fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>?): STATE {
-        callbacks?.onActionLaunched(this, oldState)
+    internal fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>): STATE {
+        callbacks.onActionLaunched(this, oldState)
 
         val availableTransitions = getAvailableTransitions(oldState)
 
         if (availableTransitions.size > 1) {
-            callbacks?.onMultipleTransitionError(this, oldState)
+            callbacks.onMultipleTransitionError(this, oldState)
         }
 
         val selectedTransition = availableTransitions.firstOrNull()
 
         if (selectedTransition == null) {
-            callbacks?.onNoTransitionError(this, oldState)
+            callbacks.onNoTransitionError(this, oldState)
             return oldState
         }
 
-        callbacks?.onTransitionSelected(this, selectedTransition, oldState)
+        callbacks.onTransitionSelected(this, selectedTransition, oldState)
 
         val newState = selectedTransition.transform(oldState)
 
-        callbacks?.onNewStateReduced(this, selectedTransition, oldState, newState)
+        callbacks.onNewStateReduced(this, selectedTransition, oldState, newState)
 
         return newState
     }
 
-    @Suppress("UNCHECKED_CAST", "DEPRECATION")
+    @Suppress("UNCHECKED_CAST")
     private fun getAvailableTransitions(oldState: STATE): List<Transition<STATE, STATE>> =
         (transitions as List<Transition<STATE, STATE>>).filter { isCorrectTransition(it, oldState) }
 

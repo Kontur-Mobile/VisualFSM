@@ -4,9 +4,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.TransitionCallbacks
 import ru.kontur.mobile.visualfsm.helper.runFSMFeatureTest
 import ru.kontur.mobile.visualfsm.sealedTests.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.sealedTests.testFSM.TestFSMFeature
@@ -26,36 +23,7 @@ class SealedClassInActionTests {
             TestFSMFeature(
                 initialState = TestFSMState.Initial(0),
                 asyncWorker = TestFSMAsyncWorker(dispatcher),
-                transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
-                    override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
-                    }
-
-                    override fun onTransitionSelected(
-                        action: Action<TestFSMState>,
-                        transition: Transition<TestFSMState, TestFSMState>,
-                        currentState: TestFSMState,
-                    ) {
-                    }
-
-                    override fun onNewStateReduced(
-                        action: Action<TestFSMState>,
-                        transition: Transition<TestFSMState, TestFSMState>,
-                        oldState: TestFSMState,
-                        newState: TestFSMState,
-                    ) {
-                    }
-
-                    override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                        throw IllegalStateException("onNoTransitionError $action $currentState")
-                    }
-
-                    override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-
-                    }
-
-                    override fun onInitialStateReceived(initialState: TestFSMState) {
-                    }
-                })
+            )
 
         }
     ) { feature, states ->

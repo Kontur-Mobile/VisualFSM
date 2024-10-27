@@ -11,11 +11,11 @@ package ru.kontur.mobile.visualfsm
  */
 abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IBaseStateSource<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE>?
+    private val transitionCallbacks: TransitionCallbacks<STATE>
 ) {
 
     init {
-        transitionCallbacks?.onInitialStateReceived(stateSource.getCurrentState())
+        transitionCallbacks.onInitialStateReceived(stateSource.getCurrentState())
     }
 
     /**

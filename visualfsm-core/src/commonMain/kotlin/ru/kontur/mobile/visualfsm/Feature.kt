@@ -3,6 +3,9 @@ package ru.kontur.mobile.visualfsm
 import kotlinx.atomicfu.locks.*
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import ru.kontur.mobile.visualfsm.transitioncallbacks.LogLevel
+import ru.kontur.mobile.visualfsm.transitioncallbacks.LogTransitionCallbacks
+import ru.kontur.mobile.visualfsm.transitioncallbacks.StdoutFSMLogger
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -19,7 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSource<STATE>,
     asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-    transitionCallbacks: TransitionCallbacks<STATE>? = null,
+    transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
     transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
 ) : BaseFeature<STATE, ACTION>() {
 
@@ -43,7 +46,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
 
@@ -58,7 +61,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
 
@@ -73,7 +76,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         stateSource: IStateSource<STATE>,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
 

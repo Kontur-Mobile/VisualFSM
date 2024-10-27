@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.*
  */
 internal class Store<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IStateSourceWithSharedFlow<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE>?
+    private val transitionCallbacks: TransitionCallbacks<STATE>
 ) : BaseStore<STATE, ACTION>(stateSource, transitionCallbacks) {
 
     /**

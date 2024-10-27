@@ -17,7 +17,7 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IStateSourceRx<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE>?,
+    private val transitionCallbacks: TransitionCallbacks<STATE>,
 ) : BaseStore<STATE, ACTION>(stateSource, transitionCallbacks) {
 
     /**

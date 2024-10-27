@@ -12,9 +12,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.Transition
-import ru.kontur.mobile.visualfsm.TransitionCallbacks
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMFeature
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMState
@@ -317,36 +314,7 @@ class StateMachineTests {
         val feature = TestFSMFeature(
             initialState = TestFSMState.Initial,
             asyncWorker = TestFSMAsyncWorker(Dispatchers.Default),
-            transitionCallbacks = object : TransitionCallbacks<TestFSMState> {
-                override fun onActionLaunched(action: Action<TestFSMState>, currentState: TestFSMState) {
-                }
-
-                override fun onTransitionSelected(
-                    action: Action<TestFSMState>,
-                    transition: Transition<TestFSMState, TestFSMState>,
-                    currentState: TestFSMState,
-                ) {
-                }
-
-                override fun onNewStateReduced(
-                    action: Action<TestFSMState>,
-                    transition: Transition<TestFSMState, TestFSMState>,
-                    oldState: TestFSMState,
-                    newState: TestFSMState
-                ) {
-                }
-
-                override fun onNoTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                    throw IllegalStateException("onNoTransitionError $action $currentState")
-                }
-
-                override fun onMultipleTransitionError(action: Action<TestFSMState>, currentState: TestFSMState) {
-                    throw IllegalStateException("onMultipleTransitionError $action $currentState")
-                }
-
-                override fun onInitialStateReceived(initialState: TestFSMState) {
-                }
-            })
+        )
 
         val states = mutableListOf<TestFSMState>()
 
