@@ -22,13 +22,11 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
 ) : BaseFeature<STATE, ACTION>() {
 
-    private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
+    private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
 
-    private val store: StoreRx<STATE, ACTION>
+    private val store: StoreRx<STATE, ACTION> = StoreRx(stateSource, transitionCallbacks)
 
     init {
-        this.transitionsFactory = transitionsFactory(this)
-        store = StoreRx(stateSource, transitionCallbacks)
         asyncWorker?.bind(this)
     }
 
@@ -111,12 +109,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      */
     override fun proceed(action: ACTION) {
         synchronized(this) {
-            val transitionsFactory = this.transitionsFactory
-            return store.proceed(
-                action.apply {
-                    if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
-                }
-            )
+            return store.proceed(action, transitionsFactory)
         }
     }
 }

@@ -25,13 +25,11 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
 
     internal val synchronizedObject = SynchronizedObject()
 
-    private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
+    private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
 
-    private val store: Store<STATE, ACTION>
+    private val store: Store<STATE, ACTION> = Store(StateSourceSharedFlowDecorator(stateSource), transitionCallbacks)
 
     init {
-        this.transitionsFactory = transitionsFactory(this)
-        store = Store(StateSourceSharedFlowDecorator(stateSource), transitionCallbacks)
         asyncWorker?.bind(this)
     }
 
@@ -113,12 +111,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      */
     override fun proceed(action: ACTION) {
         synchronized(synchronizedObject) {
-            val transitionsFactory = this.transitionsFactory
-            return store.proceed(
-                action.apply {
-                    if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
-                }
-            )
+            return store.proceed(action, transitionsFactory)
         }
     }
 }

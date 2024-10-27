@@ -14,11 +14,7 @@ import kotlinx.coroutines.flow.*
 internal class Store<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IStateSourceWithSharedFlow<STATE>,
     private val transitionCallbacks: TransitionCallbacks<STATE>?
-) {
-
-    init {
-        transitionCallbacks?.onInitialStateReceived(stateSource.getCurrentState())
-    }
+) : BaseStore<STATE, ACTION>(stateSource, transitionCallbacks) {
 
     /**
      * Provides a [flow][StateFlow] of [states][State]
@@ -36,37 +32,5 @@ internal class Store<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun observeAllStates(): SharedFlow<STATE> {
         return stateSource.observeAllStates()
-    }
-
-    /**
-     * Returns current state
-     *
-     * @return current [state][State]
-     */
-    internal fun getCurrentState(): STATE {
-        return stateSource.getCurrentState()
-    }
-
-    /**
-     * Changes current state
-     *
-     * @param action [Action] that was launched
-     */
-    internal fun proceed(action: ACTION) {
-        val newState = reduce(action, getCurrentState())
-        stateSource.updateState(newState)
-    }
-
-    /**
-     * Runs [action's][Action] transition of [states][State]
-     *
-     * @param action launched [action][Action]
-     * @param state new [state][State]
-     * @return new [state][State]
-     */
-    private fun reduce(
-        action: ACTION, state: STATE
-    ): STATE {
-        return action.run(state, transitionCallbacks)
     }
 }
