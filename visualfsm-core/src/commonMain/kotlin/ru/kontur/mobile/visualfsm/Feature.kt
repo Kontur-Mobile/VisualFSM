@@ -3,9 +3,7 @@ package ru.kontur.mobile.visualfsm
 import kotlinx.atomicfu.locks.*
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import ru.kontur.mobile.visualfsm.transitioncallbacks.LogLevel
-import ru.kontur.mobile.visualfsm.transitioncallbacks.LogTransitionCallbacks
-import ru.kontur.mobile.visualfsm.transitioncallbacks.StdoutFSMLogger
+import ru.kontur.mobile.visualfsm.log.LogParams
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -22,15 +20,19 @@ import ru.kontur.mobile.visualfsm.transitioncallbacks.StdoutFSMLogger
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSource<STATE>,
     asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-    transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+    transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
     transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
+    logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
 ) : BaseFeature<STATE, ACTION>() {
 
     internal val synchronizedObject = SynchronizedObject()
 
     private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
 
-    private val store: Store<STATE, ACTION> = Store(StateSourceSharedFlowDecorator(stateSource), transitionCallbacks)
+    private val store: Store<STATE, ACTION> = Store(
+        stateSource = StateSourceSharedFlowDecorator(stateSource),
+        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks)
+    )
 
     init {
         asyncWorker?.bind(this)
@@ -46,9 +48,10 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
+        logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
+    ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
 
     /**
      * @param initialState initial [state][State]
@@ -61,9 +64,10 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
+        logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
+    ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, transitionsFactory, logParams)
 
     /**
      * @param stateSource the [state source][IStateSource] for storing and subscribing to state,
@@ -76,9 +80,10 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         stateSource: IStateSource<STATE>,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
+        logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
+    ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
 
     /**
      * Provides a [flow][StateFlow] of [states][State]

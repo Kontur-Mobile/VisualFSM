@@ -14,6 +14,6 @@ class TestFSMFeature(
     ) : Feature<TestFSMState, TestFSMAction>(
     initialState = initialState,
     asyncWorker = asyncWorker,
-    transitionCallbacks = TestFSMTransitionCallbacks(),
+    transitionCallbacks = listOf(TestFSMTransitionCallbacks()),
     transitionsFactory = provideTransitionsFactory(),
 )

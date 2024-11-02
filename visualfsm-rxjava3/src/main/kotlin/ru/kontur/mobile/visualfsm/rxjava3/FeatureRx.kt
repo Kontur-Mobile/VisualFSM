@@ -2,9 +2,7 @@ package ru.kontur.mobile.visualfsm.rxjava3
 
 import io.reactivex.rxjava3.core.Observable
 import ru.kontur.mobile.visualfsm.*
-import ru.kontur.mobile.visualfsm.transitioncallbacks.LogLevel
-import ru.kontur.mobile.visualfsm.transitioncallbacks.LogTransitionCallbacks
-import ru.kontur.mobile.visualfsm.transitioncallbacks.StdoutFSMLogger
+import ru.kontur.mobile.visualfsm.log.LogParams
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -21,13 +19,17 @@ import ru.kontur.mobile.visualfsm.transitioncallbacks.StdoutFSMLogger
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSourceRx<STATE>,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-    transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+    transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
+    logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
 ) : BaseFeature<STATE, ACTION>() {
 
     private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
 
-    private val store: StoreRx<STATE, ACTION> = StoreRx(stateSource, transitionCallbacks)
+    private val store: StoreRx<STATE, ACTION> = StoreRx(
+        stateSource = stateSource,
+        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks)
+    )
 
     init {
         asyncWorker?.bind(this)
@@ -43,7 +45,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
 
@@ -58,7 +60,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
 
@@ -73,7 +75,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         stateSource: IStateSourceRx<STATE>,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE> = LogTransitionCallbacks(StdoutFSMLogger(LogLevel.ERROR)),
+        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
 
