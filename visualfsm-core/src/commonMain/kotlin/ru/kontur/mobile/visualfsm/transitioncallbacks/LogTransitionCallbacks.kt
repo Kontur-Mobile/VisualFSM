@@ -5,71 +5,84 @@ import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 import ru.kontur.mobile.visualfsm.log.LogFormatter
-import ru.kontur.mobile.visualfsm.log.LogLevel
 import ru.kontur.mobile.visualfsm.log.Logger
 
 class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
-    private val logLevel: LogLevel,
     private val logger: Logger,
     private val tag: String,
     private val logFormatter: LogFormatter<STATE, ACTION>,
-) : TransitionCallbacks<STATE> {
+) : TransitionCallbacks<STATE, ACTION> {
 
     override fun onInitialStateReceived(initialState: STATE) {
-        if (logLevel == LogLevel.ERROR) return
-
-        val message = "LogTransitionCallbacks onInitialStateReceived: ${logFormatter.stateFormatter(initialState)}"
-
-        when (logLevel) {
-            LogLevel.ERROR -> Unit
-
-            LogLevel.INFO -> logger.log(
-                tag = tag,
-                message = message
-            )
-
-            LogLevel.VERBOSE -> logger.log(
-                tag = tag,
-                message = message
-            )
-        }
+        logger.log(
+            tag = tag,
+            message = "LogTransitionCallbacks onInitialStateReceived: ${logFormatter.stateFormatter(initialState)}"
+        )
     }
 
     override fun onActionLaunched(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE
     ) {
-        logger.log(tag, "")
+        logger.log(
+            tag = tag,
+            message = "onActionLaunched: ${logFormatter.actionFormatter(action)} " +
+                    "from state ${currentState::class.simpleName}"
+        )
     }
 
     override fun onTransitionSelected(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         currentState: STATE
     ) {
-        logger.log(tag, "")
+        logger.log(
+            tag = tag,
+            message = "onTransitionSelected: ${transition::class.simpleName}, " +
+                    "for action ${action::class.simpleName}"
+        )
     }
 
     override fun onNewStateReduced(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
     ) {
-        logger.log(tag, "")
+        logger.log(
+            tag = tag,
+            message = "onNewStateReduced: ${logFormatter.stateFormatter(newState)}"
+        )
     }
 
     override fun onNoTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
     ) {
-        logger.log(tag, "")
+        logger.error(
+            tag = tag,
+            message = "NoTransitionError for ${action::class.simpleName} " +
+                    "from ${currentState::class.simpleName}",
+            errorGroupId = "to${action::class.simpleName}" +
+                    "from${currentState::class.simpleName}"
+        )
     }
 
     override fun onMultipleTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
+        suitableTransitions: List<Transition<STATE, STATE>>
     ) {
-        logger.log(tag, "")
+        logger.error(
+            tag = tag,
+            message = "MultipleTransitionError for ${action::class.simpleName} " +
+                    "from ${currentState::class.simpleName}, " +
+                    "suitableTransitions ${
+                        suitableTransitions.map { it::class.simpleName }.joinToString()
+                    }",
+            errorGroupId = "suitable${suitableTransitions.size}" +
+                    "to${action::class.simpleName}" +
+                    "from${currentState::class.simpleName}"
+        )
     }
 }

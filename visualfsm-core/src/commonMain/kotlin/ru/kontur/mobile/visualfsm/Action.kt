@@ -23,13 +23,13 @@ abstract class Action<STATE : State> {
      * @param callbacks [transition callbacks][TransitionCallbacks]
      * @return [new state][State]
      */
-    internal fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE>): STATE {
+    internal fun run(oldState: STATE, callbacks: TransitionCallbacks<STATE, Action<STATE>>): STATE {
         callbacks.onActionLaunched(this, oldState)
 
         val availableTransitions = getAvailableTransitions(oldState)
 
         if (availableTransitions.size > 1) {
-            callbacks.onMultipleTransitionError(this, oldState)
+            callbacks.onMultipleTransitionError(this, oldState, availableTransitions)
         }
 
         val selectedTransition = availableTransitions.firstOrNull()

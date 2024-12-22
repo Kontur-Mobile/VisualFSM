@@ -3,7 +3,7 @@ package ru.kontur.mobile.visualfsm
 /**
  * Inherit to declare third party logic on provided event calls (like logging, debugging, or metrics)
  */
-interface TransitionCallbacks<STATE : State> {
+interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
 
     /**
      * Is called when the [Feature] is initialized
@@ -21,7 +21,7 @@ interface TransitionCallbacks<STATE : State> {
      * @param currentState current [state][STATE]
      */
     fun onActionLaunched(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE
     )
 
@@ -33,7 +33,7 @@ interface TransitionCallbacks<STATE : State> {
      * @param currentState current [state][STATE]
      */
     fun onTransitionSelected(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         currentState: STATE
     )
@@ -47,7 +47,7 @@ interface TransitionCallbacks<STATE : State> {
      * @param newState new [state][State]
      */
     fun onNewStateReduced(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
@@ -60,7 +60,7 @@ interface TransitionCallbacks<STATE : State> {
      * @param currentState current [state][State]
      */
     fun onNoTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
     )
 
@@ -69,9 +69,11 @@ interface TransitionCallbacks<STATE : State> {
      *
      * @param action [Action] that was being launched
      * @param currentState current [state][State]
+     * @param suitableTransitions list of suitable [transitions][Transition]
      */
     fun onMultipleTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
+        suitableTransitions: List<Transition<STATE, STATE>>
     )
 }

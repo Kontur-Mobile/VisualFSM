@@ -11,7 +11,7 @@ package ru.kontur.mobile.visualfsm
  */
 abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IBaseStateSource<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE>
+    private val transitionCallbacks: TransitionCallbacks<STATE, ACTION>
 ) {
 
     init {
@@ -48,6 +48,7 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     private fun reduce(
         action: ACTION, state: STATE
     ): STATE {
-        return action.run(state, transitionCallbacks)
+        @Suppress("UNCHECKED_CAST")
+        return action.run(state, transitionCallbacks as TransitionCallbacks<STATE, Action<STATE>>)
     }
 }

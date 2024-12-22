@@ -8,10 +8,10 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
 /**
  * Inherit to declare third party logic on provided event calls (like logging, debugging, or metrics)
  */
-interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE> {
+interface DefaultTransitionCallbacks<STATE : State, ACTION : Action<STATE>> : TransitionCallbacks<STATE, ACTION> {
 
     /**
-     * Is called when the [Feature] is initialized
+     * Is called when the [ru.kontur.mobile.visualfsm.Feature] is initialized
      *
      * @param initialState the [state][STATE] with which the Feature is initialized
      */
@@ -27,7 +27,7 @@ interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE>
      * @param currentState current [state][STATE]
      */
     override fun onActionLaunched(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE
     ) {
     }
@@ -40,7 +40,7 @@ interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE>
      * @param currentState current [state][STATE]
      */
     override fun onTransitionSelected(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         currentState: STATE
     ) {
@@ -55,7 +55,7 @@ interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE>
      * @param newState new [state][State]
      */
     override fun onNewStateReduced(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
@@ -69,7 +69,7 @@ interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE>
      * @param currentState current [state][State]
      */
     override fun onNoTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
     ) {
     }
@@ -79,10 +79,12 @@ interface DefaultTransitionCallbacks<STATE : State> : TransitionCallbacks<STATE>
      *
      * @param action [Action] that was being launched
      * @param currentState current [state][State]
+     * @param suitableTransitions list of suitable [transitions][Transition]
      */
     override fun onMultipleTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
+        suitableTransitions: List<Transition<STATE, STATE>>
     ) {
     }
 }

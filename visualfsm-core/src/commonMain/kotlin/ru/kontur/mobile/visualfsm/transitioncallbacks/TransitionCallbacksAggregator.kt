@@ -6,9 +6,9 @@ import ru.kontur.mobile.visualfsm.Transition
 import ru.kontur.mobile.visualfsm.TransitionCallbacks
 
 
-class TransitionCallbacksAggregator<STATE : State>(
-    private val callbacksList: List<TransitionCallbacks<STATE>>
-) : TransitionCallbacks<STATE> {
+class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
+    private val callbacksList: List<TransitionCallbacks<STATE, ACTION>>
+) : TransitionCallbacks<STATE, ACTION> {
     override fun onInitialStateReceived(initialState: STATE) {
         callbacksList.onEach {
             it.onInitialStateReceived(initialState)
@@ -16,7 +16,7 @@ class TransitionCallbacksAggregator<STATE : State>(
     }
 
     override fun onActionLaunched(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE
     ) {
         callbacksList.onEach {
@@ -25,7 +25,7 @@ class TransitionCallbacksAggregator<STATE : State>(
     }
 
     override fun onTransitionSelected(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         currentState: STATE
     ) {
@@ -35,7 +35,7 @@ class TransitionCallbacksAggregator<STATE : State>(
     }
 
     override fun onNewStateReduced(
-        action: Action<STATE>,
+        action: ACTION,
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
@@ -51,7 +51,7 @@ class TransitionCallbacksAggregator<STATE : State>(
     }
 
     override fun onNoTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
     ) {
         callbacksList.onEach {
@@ -60,11 +60,12 @@ class TransitionCallbacksAggregator<STATE : State>(
     }
 
     override fun onMultipleTransitionError(
-        action: Action<STATE>,
+        action: ACTION,
         currentState: STATE,
+        suitableTransitions: List<Transition<STATE, STATE>>
     ) {
         callbacksList.onEach {
-            it.onMultipleTransitionError(action, currentState)
+            it.onMultipleTransitionError(action, currentState, suitableTransitions)
         }
     }
 }

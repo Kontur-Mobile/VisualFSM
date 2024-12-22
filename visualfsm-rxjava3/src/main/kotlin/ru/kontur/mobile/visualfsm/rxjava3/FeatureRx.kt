@@ -19,7 +19,7 @@ import ru.kontur.mobile.visualfsm.log.LogParams
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSourceRx<STATE>,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-    transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
+    transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
     logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
 ) : BaseFeature<STATE, ACTION>() {
@@ -45,7 +45,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
+        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
 
@@ -60,7 +60,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
+        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
         transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
     ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
 
@@ -75,7 +75,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     constructor(
         stateSource: IStateSourceRx<STATE>,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE>> = listOf<TransitionCallbacks<STATE>>(),
+        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
     ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
 

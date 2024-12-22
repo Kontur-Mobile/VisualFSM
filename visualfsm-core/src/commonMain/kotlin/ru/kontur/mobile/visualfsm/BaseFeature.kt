@@ -26,12 +26,11 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
      */
     protected fun getTransitionCallbacksAggregator(
         logParams: LogParams<STATE, ACTION>,
-        transitionCallbacksList: List<TransitionCallbacks<STATE>>
-    ): TransitionCallbacksAggregator<STATE> {
+        transitionCallbacksList: List<TransitionCallbacks<STATE, ACTION>>
+    ): TransitionCallbacksAggregator<STATE, ACTION> {
 
-        val transitionCallbacksList = if (logParams.internalLoggingEnabled) {
+        val newTransitionCallbacksList = if (logParams.internalLoggingEnabled) {
             val logTransitionCallbacks = LogTransitionCallbacks(
-                logLevel = logParams.logLevel,
                 logger = logParams.logger,
                 tag = logParams.tag ?: this::class.simpleName ?: "Feature",
                 logFormatter = logParams.logFormatter,
@@ -41,7 +40,7 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
             transitionCallbacksList
         }
 
-        return TransitionCallbacksAggregator(transitionCallbacksList)
+        return TransitionCallbacksAggregator(newTransitionCallbacksList)
     }
 
     companion object
