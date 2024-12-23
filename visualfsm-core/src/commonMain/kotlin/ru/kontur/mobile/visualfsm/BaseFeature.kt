@@ -1,6 +1,7 @@
 package ru.kontur.mobile.visualfsm
 
 import ru.kontur.mobile.visualfsm.log.LogParams
+import ru.kontur.mobile.visualfsm.log.LoggerMode
 import ru.kontur.mobile.visualfsm.transitioncallbacks.LogTransitionCallbacks
 import ru.kontur.mobile.visualfsm.transitioncallbacks.TransitionCallbacksAggregator
 
@@ -29,8 +30,9 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
         transitionCallbacksList: List<TransitionCallbacks<STATE, ACTION>>
     ): TransitionCallbacksAggregator<STATE, ACTION> {
 
-        val newTransitionCallbacksList = if (logParams.internalLoggingEnabled) {
+        val newTransitionCallbacksList = if (logParams.loggerMode != LoggerMode.NONE) {
             val logTransitionCallbacks = LogTransitionCallbacks(
+                loggerMode = logParams.loggerMode,
                 logger = logParams.logger,
                 tag = logParams.tag ?: this::class.simpleName ?: "Feature",
                 logFormatter = logParams.logFormatter,

@@ -3,6 +3,7 @@ package ru.kontur.mobile.visualfsm.rxjava3
 import io.reactivex.rxjava3.core.Observable
 import ru.kontur.mobile.visualfsm.*
 import ru.kontur.mobile.visualfsm.log.LogParams
+import ru.kontur.mobile.visualfsm.log.LoggerMode
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -15,13 +16,16 @@ import ru.kontur.mobile.visualfsm.log.LogParams
  * on provided event calls (like logging, debugging, or metrics) (optional)
  * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
  * for the action
+ * @param logParams the internal logger params, by default configured for write only error messages
+ * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+ * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatter]
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSourceRx<STATE>,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
     transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    logParams: LogParams<STATE, ACTION> = LogParams(internalLoggingEnabled = true)
+    logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
 ) : BaseFeature<STATE, ACTION>() {
 
     private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
