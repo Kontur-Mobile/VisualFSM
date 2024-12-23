@@ -90,8 +90,8 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
 
         logger.error(
             tag = tag,
-            message = "NoTransitionError for ${action::class.simpleName} " +
-                    "from ${currentState::class.simpleName}",
+            message = "NoTransitionError for ${logFormatter.actionFormatter(action)} " +
+                    "from ${logFormatter.stateFormatter(currentState)}",
             errorGroupId = "to${action::class.simpleName}" +
                     "from${currentState::class.simpleName}"
         )
@@ -106,11 +106,11 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
 
         logger.error(
             tag = tag,
-            message = "MultipleTransitionError for ${action::class.simpleName} " +
-                    "from ${currentState::class.simpleName}, " +
-                    "suitableTransitions ${
+            message = "MultipleTransitionError for ${logFormatter.actionFormatter(action)} " +
+                    "from ${logFormatter.stateFormatter(currentState)}, " +
+                    "suitableTransitions [${
                         suitableTransitions.map { it::class.simpleName }.joinToString()
-                    }",
+                    }]",
             errorGroupId = "suitable${suitableTransitions.size}" +
                     "to${action::class.simpleName}" +
                     "from${currentState::class.simpleName}"
