@@ -13,7 +13,7 @@ class TestFSMFeature(
 ) : Feature<TestFSMState, TestFSMAction>(
     initialState = initialState,
     asyncWorker = asyncWorker,
-    transitionCallbacks = listOf(TestFSMTransitionCallbacks()),
+    transitionCallbacks = TestFSMTransitionCallbacks(),
     transitionsFactory = provideTransitionsFactory(),
 ) {
     fun onDestroy() {

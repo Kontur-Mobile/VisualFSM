@@ -21,7 +21,7 @@ import ru.kontur.mobile.visualfsm.log.LoggerMode
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSource<STATE>,
     asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-    transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
+    transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
     transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
     logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
 ) : BaseFeature<STATE, ACTION>() {
@@ -52,7 +52,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
     ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
@@ -68,7 +68,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: Feature<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
         logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
     ) : this(RootStateSource(initialState), asyncWorker, transitionCallbacks, transitionsFactory, logParams)
@@ -84,7 +84,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
     constructor(
         stateSource: IStateSource<STATE>,
         asyncWorker: AsyncWorker<STATE, ACTION>? = null,
-        transitionCallbacks: List<TransitionCallbacks<STATE, ACTION>> = listOf(),
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
         logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
     ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
