@@ -11,6 +11,7 @@ version = rootProject.version
 
 kotlin {
     jvmToolchain(17)
+
     jvm()
 
     js {
