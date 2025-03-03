@@ -12,7 +12,7 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
      */
     fun onInitialStateReceived(
         initialState: STATE
-    )
+    ) {}
 
     /**
      * Is called when [Action] is being launched
@@ -23,7 +23,7 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
     fun onActionLaunched(
         action: ACTION,
         currentState: STATE
-    )
+    ) {}
 
     /**
      * Is called on transition being selected
@@ -36,7 +36,7 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
         action: ACTION,
         transition: Transition<STATE, STATE>,
         currentState: STATE
-    )
+    ) {}
 
     /**
      * Is called when [new state][State] reduced
@@ -51,7 +51,7 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
         transition: Transition<STATE, STATE>,
         oldState: STATE,
         newState: STATE
-    )
+    ) {}
 
     /**
      * Is called when there is no available [transition][Transition]
@@ -62,7 +62,7 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
     fun onNoTransitionError(
         action: ACTION,
         currentState: STATE,
-    )
+    ) {}
 
     /**
      * Is called when more than one [transition][Transition] is available
@@ -75,5 +75,5 @@ interface TransitionCallbacks<STATE : State, ACTION : Action<STATE>> {
         action: ACTION,
         currentState: STATE,
         suitableTransitions: List<Transition<STATE, STATE>>
-    )
+    ) {}
 }

@@ -24,7 +24,7 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
             INFO,
             VERBOSE -> logger.log(
                 tag = tag,
-                message = "LogTransitionCallbacks onInitialStateReceived: ${logFormatter.stateFormatter(initialState)}"
+                message = "onInitialStateReceived: ${logFormatter.stateFormatter(initialState)}"
             )
         }
     }
