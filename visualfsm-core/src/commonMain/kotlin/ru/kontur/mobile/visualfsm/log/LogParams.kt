@@ -7,11 +7,11 @@ import ru.kontur.mobile.visualfsm.State
  * @param loggerMode - [LoggerMode] (NONE - for disable internal logging, ERRORS(default) - log errors only, VERBOSE - log all events)
  * @param logger - custom [Logger] implementation, by default used internal [StdoutLogger]
  * @param tag - custom tag for log messages, if null - used Feature class simple name
- * @param logFormatter - custom [LogFormatter] implementation, by default used [DefaultVerboseLogFormatter]
+ * @param logFormatters - custom [LogFormatters] implementation, by default used [DefaultVerboseLogFormatters]
  */
-data class LogParams<STATE : State, ACTION : Action<STATE>>(
+open class LogParams<STATE : State, ACTION : Action<STATE>>(
     val loggerMode: LoggerMode,
     val logger: Logger = StdoutLogger(),
     val tag: String? = null,
-    val logFormatter: LogFormatter<STATE, ACTION> = DefaultVerboseLogFormatter(),
+    val logFormatters: LogFormatters<STATE, ACTION> = DefaultVerboseLogFormatters(),
 )

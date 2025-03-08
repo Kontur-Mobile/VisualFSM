@@ -18,7 +18,7 @@ import ru.kontur.mobile.visualfsm.log.LoggerMode
  * for the action
  * @param logParams the internal logger params, by default configured for write only error messages
  * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
- * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatter]
+ * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSourceRx<STATE>,

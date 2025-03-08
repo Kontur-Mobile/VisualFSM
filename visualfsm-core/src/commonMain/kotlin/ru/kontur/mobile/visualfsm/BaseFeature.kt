@@ -35,7 +35,7 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
                 loggerMode = logParams.loggerMode,
                 logger = logParams.logger,
                 tag = logParams.tag ?: this::class.simpleName ?: "Feature",
-                logFormatter = logParams.logFormatter,
+                logFormatters = logParams.logFormatters,
             )
             transitionCallbacks?.let { listOf(logTransitionCallbacks, it) } ?: listOf(logTransitionCallbacks)
         } else {
