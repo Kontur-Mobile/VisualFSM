@@ -17,6 +17,9 @@ import ru.kontur.mobile.visualfsm.log.LoggerMode
  * on provided event calls (like logging, debugging, or metrics) (optional)
  * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
  * for the action
+ * @param logParams the internal logger params, by default configured for write only error messages
+ * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+ * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
  */
 open class Feature<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSource<STATE>,
@@ -64,6 +67,9 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a function that returns a [TransitionsFactory] instance
      * to create the transition list for the action
+     * @param logParams the internal logger params, by default configured for write only error messages
+     * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+     * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
      */
     constructor(
         initialState: STATE,
@@ -80,6 +86,9 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     * @param logParams the internal logger params, by default configured for write only error messages
+     * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+     * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
      */
     constructor(
         stateSource: IStateSource<STATE>,
