@@ -22,10 +22,13 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
             ERRORS -> Unit
 
             INFO,
-            VERBOSE -> logger.log(
-                tag = tag,
-                message = "onInitialStateReceived: ${logFormatters.formatState(initialState)}"
-            )
+            VERBOSE ->
+                logFormatters.formatState(initialState)?.let {
+                    logger.log(
+                        tag = tag,
+                        message = "onInitialStateReceived: $it"
+                    )
+                }
         }
     }
 
@@ -38,11 +41,14 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
             ERRORS -> Unit
 
             INFO,
-            VERBOSE -> logger.log(
-                tag = tag,
-                message = "onActionLaunched: ${logFormatters.formatAction(action)} " +
-                        "from state ${currentState::class.simpleName}"
-            )
+            VERBOSE ->
+                logFormatters.formatAction(action)?.let {
+                    logger.log(
+                        tag = tag,
+                        message = "onActionLaunched: $it " +
+                                "from state ${currentState::class.simpleName}"
+                    )
+                }
         }
     }
 
@@ -75,10 +81,13 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
             ERRORS -> Unit
 
             INFO,
-            VERBOSE -> logger.log(
-                tag = tag,
-                message = "onNewStateReduced: ${logFormatters.formatState(newState)}"
-            )
+            VERBOSE ->
+                logFormatters.formatState(newState)?.let {
+                    logger.log(
+                        tag = tag,
+                        message = "onNewStateReduced: $it"
+                    )
+                }
         }
     }
 
@@ -90,8 +99,8 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
 
         logger.error(
             tag = tag,
-            message = "NoTransitionError for ${logFormatters.formatAction(action)} " +
-                    "from ${logFormatters.formatState(currentState)}",
+            message = "NoTransitionError for ${logFormatters.formatAction(action) ?: action::class.simpleName} " +
+                    "from ${logFormatters.formatState(currentState) ?: currentState::class.simpleName}",
             errorGroupId = "to${action::class.simpleName}" +
                     "from${currentState::class.simpleName}"
         )
@@ -106,8 +115,8 @@ class LogTransitionCallbacks<STATE : State, ACTION : Action<STATE>>(
 
         logger.error(
             tag = tag,
-            message = "MultipleTransitionError for ${logFormatters.formatAction(action)} " +
-                    "from ${logFormatters.formatState(currentState)}, " +
+            message = "MultipleTransitionError for ${logFormatters.formatAction(action) ?: action::class.simpleName} " +
+                    "from ${logFormatters.formatState(currentState) ?: currentState::class.simpleName}, " +
                     "suitableTransitions [${
                         suitableTransitions.map { it::class.simpleName }.joinToString()
                     }]",

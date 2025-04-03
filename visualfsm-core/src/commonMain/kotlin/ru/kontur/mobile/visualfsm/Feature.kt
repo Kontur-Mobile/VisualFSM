@@ -31,11 +31,10 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
 
     internal val synchronizedObject = SynchronizedObject()
 
-    private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
-
     private val store: Store<STATE, ACTION> = Store(
         stateSource = StateSourceSharedFlowDecorator(stateSource),
-        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks)
+        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks),
+        transitionsFactory = transitionsFactory()
     )
 
     init {
@@ -132,7 +131,7 @@ open class Feature<STATE : State, ACTION : Action<STATE>>(
      */
     override fun proceed(action: ACTION) {
         synchronized(synchronizedObject) {
-            return store.proceed(action, transitionsFactory)
+            return store.proceed(action)
         }
     }
 }

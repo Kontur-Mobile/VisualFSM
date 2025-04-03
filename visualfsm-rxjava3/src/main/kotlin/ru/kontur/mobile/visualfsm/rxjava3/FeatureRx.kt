@@ -28,11 +28,11 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
 ) : BaseFeature<STATE, ACTION>() {
 
-    private val transitionsFactory: TransitionsFactory<STATE, ACTION> = transitionsFactory(this)
 
     private val store: StoreRx<STATE, ACTION> = StoreRx(
         stateSource = stateSource,
-        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks)
+        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks),
+        transitionsFactory = transitionsFactory()
     )
 
     init {
@@ -130,7 +130,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      */
     override fun proceed(action: ACTION) {
         synchronized(this) {
-            return store.proceed(action, transitionsFactory)
+            return store.proceed(action)
         }
     }
 }

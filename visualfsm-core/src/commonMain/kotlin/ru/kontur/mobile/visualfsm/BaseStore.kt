@@ -7,11 +7,14 @@ package ru.kontur.mobile.visualfsm
  * @param stateSource the [state source][IBaseStateSource] for storing and getting state,
  * can be external to implement a common state tree between parent and child state machines
  * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
- * on provided event calls (like logging, debugging, or metrics) (optional)
+ * on provided event calls (like logging, debugging, or metrics)
+ * @param transitionsFactory the [factory][TransitionsFactory] Factory for creating [transitions][Transition]
+ * described in [action][Action]
  */
 abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IBaseStateSource<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE, ACTION>
+    private val transitionCallbacks: TransitionCallbacks<STATE, ACTION>,
+    private val transitionsFactory: TransitionsFactory<STATE, ACTION>,
 ) {
 
     init {
@@ -32,23 +35,60 @@ abstract class BaseStore<STATE : State, ACTION : Action<STATE>>(
      *
      * @param action [Action] that was launched
      */
-    fun proceed(action: ACTION, transitionsFactory: TransitionsFactory<STATE, ACTION>) {
-        action.setTransitions(transitionsFactory.create(action))
+    fun proceed(action: ACTION) {
         val newState = reduce(action, getCurrentState())
         stateSource.updateState(newState)
     }
 
     /**
-     * Runs [action's][Action] transition of [states][State]
+     * Runs [action][Action]
      *
      * @param action launched [action][Action]
-     * @param state new [state][State]
+     * @param oldState old state [state][State]
      * @return new [state][State]
      */
     private fun reduce(
-        action: ACTION, state: STATE
+        action: ACTION, oldState: STATE
     ): STATE {
-        @Suppress("UNCHECKED_CAST")
-        return action.run(state, transitionCallbacks as TransitionCallbacks<STATE, Action<STATE>>)
+        transitionCallbacks.onActionLaunched(action, oldState)
+
+        val availableTransitions = getAvailableTransitions(action, oldState)
+
+        if (availableTransitions.size > 1) {
+            transitionCallbacks.onMultipleTransitionError(
+                action,
+                oldState,
+                availableTransitions
+            )
+        }
+
+        val selectedTransition = availableTransitions.firstOrNull()
+
+        if (selectedTransition == null) {
+            transitionCallbacks.onNoTransitionError(action, oldState)
+            return oldState
+        }
+
+        transitionCallbacks.onTransitionSelected(action, selectedTransition, oldState)
+
+        val newState = selectedTransition.transform(oldState)
+
+        transitionCallbacks.onNewStateReduced(action, selectedTransition, oldState, newState)
+
+        return newState
     }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getAvailableTransitions(action: ACTION, oldState: STATE): List<Transition<STATE, STATE>> =
+        (transitionsFactory.create(action) as List<Transition<STATE, STATE>>).filter {
+            isCorrectTransition(
+                transition = it,
+                oldState = oldState
+            )
+        }
+
+    private fun isCorrectTransition(
+        transition: Transition<STATE, STATE>,
+        oldState: STATE,
+    ): Boolean = (transition.fromState == oldState::class) && transition.predicate(oldState)
 }
