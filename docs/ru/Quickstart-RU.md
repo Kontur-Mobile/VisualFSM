@@ -359,6 +359,7 @@ digraph SampleFSMStateTransitions {
 Для визуализации на компьютере разработчика используйте [webgraphviz](http://www.webgraphviz.com/).
 
 ## Демонстрационные проекты
+#### [Compose Multiplatform Application архитектурные примеры](https://github.com/VasilyRylov/kmp-architecture-samples)
 #### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
 #### [KMM (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
 #### [Command line Kotlin приложение (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)

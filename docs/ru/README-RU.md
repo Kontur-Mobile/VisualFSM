@@ -107,11 +107,11 @@ _поиск ошибок_, _добавление нового функциона
 Основные сущности, которые используются, – `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`
 , `TransitionCallbacks`.
 
-### State в VisualFSM
+### State
 
 `State` – интерфейс-метка для обозначения классов состояний.
 
-### Action в VisualFSM
+### Action
 
 `Action` — базовый класс действия, является входным объектом для FSM и описывает правила переходов в
 другие состояния, используя классы `Transition`. В зависимости от текущего `State` у FSM и заданного
@@ -125,7 +125,7 @@ _поиск ошибок_, _добавление нового функциона
 2. В случае если не подойдет ни один из указанных `Transition`, то в `TransitionCallbacks` будет
    передана ошибка, будет вызван `onNoTransitionError`, а `State` останется неизмененным.
 
-### Transition в VisualFSM
+### Transition
 
 `Transition` — базовый класс перехода, реализуется как inner class в `Action`. Для
 каждого `Transition` нужно указать два generic параметра типа `State`: `State`, из которого
@@ -260,7 +260,7 @@ inner class Transition : SelfTransition<AsyncWorkerState>() {
 
 </details>
 
-### AsyncWorker в VisualFSM
+### AsyncWorker
 
 ![AsyncWorker](../img/asyncworker.png)
 
@@ -289,11 +289,20 @@ inner class Transition : SelfTransition<AsyncWorkerState>() {
 
 * AsyncWorkerTask.Cancel - остановить асинхронную операцию если есть активная.
 
-### Feature в VisualFSM
+### Feature
 
 `Feature` — фасад к FSM, предоставляет подписку на `State` и принимает `Action` для обработки.
 
-### TransitionCallbacks в VisualFSM
+### TransitionCallbacks
+
+`TransitionCallbacks` предоставляет обратные вызовы для сторонней логики. Их удобно использовать для
+_логгирования_, _бизнес метрик_, _отладки_ и другого с использованием шести доступных ивентов:
+когда начальный `State` получен, когда `Action` запускается, когда `Transition` выбран, новый `State` был создан,
+и двух ошибок — когда нет доступных `Transition` или когда доступно несколько `Transition`.
+
+### LogParams
+Параметры логгирования для встроенного логгера, если возможностей встроенного логгера недостаточно,
+используйте `TransitionCallbacks` для реализации собственного журналирования и `LoggerMode.NONE` в аргументах `LogParams`.
 
 `TransitionCallbacks` предоставляет обратные вызовы для сторонней логики. Их удобно использовать для
 _логгирования_, _бизнес метрик_, _отладки_ и другого с использованием шести доступных ивентов:
@@ -338,6 +347,7 @@ ksp {
 
 ## Примеры использования
 
+#### [Compose Multiplatform Application архитектурные примеры](https://github.com/VasilyRylov/kmp-architecture-samples)
 #### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
 #### [KMM (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
 #### [Command line Kotlin приложение (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)
