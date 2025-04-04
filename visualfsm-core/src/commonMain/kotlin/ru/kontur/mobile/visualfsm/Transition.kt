@@ -17,21 +17,6 @@ abstract class SelfTransition<STATE : State> : Transition<STATE, STATE>()
  */
 abstract class Transition<FROM : State, TO : State>() {
 
-    /**
-     * @param fromState a [state][State] that FSM had on [transition][Transition] start
-     * @param toState a [state][State] FSM would have after the [transition][Transition] completes
-     */
-    @Deprecated(
-        message = "Deprecated, because now the fromState and toState is setted in the generated code (of TransitionsFactory).\n" +
-            "Code generation not configured or configured incorrectly.\n" +
-            "See the quickstart file for more information on set up code generation (https://github.com/Kontur-Mobile/VisualFSM/blob/main/docs/Quickstart.md).",
-        replaceWith = ReplaceWith("Constructor without parameters")
-    )
-    constructor(fromState: KClass<FROM>, toState: KClass<TO>) : this() {
-        this._fromState = fromState
-        this._toState = toState
-    }
-
     /** This property is needed to use it in the generated code. Do not use it. */
     @Suppress("PropertyName")
     var _fromState: KClass<FROM>? = null

@@ -107,11 +107,11 @@ An AsyncWorker allows you to simplify the processing of states with asynchronous
 
 The main entities are `State`, `Action`, `Transition`, `Feature`, `AsyncWorker`, `TransitionCallbacks`.
 
-### State of VisualFSM
+### State
 
 `State` is an interface to mark State classes.
 
-### Action of VisualFSM
+### Action
 
 `Action` is a base class for action, used as an input object for FSM and describes the transition
 rules to other states by `Transition` classes. A state is being selected depending of the current
@@ -125,7 +125,7 @@ say the transition rules were set wrong:
 2. In case no `Transtion` will do, an error would be passed to a `TransitionCallbacks`,
    `onNoTransitionError` would be called, and a `State` won't be changed.
 
-### Transition of VisualFSM
+### Transition
 
 `Transition` is a base transition class and is declared as an inner class in an `Action`. There must
 be two generic `State`s for every `Transition`: a `State`, the one the transition is going from, and
@@ -262,7 +262,7 @@ A possibility of the following transitions appears in the FSM:
 
 </details>
 
-### AsyncWorker of VisualFSM
+### AsyncWorker
 
 ![AsyncWorker](docs/img/asyncworker.png)
 
@@ -291,17 +291,21 @@ To handle a state change to state without async work, you must use a task:
 
 * AsyncWorkerTask.Cancel - stop asynchronous work, if running
 
-### Feature of VisualFSM
+### Feature
 
 `Feature` is the facade for FSM, provides subscription on current `State`, and
 proceeds incoming `Action`s.
 
-### TransitionCallbacks of VisualFSM
+### TransitionCallbacks
 
 `TransitionCallbacks` gives access to method callbacks for third party logic. They are great for
-_logging_, _debugging_, _metrics_, etc. on five available events: when `Action` is launched,
+_logging_, _debugging_, _metrics_, etc. on six available events: when initial `State` is received, when `Action` is launched,
 when `Transition` is selected, a new `State` had been reduced, and two error events —
 no `Transition`s or multiple `Transition`s available.
+
+### LogParams
+Logging parameters for the built-in logger, if the capabilities of the built-in logger are not enough, 
+use `TransitionCallbacks` to implement your own logging and `LoggerMode.NONE` in the `LogParams` arguments.
 
 ### Tools of VisualFSM
 
@@ -341,6 +345,7 @@ In the package that contains the `Feature`, a file called `[Base State Name]AllT
 [Example](#authfsmstatealltransitionscsv)
 
 ## Samples of usage
+#### [Compose Multiplatform Application architecture samples](https://github.com/VasilyRylov/kmp-architecture-samples)
 #### [Android app (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
 #### [KMM (Android + iOS) app (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
 #### [Command line app Kotlin (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)

@@ -58,7 +58,7 @@ object VisualFSM {
      * @return edge name for [transition][Transition]
      */
     fun <STATE : State> getEdgeName(
-        transitionClass: KClass<out Transition<out STATE, out STATE>>,
+        transitionClass: KClass<out Transition<STATE, STATE>>,
     ) = GraphGenerator.getEdgeName(transitionClass)
 
     /**

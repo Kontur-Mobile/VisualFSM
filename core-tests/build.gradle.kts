@@ -18,6 +18,8 @@ dependencies {
 }
 
 kotlin {
+    jvmToolchain(17)
+
     sourceSets {
         main.configure { kotlin.srcDir("build/generated/ksp/main/kotlin") }
         test.configure { kotlin.srcDir("build/generated/ksp/test/kotlin") }

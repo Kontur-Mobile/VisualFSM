@@ -1,9 +1,7 @@
 package ru.kontur.mobile.visualfsm.rxjava3
 
 import io.reactivex.rxjava3.core.Observable
-import ru.kontur.mobile.visualfsm.Action
-import ru.kontur.mobile.visualfsm.State
-import ru.kontur.mobile.visualfsm.TransitionCallbacks
+import ru.kontur.mobile.visualfsm.*
 
 /**
  * Stores current [state][State] and provides subscription on [state][State] updates.
@@ -13,11 +11,14 @@ import ru.kontur.mobile.visualfsm.TransitionCallbacks
  * (like logging, debugging, or metrics) (optional)
  * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
  * can be external to implement a common state tree between parent and child state machines
+ * @param transitionsFactory the [factory][TransitionsFactory] Factory for creating [transitions][Transition]
+ * described in [action][Action]
  */
 internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
     private val stateSource: IStateSourceRx<STATE>,
-    private val transitionCallbacks: TransitionCallbacks<STATE>?,
-) {
+    private val transitionCallbacks: TransitionCallbacks<STATE, ACTION>,
+    private val transitionsFactory: TransitionsFactory<STATE, ACTION>,
+) : BaseStore<STATE, ACTION>(stateSource, transitionCallbacks, transitionsFactory) {
 
     /**
      * Provides a [observable][Observable] of [states][State]
@@ -26,39 +27,5 @@ internal class StoreRx<STATE : State, ACTION : Action<STATE>>(
      */
     internal fun observeState(): Observable<STATE> {
         return stateSource.observeState()
-    }
-
-    /**
-     * Returns current state
-     *
-     * @return current [state][State]
-     */
-    internal fun getCurrentState(): STATE {
-        return stateSource.getCurrentState()
-    }
-
-    /**
-     * Changes current state
-     *
-     * @param action [Action] that was launched
-     */
-    internal fun proceed(action: ACTION) {
-        val currentState = getCurrentState()
-        val newState = reduce(action, currentState)
-        stateSource.updateState(newState)
-    }
-
-    /**
-     * Runs [action's][Action] transition of [states][State]
-     *
-     * @param action launched [action][Action]
-     * @param state new [state][State]
-     * @return new [state][State]
-     */
-    private fun reduce(
-        action: ACTION,
-        state: STATE
-    ): STATE {
-        return action.run(state, transitionCallbacks)
     }
 }

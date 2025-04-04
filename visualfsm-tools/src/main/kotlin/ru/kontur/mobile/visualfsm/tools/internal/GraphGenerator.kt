@@ -31,7 +31,7 @@ internal object GraphGenerator {
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions = actionClass.nestedClasses
                 .filter { it.allSuperclasses.contains(Transition::class) }
-                .map { it as KClass<Transition<out STATE, out STATE>> }
+                .map { it as KClass<Transition<STATE, STATE>> }
 
             transactions.forEach { transitionKClass ->
                 val genericFromState = transitionKClass.supertypes.first().arguments
@@ -83,7 +83,7 @@ internal object GraphGenerator {
         actions.forEach { actionClass: KClass<out Action<STATE>> ->
             val transactions = actionClass.nestedClasses
                 .filter { it.allSuperclasses.contains(Transition::class) }
-                .map { it as KClass<Transition<out STATE, out STATE>> }
+                .map { it as KClass<Transition<STATE, STATE>> }
 
             transactions.forEach { transitionKClass ->
                 val fromStateGeneric = transitionKClass.supertypes.first().arguments
@@ -116,7 +116,7 @@ internal object GraphGenerator {
      * @param transitionKClass [transition][Transition] class
      * @return edge name for [transition][Transition]
      */
-    fun <STATE : State> getEdgeName(transitionKClass: KClass<out Transition<out STATE, out STATE>>): String {
+    fun <STATE : State> getEdgeName(transitionKClass: KClass<out Transition<STATE, STATE>>): String {
         return transitionKClass.findAnnotation<Edge>()?.name ?: transitionKClass.simpleName!!
     }
 
@@ -162,7 +162,7 @@ internal object GraphGenerator {
      * @return edge name for [transition][Transition]
      */
     private fun <STATE : State> getEdgeNameByActionName(
-        transitionKClass: KClass<out Transition<out STATE, out STATE>>,
+        transitionKClass: KClass<out Transition<STATE, STATE>>,
         actionClass: KClass<out Action<STATE>>,
     ): String {
         return transitionKClass.findAnnotation<Edge>()?.name ?: actionClass.simpleName!!

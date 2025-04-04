@@ -2,6 +2,8 @@ package ru.kontur.mobile.visualfsm.rxjava3
 
 import io.reactivex.rxjava3.core.Observable
 import ru.kontur.mobile.visualfsm.*
+import ru.kontur.mobile.visualfsm.log.LogParams
+import ru.kontur.mobile.visualfsm.log.LoggerMode
 
 /**
  * Is the facade for FSM. Provides access to subscription on [state][State] changes
@@ -14,21 +16,26 @@ import ru.kontur.mobile.visualfsm.*
  * on provided event calls (like logging, debugging, or metrics) (optional)
  * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
  * for the action
+ * @param logParams the internal logger params, by default configured for write only error messages
+ * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+ * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
  */
 open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
     stateSource: IStateSourceRx<STATE>,
     asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-    transitionCallbacks: TransitionCallbacks<STATE>? = null,
+    transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
     transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
+    logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
 ) : BaseFeature<STATE, ACTION>() {
 
-    private var transitionsFactory: TransitionsFactory<STATE, ACTION>? = null
 
-    private val store: StoreRx<STATE, ACTION>
+    private val store: StoreRx<STATE, ACTION> = StoreRx(
+        stateSource = stateSource,
+        transitionCallbacks = getTransitionCallbacksAggregator(logParams, transitionCallbacks),
+        transitionsFactory = transitionsFactory()
+    )
 
     init {
-        this.transitionsFactory = transitionsFactory(this)
-        store = StoreRx(stateSource, transitionCallbacks)
         asyncWorker?.bind(this)
     }
 
@@ -38,13 +45,17 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     * @param logParams the internal logger params, by default configured for write only error messages
+     * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+     * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
      */
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, { transitionsFactory })
+        logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
+    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
 
     /**
      * @param initialState initial [state][State]
@@ -53,13 +64,17 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a function that returns a [TransitionsFactory] instance to create the transition list
      * for the action
+     * @param logParams the internal logger params, by default configured for write only error messages
+     * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+     * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
      */
     constructor(
         initialState: STATE,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: FeatureRx<STATE, ACTION>.() -> TransitionsFactory<STATE, ACTION>,
-    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, transitionsFactory)
+        logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
+    ) : this(RootStateSourceRx(initialState), asyncWorker, transitionCallbacks, transitionsFactory, logParams)
 
     /**
      * @param stateSource the [state source][IStateSourceRx] for storing and subscribing to state,
@@ -68,13 +83,17 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      * @param transitionCallbacks the [callbacks][TransitionCallbacks] for declare third party logic
      * on provided event calls (like logging, debugging, or metrics) (optional)
      * @param transitionsFactory a [TransitionsFactory] instance to create the transition list for the action
+     * @param logParams the internal logger params, by default configured for write only error messages
+     * to [ru.kontur.mobile.visualfsm.log.StdoutLogger]
+     * and format actions and states by [ru.kontur.mobile.visualfsm.log.DefaultVerboseLogFormatters]
      */
     constructor(
         stateSource: IStateSourceRx<STATE>,
         asyncWorker: AsyncWorkerRx<STATE, ACTION>? = null,
-        transitionCallbacks: TransitionCallbacks<STATE>? = null,
+        transitionCallbacks: TransitionCallbacks<STATE, ACTION>? = null,
         transitionsFactory: TransitionsFactory<STATE, ACTION>,
-    ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory })
+        logParams: LogParams<STATE, ACTION> = LogParams(loggerMode = LoggerMode.ERRORS)
+    ) : this(stateSource, asyncWorker, transitionCallbacks, { transitionsFactory }, logParams)
 
     /**
      * Provides a [observable][Observable] of [states][State]
@@ -111,12 +130,7 @@ open class FeatureRx<STATE : State, ACTION : Action<STATE>>(
      */
     override fun proceed(action: ACTION) {
         synchronized(this) {
-            val transitionsFactory = this.transitionsFactory
-            return store.proceed(
-                action.apply {
-                    if (transitionsFactory != null) setTransitions(transitionsFactory.create(action))
-                }
-            )
+            return store.proceed(action)
         }
     }
 }
