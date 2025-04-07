@@ -8,6 +8,7 @@ kotlinPoet = "2.0.0"
 kotlinCompileTesting = "1.6.0"
 dokka = "2.0.0"
 atomicfu = "0.26.1"
+mavenPublish = "0.31.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitJupiter" }
@@ -31,5 +32,6 @@ rxJava3 = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxJava3" }
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref  = "dokka" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref  = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
