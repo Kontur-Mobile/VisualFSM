@@ -71,31 +71,31 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), "visualfsm-core", version.toString())
+    coordinates(group.toString(), project.name, version.toString())
 
     pom {
-        name = "VisualFSM"
-        description = "VisualFSM - Kotlin Multiplatform library for FSM with visualization and analysis tools"
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin-hands-on/fibonacci/"
+        name = findProperty("POM_NAME") as String
+        description = findProperty("POM_DESCRIPTION") as String
+        inceptionYear = findProperty("POM_INCEPTION_YEAR") as String
+        url = findProperty("POM_URL") as String
         licenses {
             license {
-                name = "MIT License"
-                url = "https://raw.githubusercontent.com/Kontur-Mobile/VisualFSM/main/LICENSE"
-                distribution = "https://raw.githubusercontent.com/Kontur-Mobile/VisualFSM/main/LICENSE"
+                name = findProperty("POM_LICENSE_NAME") as String
+                url = findProperty("POM_LICENSE_URL") as String
+                distribution = findProperty("POM_LICENSE_DIST") as String
             }
         }
         developers {
             developer {
-                id = "skbkontur"
-                name = "SKB Kontur"
-                url = "https://kontur.ru/"
+                id = findProperty("POM_DEVELOPER_ID") as String
+                name = findProperty("POM_DEVELOPER_NAME") as String
+                url = findProperty("POM_DEVELOPER_URL") as String
             }
         }
         scm {
-            url = "https://github.com/Kontur-Mobile/visualfsm"
-            connection = "scm:git:git://github.com/Kontur-Mobile/visualfsm.git"
-            developerConnection = "scm:git:git://github.com/Kontur-Mobile/visualfsm.git"
+            url = findProperty("POM_SCM_URL") as String
+            connection = findProperty("POM_SCM_CONNECTION") as String
+            developerConnection = findProperty("POM_SCM_DEV_CONNECTION") as String
         }
     }
 }
