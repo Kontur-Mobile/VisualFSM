@@ -7,7 +7,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 class VisualFSMSymbolProcessorProvider : SymbolProcessorProvider {
 
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        environment.options
         return VisualFSMSymbolProcessor(
             logger = environment.logger,
             codeGenerator = environment.codeGenerator,
