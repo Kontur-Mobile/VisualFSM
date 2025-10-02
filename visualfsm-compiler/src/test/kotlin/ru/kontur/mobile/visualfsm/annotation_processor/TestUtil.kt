@@ -1,6 +1,6 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
-import annotation_processor.AnnotationProcessorProvider
+import annotation_processor.VisualFSMSymbolProcessorProvider
 import com.tschuchort.compiletesting.*
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
@@ -14,7 +14,7 @@ object TestUtil {
     ): KotlinCompilation {
         return KotlinCompilation().apply {
             configureKsp(useKsp2 = true) {
-                symbolProcessorProviders += AnnotationProcessorProvider()
+                symbolProcessorProviders += VisualFSMSymbolProcessorProvider()
             }
             inheritClassPath = true
             this.sources += sources

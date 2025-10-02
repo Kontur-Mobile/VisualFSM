@@ -20,7 +20,7 @@ import ru.kontur.mobile.visualfsm.GenerateTransitionsFactory
 import ru.kontur.mobile.visualfsm.State
 import ru.kontur.mobile.visualfsm.rxjava3.FeatureRx
 
-class AnnotationProcessor(
+class VisualFSMSymbolProcessor(
     private val logger: KSPLogger,
     private val codeGenerator: CodeGenerator,
     private val options: Map<String, String>,
