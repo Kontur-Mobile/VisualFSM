@@ -8,4 +8,4 @@ plugins {
 }
 
 group = "ru.kontur.mobile.visualfsm"
-version = "4.0.0"
+version = "4.1.0"
