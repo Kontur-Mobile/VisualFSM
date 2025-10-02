@@ -1,9 +1,7 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
-import annotation_processor.AnnotationProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -17,7 +15,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -46,10 +44,9 @@ internal class TransitionErrorAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Transition must have \"inner\" modifier. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
@@ -61,7 +58,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -90,10 +87,9 @@ internal class TransitionErrorAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Transition must not have \"abstract\" modifier. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
@@ -105,7 +101,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -134,10 +130,9 @@ internal class TransitionErrorAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Transition must not have constructor parameters. The \"TestAction1.Transition2(Test.kt:17)\" does not meet this requirement."))
@@ -149,7 +144,7 @@ internal class TransitionErrorAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -180,10 +175,9 @@ internal class TransitionErrorAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Super class of transition must have exactly two generic types (fromState and toState). But the super class of \"TestAction1.Transition2(Test.kt:19)\" have 1: [TestState.TestState1]"))

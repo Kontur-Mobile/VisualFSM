@@ -1,9 +1,7 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
-import annotation_processor.AnnotationProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -17,7 +15,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -45,11 +43,9 @@ internal class AnnotationProcessorTests {
                 )
                 """
         )
-
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspCodeGeneratedSources()
@@ -89,7 +85,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -98,7 +94,7 @@ internal class AnnotationProcessorTests {
                 
                 internal sealed class TestAction: Action<TestState>()
                 
-                class TestAction1(val parameter1: String): TestAction() {
+                internal class TestAction1(val parameter1: String): TestAction() {
                 
                     inner class Transition1: Transition<TestState.TestState1, TestState.TestState2>() {
                         override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
@@ -111,17 +107,16 @@ internal class AnnotationProcessorTests {
                 }
                 
                 @GenerateTransitionsFactory
-                class TestFeature: Feature<TestState, TestAction>(
+                internal class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
                     transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspCodeGeneratedSources()
@@ -161,7 +156,7 @@ internal class AnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -177,7 +172,7 @@ internal class AnnotationProcessorTests {
                 
                 internal sealed class TestAction: Action<TestState>()
                 
-                class TestAction1(val parameter1: String): TestAction() {
+                internal class TestAction1(val parameter1: String): TestAction() {
                     
                     inner class Transition1: Transition<TestState.SealedState, TestState.TestState1>() {
                         override fun transform(state: TestState.SealedState): TestState.TestState1 = TestState.TestState1()
@@ -197,17 +192,16 @@ internal class AnnotationProcessorTests {
                 }
                 
                 @GenerateTransitionsFactory
-                class TestFeature: Feature<TestState, TestAction>(
+                internal class TestFeature: Feature<TestState, TestAction>(
                     initialState = TestState.TestState1(),
                     transitionsFactory = provideTransitionsFactory(),
                 )
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         println(result.messages)
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)

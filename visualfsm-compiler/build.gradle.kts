@@ -16,6 +16,7 @@ kotlin {
 dependencies {
     implementation(projects.visualfsmCore)
     implementation(projects.visualfsmRxjava3)
+    implementation(projects.visualfsmProviders)
 
     implementation(libs.ksp.symbol.processing.api)
 
