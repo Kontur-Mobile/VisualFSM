@@ -33,7 +33,7 @@
 
 ## Обзор модулей библиотеки
 
-Базовые классы для Android, JVM и KMM проектов (Kotlin Coroutines версия Feature и AsyncWorker)
+Базовые классы для Android, JVM и KMP проектов (Kotlin Coroutines версия Feature и AsyncWorker)
 
 ```kotlin
 implementation("ru.kontur.mobile.visualfsm:visualfsm-core:$visualfsmVersion")
@@ -344,7 +344,7 @@ ksp {
 
 #### [Compose Multiplatform Application архитектурные примеры](https://github.com/VasilyRylov/kmp-architecture-samples)
 #### [Android приложение (Kotlin Coroutines, Jetpack Compose)](https://github.com/Kontur-Mobile/VisualFSM-Sample-Android)
-#### [KMM (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMM)
+#### [KMP (Android + iOS) приложение (Kotlin Coroutines, Jetpack Compose, SwiftUI)](https://github.com/Kontur-Mobile/VisualFSM-Sample-KMP)
 #### [Command line Kotlin приложение (Kotlin Coroutines)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample)
 #### [Command line Kotlin приложение (RxJava)](https://github.com/Kontur-Mobile/VisualFSM-Sample-CLI/tree/main/cli-sample-rx)
 
@@ -365,7 +365,7 @@ class AuthFeature(initialState: AuthFSMState) : Feature<AuthFSMState, AuthFSMAct
     asyncWorker = AuthFSMAsyncWorker(AuthInteractor()),
     transitionCallbacks = TransitionCallbacksImpl(), // Совет - используйте DI
     transitionsFactory = provideTransitionsFactory() // Получаем экземпляр сгенерованной TransitionsFactory
-    // Получение экземпляра сгенерованной TransitionsFactory для KMM проектов:
+    // Получение экземпляра сгенерованной TransitionsFactory для KMP проектов:
     // Имя генерируется по маске Generated[FeatureName]TransitionsFactory()
     // transitionsFactory = GeneratedAuthFeatureTransitionsFactory(), // До первого запуска кодогенерации класс не будет виден в IDE.
 )
