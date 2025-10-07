@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -12,7 +11,7 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     jvm()
 
@@ -67,7 +66,7 @@ kotlin {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 
     signAllPublications()
 

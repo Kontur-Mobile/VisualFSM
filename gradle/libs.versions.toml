@@ -1,14 +1,14 @@
 [versions]
 kotlin = "2.2.20"
 coroutines = "1.9.0"
-rxJava3 = "3.1.10"
+rxJava3 = "3.1.12"
 junitJupiter = "5.11.4"
-ksp = "2.2.20-2.0.2"
+ksp = "2.2.20-2.0.3"
 kotlinPoet = "2.2.0"
 kotlinCompileTesting = "0.9.0"
 dokka = "2.0.0"
 atomicfu = "0.29.0"
-mavenPublish = "0.31.0"
+mavenPublish = "0.34.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitJupiter" }
