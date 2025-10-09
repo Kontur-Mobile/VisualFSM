@@ -1,9 +1,7 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
-import annotation_processor.AnnotationProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -17,7 +15,7 @@ internal class InvalidGenericParameterAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -46,10 +44,9 @@ internal class InvalidGenericParameterAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Super class of \"TestFeature(Test.kt:24)\" contains generic parameter with invalid class name."))
@@ -61,7 +58,7 @@ internal class InvalidGenericParameterAnnotationProcessorTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -90,10 +87,9 @@ internal class InvalidGenericParameterAnnotationProcessorTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         Assertions.assertTrue(result.messages.contains("Super class of \"TestAction1.Transition1(Test.kt:13)\" contains generic parameter with invalid class name."))

@@ -1,10 +1,7 @@
 package ru.kontur.mobile.visualfsm.annotation_processor
 
-import annotation_processor.AnnotationProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspArgs
-import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -18,7 +15,7 @@ internal class AllTransitionsFileTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -51,12 +48,12 @@ internal class AllTransitionsFileTests {
                     }
                 
                     inner class Transition23: Transition<TestState.TestState3, TestState.TestState2>() {
-                        override fun transform(state: TestState.TestState1): TestState.TestState2 = TestState.TestState2()
+                        override fun transform(state: TestState.TestState3): TestState.TestState2 = TestState.TestState2()
                     }
                 
                     @Edge("NamedByEdgeTransition")
                     inner class Transition24: Transition<TestState.TestState2, TestState.TestState3>() {
-                        override fun transform(state: TestState.TestState2): TestState.TestState1 = TestState.TestState1()
+                        override fun transform(state: TestState.TestState2): TestState.TestState3 = TestState.TestState3()
                     }
                 
                 }
@@ -69,13 +66,10 @@ internal class AllTransitionsFileTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-            kspArgs = mutableMapOf(
-                "generateAllTransitionsCsvFiles" to "true",
-            )
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+            kspProcessorOptions = mapOf("generateAllTransitionsCsvFiles" to "true")
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
@@ -98,7 +92,7 @@ internal class AllTransitionsFileTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -123,11 +117,11 @@ internal class AllTransitionsFileTests {
                     }
 
                     inner class Transition2: Transition<TestState.TestState1, TestState.TestNavigation.DialogNavigation.Show>() {
-                        override fun transform(state: TestState.TestState1): TestState.TestNavigation.DialogNavigation.Show = TestState.TestNavigation.DialogNavigation.Show()
+                        override fun transform(state: TestState.TestState1): TestState.TestNavigation.DialogNavigation.Show = TestState.TestNavigation.DialogNavigation.Show
                     }
 
                     inner class Transition3: Transition<TestState.TestNavigation.DialogNavigation.Show, TestState.TestNavigation.DialogNavigation.Hide>() {
-                        override fun transform(state: TestNavigation.DialogNavigation.Show): TestState.TestNavigation.DialogNavigation.Hide = TestState.TestNavigation.DialogNavigation.Hide()
+                        override fun transform(state: TestState.TestNavigation.DialogNavigation.Show): TestState.TestNavigation.DialogNavigation.Hide = TestState.TestNavigation.DialogNavigation.Hide
                     }
                 }
                 
@@ -139,13 +133,10 @@ internal class AllTransitionsFileTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-            kspArgs = mutableMapOf(
-                "generateAllTransitionsCsvFiles" to "true",
-            )
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+            kspProcessorOptions = mapOf("generateAllTransitionsCsvFiles" to "true")
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
@@ -168,7 +159,7 @@ internal class AllTransitionsFileTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -200,13 +191,10 @@ internal class AllTransitionsFileTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-            kspArgs = mutableMapOf(
-                "generateAllTransitionsCsvFiles" to "true",
-            )
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+            kspProcessorOptions = mapOf("generateAllTransitionsCsvFiles" to "true")
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
@@ -229,7 +217,7 @@ internal class AllTransitionsFileTests {
             name = "Test.kt",
             contents = """
                 import ru.kontur.mobile.visualfsm.*
-                import ru.kontur.mobile.visualfsm.tools.GeneratedTransitionsFactoryFunctionProvider.provideTransitionsFactoryFunction
+                import ru.kontur.mobile.visualfsm.providers.GeneratedTransitionsFactoryProvider.provideTransitionsFactory
                 
                 sealed class TestState: State {
                     class TestState1: TestState()
@@ -243,7 +231,7 @@ internal class AllTransitionsFileTests {
                     }
                 }
                 
-                internal sealed class TestAction: Action<TestState>()
+                sealed class TestAction: Action<TestState>()
                 
                 class TestAction1(val parameter1: String): TestAction() {
                     
@@ -272,13 +260,10 @@ internal class AllTransitionsFileTests {
                 """
         )
 
-        val compilation = KotlinCompilation().apply {
-            sources = TestUtil.getVisualFSMSources() + testFSMSource
-            symbolProcessorProviders = listOf(AnnotationProcessorProvider())
-            kspArgs = mutableMapOf(
-                "generateAllTransitionsCsvFiles" to "true",
-            )
-        }
+        val compilation = TestUtil.getKotlinCompilation(
+            sources = listOf(testFSMSource),
+            kspProcessorOptions = mapOf("generateAllTransitionsCsvFiles" to "true")
+        )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
         val kspGeneratedSources = result.getKspNoCodeGeneratedSources()

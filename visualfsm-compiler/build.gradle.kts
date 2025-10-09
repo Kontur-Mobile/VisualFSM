@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
@@ -10,12 +8,13 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 dependencies {
     implementation(projects.visualfsmCore)
     implementation(projects.visualfsmRxjava3)
+    implementation(projects.visualfsmProviders)
 
     implementation(libs.ksp.symbol.processing.api)
 
@@ -35,7 +34,7 @@ tasks.test {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 
     signAllPublications()
 
