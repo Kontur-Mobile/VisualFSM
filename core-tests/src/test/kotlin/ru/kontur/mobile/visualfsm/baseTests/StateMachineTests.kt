@@ -4,11 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -16,6 +12,7 @@ import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMAsyncWorker
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMFeature
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.TestFSMState
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Cancel
+import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Finish
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.helper.runFSMFeatureTest
@@ -30,6 +27,15 @@ import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StateMachineTests {
+
+    @Test
+    fun kek() {
+        val transitions = Finish(true, "123").getTransitions()
+        assertEquals(TestFSMState.Async::class, transitions[0].fromState)
+        assertEquals(TestFSMState.Complete::class, transitions[1].fromState)
+        println(transitions)
+    }
+
     @Test
     fun generateDigraphTest() {
         val digraph = VisualFSM.generateDigraph(
