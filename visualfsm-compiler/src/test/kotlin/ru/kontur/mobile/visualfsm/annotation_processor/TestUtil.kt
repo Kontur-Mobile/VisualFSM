@@ -13,7 +13,7 @@ object TestUtil {
         kspProcessorOptions: Map<String, String> = mutableMapOf(),
     ): KotlinCompilation {
         return KotlinCompilation().apply {
-            configureKsp(useKsp2 = true) {
+            configureKsp {
                 symbolProcessorProviders += VisualFSMSymbolProcessorProvider()
             }
             inheritClassPath = true
