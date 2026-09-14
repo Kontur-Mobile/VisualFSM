@@ -2,10 +2,10 @@ package ru.kontur.mobile.visualfsm.annotation_processor
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.sourcesGeneratedBySymbolProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspNoCodeGeneratedSources
 
 @OptIn(ExperimentalCompilerApi::class)
 internal class AllTransitionsFileTests {
@@ -72,9 +72,8 @@ internal class AllTransitionsFileTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
-        println(generatedAllTransitionsFile.readText())
+        val generatedAllTransitionsFile =
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("TestStateAllTransitions.csv") }
         Assertions.assertEquals(
             "Transition11,TestState1,TestState2\n" +
                 "Transition12,TestState2,TestState1\n" +
@@ -139,9 +138,8 @@ internal class AllTransitionsFileTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
-        println(generatedAllTransitionsFile.readText())
+        val generatedAllTransitionsFile =
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("TestStateAllTransitions.csv") }
         Assertions.assertEquals(
             "Transition1,TestNavigation.DialogNavigation.Hide,TestState1\n" +
                 "Transition1,TestNavigation.DialogNavigation.Show,TestState1\n" +
@@ -197,9 +195,8 @@ internal class AllTransitionsFileTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
-        println(generatedAllTransitionsFile.readText())
+        val generatedAllTransitionsFile =
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("TestStateAllTransitions.csv") }
         Assertions.assertEquals(
             "Transition1,SealedTest1.TestState2,SealedTest1.TestState2\n" +
                 "Transition1,SealedTest1.TestState2,SealedTest1.TestState3\n" +
@@ -266,9 +263,8 @@ internal class AllTransitionsFileTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspNoCodeGeneratedSources()
-        val generatedAllTransitionsFile = kspGeneratedSources.first { it.path.endsWith("TestStateAllTransitions.csv") }
-        println(generatedAllTransitionsFile.readText())
+        val generatedAllTransitionsFile =
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("TestStateAllTransitions.csv") }
         Assertions.assertEquals(
             "Transition1,SealedState.SealedState1,TestState1\n" +
                 "Transition1,SealedState.SealedState2,TestState1\n" +
