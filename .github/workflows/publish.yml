@@ -16,6 +16,7 @@ jobs:
   publish:
     name: Publish release
     if: ${{ github.repository == 'Kontur-Mobile/VisualFSM' }}
+    environment: maven-central-releases
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:

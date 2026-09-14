@@ -1,0 +1,77 @@
+name: Publish snapshot to Maven Central
+run-name: Publish ${{ inputs.snapshot_version }} from ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_version:
+        description: Version ending with -SNAPSHOT (for example, 4.2.1-SNAPSHOT)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-maven-snapshot-${{ inputs.snapshot_version }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish snapshot
+    if: ${{ github.repository == 'Kontur-Mobile/VisualFSM' && github.ref_type == 'branch' }}
+    environment: maven-central-snapshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out selected commit
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Validate snapshot version
+        env:
+          SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+        run: |
+          if [[ ! "$SNAPSHOT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]]; then
+            echo "::error::Snapshot version must match '<major>.<minor>.<patch>-SNAPSHOT'"
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@f236b35da9d031e13b1005234ebe4392ed54c580 # v5.0.0
+
+      - name: Verify publishing secrets
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          missing=()
+          [[ -n "$MAVEN_CENTRAL_USERNAME" ]] || missing+=(MAVEN_CENTRAL_USERNAME)
+          [[ -n "$MAVEN_CENTRAL_PASSWORD" ]] || missing+=(MAVEN_CENTRAL_PASSWORD)
+          [[ -n "$SIGNING_KEY" ]] || missing+=(SIGNING_KEY)
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing required environment secrets: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Run checks
+        env:
+          SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+        run: ./gradlew check -PvisualFsmVersion="$SNAPSHOT_VERSION" --no-daemon
+
+      - name: Publish snapshot
+        env:
+          SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publishToMavenCentral -PvisualFsmVersion="$SNAPSHOT_VERSION" --no-daemon

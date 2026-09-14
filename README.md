@@ -22,6 +22,8 @@ separate module that would allow it to be connected to testing environment.
 
 [Running tests locally](#running-tests-locally)
 
+[Publishing snapshots](#publishing-snapshots)
+
 [Quickstart](#quickstart)
 
 [External state source](#external-state-source)
@@ -73,6 +75,31 @@ The project requires JDK 21. Run all tests from the repository root using the Gr
 ```
 
 On Windows, use `gradlew.bat test`.
+
+## Publishing snapshots
+
+Maintainers can publish a build from a development branch before merging it into `main`:
+
+1. Open **Actions → Publish snapshot to Maven Central → Run workflow**.
+2. Select the branch to publish.
+3. Enter a version such as `4.2.1-SNAPSHOT`.
+4. Approve the `maven-central-snapshots` deployment when prompted.
+
+To consume a snapshot, add the Central Portal snapshot repository:
+
+```kotlin
+repositories {
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
+}
+```
+
+Then use the selected snapshot version, for example:
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:4.2.1-SNAPSHOT")
+```
+
+Use `./gradlew --refresh-dependencies` to fetch a newer build published with the same snapshot version.
 
 ## Quickstart
 
