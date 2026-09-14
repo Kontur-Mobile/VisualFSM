@@ -20,6 +20,8 @@ separate module that would allow it to be connected to testing environment.
 
 [Overview of library modules](#overview-of-library-modules)
 
+[Running tests locally](#running-tests-locally)
+
 [Quickstart](#quickstart)
 
 [External state source](#external-state-source)
@@ -61,6 +63,16 @@ Graph creation and analysis
 ```kotlin
 testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 ```
+
+## Running tests locally
+
+The project requires JDK 21. Run all tests from the repository root using the Gradle wrapper:
+
+```shell
+./gradlew test
+```
+
+On Windows, use `gradlew.bat test`.
 
 ## Quickstart
 
