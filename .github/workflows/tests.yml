@@ -30,4 +30,4 @@ jobs:
         uses: gradle/actions/setup-gradle@f236b35da9d031e13b1005234ebe4392ed54c580 # v5.0.0
 
       - name: Run tests
-        run: ./run-all-tests.sh
+        run: ./gradlew test --no-daemon
