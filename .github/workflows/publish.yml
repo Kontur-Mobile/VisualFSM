@@ -1,0 +1,90 @@
+name: Publish to Maven Central
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-maven-central
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish release
+    if: ${{ github.repository == 'Kontur-Mobile/VisualFSM' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out release
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify release source
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          tag_sha="$(git rev-parse --verify "refs/tags/${RELEASE_TAG}^{commit}")"
+          if [[ "$tag_sha" != "$GITHUB_SHA" ]]; then
+            echo "::error::Release tag '$RELEASE_TAG' does not point to the immutable event commit '$GITHUB_SHA'"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/$DEFAULT_BRANCH"; then
+            echo "::error::Release commit '$GITHUB_SHA' is not contained in '$DEFAULT_BRANCH'"
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@f236b35da9d031e13b1005234ebe4392ed54c580 # v5.0.0
+
+      - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          project_version="$(./gradlew properties --quiet --no-daemon --console=plain | awk -F': ' '$1 == "version" { print $2; exit }')"
+          if [[ -z "$project_version" ]]; then
+            echo "::error::Unable to read the project version from Gradle"
+            exit 1
+          fi
+          if [[ "$RELEASE_TAG" != "$project_version" ]]; then
+            echo "::error::Release tag '$RELEASE_TAG' does not match project version '$project_version'"
+            exit 1
+          fi
+
+      - name: Verify publishing secrets
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          missing=()
+          [[ -n "$MAVEN_CENTRAL_USERNAME" ]] || missing+=(MAVEN_CENTRAL_USERNAME)
+          [[ -n "$MAVEN_CENTRAL_PASSWORD" ]] || missing+=(MAVEN_CENTRAL_PASSWORD)
+          [[ -n "$SIGNING_KEY" ]] || missing+=(SIGNING_KEY)
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing required repository secrets: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: ./gradlew check --no-daemon
+
+      - name: Publish and release
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publishAndReleaseToMavenCentral --no-daemon
