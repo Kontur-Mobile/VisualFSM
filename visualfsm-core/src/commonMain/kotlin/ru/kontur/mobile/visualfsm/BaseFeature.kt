@@ -30,19 +30,21 @@ abstract class BaseFeature<STATE : State, ACTION : Action<STATE>> {
         transitionCallbacks: TransitionCallbacks<STATE, ACTION>?
     ): TransitionCallbacksAggregator<STATE, ACTION> {
 
-        val newTransitionCallbacksList = if (logParams.loggerMode != LoggerMode.NONE) {
-            val logTransitionCallbacks = LogTransitionCallbacks(
-                loggerMode = logParams.loggerMode,
-                logger = logParams.logger,
-                tag = logParams.tag ?: this::class.simpleName ?: "Feature",
-                logFormatters = logParams.logFormatters,
-            )
-            transitionCallbacks?.let { listOf(logTransitionCallbacks, it) } ?: listOf(logTransitionCallbacks)
-        } else {
-            transitionCallbacks?.let { listOf(it) } ?: listOf()
+        val callbacks = buildList {
+            if (logParams.loggerMode != LoggerMode.NONE) {
+                add(
+                    LogTransitionCallbacks(
+                        loggerMode = logParams.loggerMode,
+                        logger = logParams.logger,
+                        tag = logParams.tag ?: this@BaseFeature::class.simpleName ?: "Feature",
+                        logFormatters = logParams.logFormatters,
+                    )
+                )
+            }
+            transitionCallbacks?.let { add(it) }
         }
 
-        return TransitionCallbacksAggregator(newTransitionCallbacksList)
+        return TransitionCallbacksAggregator(callbacks)
     }
 
     companion object

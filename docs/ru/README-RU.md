@@ -21,6 +21,10 @@
 
 [Обзор модулей библиотеки](#обзор-модулей-библиотеки)
 
+[Локальный запуск тестов](#локальный-запуск-тестов)
+
+[Публикация snapshot-версий](#публикация-snapshot-версий)
+
 [Первичная настройка библиотеки](#первичная-настройка-библиотеки)
 
 [Внешние источники состояний](#внешние-источники-состояний)
@@ -62,6 +66,41 @@ implementation("ru.kontur.mobile.visualfsm:visualfsm-providers:$visualfsmVersion
 ```kotlin
 testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion")
 ```
+
+## Локальный запуск тестов
+
+Для сборки проекта требуется JDK 21. Чтобы запустить все тесты, выполните в корневом каталоге репозитория:
+
+```shell
+./gradlew test
+```
+
+В Windows используйте `gradlew.bat test`.
+
+## Публикация snapshot-версий
+
+Мейнтейнеры могут опубликовать сборку из ветки разработки до её слияния с веткой `main`:
+
+1. Откройте **Actions → Publish snapshot to Maven Central → Run workflow**.
+2. Выберите ветку для публикации.
+3. Укажите версию, например `4.2.1-SNAPSHOT`.
+4. Подтвердите deployment в environment `maven-central-snapshots`, когда GitHub запросит подтверждение.
+
+Чтобы подключить snapshot-версию, добавьте репозиторий snapshot-артефактов Central Portal:
+
+```kotlin
+repositories {
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
+}
+```
+
+Затем укажите выбранную snapshot-версию, например:
+
+```kotlin
+implementation("ru.kontur.mobile.visualfsm:visualfsm-core:4.2.1-SNAPSHOT")
+```
+
+Чтобы получить более новую сборку, опубликованную с той же snapshot-версией, используйте `./gradlew --refresh-dependencies`.
 
 ## Первичная настройка библиотеки
 

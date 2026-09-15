@@ -19,6 +19,9 @@ import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Cancel
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.Start
 import ru.kontur.mobile.visualfsm.baseTests.testFSM.action.TestFSMAction
 import ru.kontur.mobile.visualfsm.helper.runFSMFeatureTest
+import ru.kontur.mobile.visualfsm.log.LogParams
+import ru.kontur.mobile.visualfsm.log.Logger
+import ru.kontur.mobile.visualfsm.log.LoggerMode
 import ru.kontur.mobile.visualfsm.tools.VisualFSM
 import ru.kontur.mobile.visualfsm.tools.graphviz.DotAttributes
 import ru.kontur.mobile.visualfsm.tools.graphviz.EdgeAttributes
@@ -30,6 +33,30 @@ import ru.kontur.mobile.visualfsm.tools.graphviz.enums.NodeShape
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StateMachineTests {
+    @Test
+    fun defaultLogTagUsesFeatureName() {
+        val tags = mutableListOf<String>()
+        val logger = object : Logger {
+            override fun log(tag: String, message: String) {
+                tags += tag
+            }
+
+            override fun error(tag: String, message: String, errorGroupId: String) {
+                tags += tag
+            }
+        }
+
+        TestFSMFeature(
+            initialState = TestFSMState.Initial,
+            logParams = LogParams(
+                loggerMode = LoggerMode.VERBOSE,
+                logger = logger,
+            )
+        )
+
+        assertEquals(listOf("TestFSMFeature"), tags)
+    }
+
     @Test
     fun generateDigraphTest() {
         val digraph = VisualFSM.generateDigraph(

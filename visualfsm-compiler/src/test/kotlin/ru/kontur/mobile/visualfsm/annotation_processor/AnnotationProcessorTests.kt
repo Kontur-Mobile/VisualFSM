@@ -2,10 +2,10 @@ package ru.kontur.mobile.visualfsm.annotation_processor
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.sourcesGeneratedBySymbolProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.kontur.mobile.visualfsm.annotation_processor.TestUtil.getKspCodeGeneratedSources
 
 @OptIn(ExperimentalCompilerApi::class)
 internal class AnnotationProcessorTests {
@@ -48,10 +48,8 @@ internal class AnnotationProcessorTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspCodeGeneratedSources()
         val generatedTestStateTransitionsFactory =
-            kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
-        println(generatedTestStateTransitionsFactory.readText())
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         Assertions.assertEquals(
             "import kotlin.Suppress\n" +
                     "import kotlin.collections.List\n" +
@@ -119,10 +117,8 @@ internal class AnnotationProcessorTests {
         )
         val result = compilation.compile()
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspCodeGeneratedSources()
         val generatedTestStateTransitionsFactory =
-            kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
-        println(generatedTestStateTransitionsFactory.readText())
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         Assertions.assertEquals(
             "import kotlin.Suppress\n" +
                     "import kotlin.collections.List\n" +
@@ -203,12 +199,9 @@ internal class AnnotationProcessorTests {
             sources = listOf(testFSMSource),
         )
         val result = compilation.compile()
-        println(result.messages)
         Assertions.assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        val kspGeneratedSources = result.getKspCodeGeneratedSources()
         val generatedTestStateTransitionsFactory =
-            kspGeneratedSources.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
-        println(generatedTestStateTransitionsFactory.readText())
+            result.sourcesGeneratedBySymbolProcessor.first { it.path.endsWith("GeneratedTestFeatureTransitionsFactory.kt") }
         Assertions.assertEquals(
             "import kotlin.Suppress\n" +
                     "import kotlin.collections.List\n" +

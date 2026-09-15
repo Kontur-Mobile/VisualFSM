@@ -8,4 +8,4 @@ plugins {
 }
 
 group = "ru.kontur.mobile.visualfsm"
-version = "4.1.0"
+version = providers.gradleProperty("visualFsmVersion").getOrElse("4.2.0")

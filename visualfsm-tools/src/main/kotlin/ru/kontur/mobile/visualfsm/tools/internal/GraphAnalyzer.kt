@@ -2,7 +2,6 @@ package ru.kontur.mobile.visualfsm.tools.internal
 
 import ru.kontur.mobile.visualfsm.Action
 import ru.kontur.mobile.visualfsm.State
-import java.util.LinkedList
 import kotlin.reflect.KClass
 
 internal object GraphAnalyzer {
@@ -31,23 +30,18 @@ internal object GraphAnalyzer {
         initialState: KClass<out STATE>,
     ): Set<KClass<out STATE>> {
         val result = hashSetOf<KClass<out STATE>>()
-        val stateToVisited = mutableMapOf<KClass<out STATE>, Boolean>()
-        val queue = LinkedList<KClass<out STATE>>()
-
         val graph = GraphGenerator.getAdjacencyMap(
             baseAction = baseAction,
             baseState = baseState,
         )
+        val stateToVisited = graph.keys.associateWithTo(mutableMapOf()) { false }
+        val queue = ArrayDeque<KClass<out STATE>>()
 
-        val stateNames = graph.keys
-
-        stateToVisited.putAll(stateNames.map { it to false })
-
-        queue.add(initialState)
+        queue.addLast(initialState)
         stateToVisited[initialState] = true
 
         while (queue.isNotEmpty()) {
-            val node = requireNotNull(queue.poll()) { "The queue must not be empty" }
+            val node = queue.removeFirst()
 
             val iterator = requireNotNull(graph[node]) { "Graph states must not be null" }.iterator()
             while (iterator.hasNext()) {
@@ -55,7 +49,7 @@ internal object GraphAnalyzer {
                 val isVisitedState = requireNotNull(stateToVisited[nextNode]) { "State on $nextNode is empty" }
                 if (!isVisitedState) {
                     stateToVisited[nextNode] = true
-                    queue.add(nextNode)
+                    queue.addLast(nextNode)
                 }
             }
         }
@@ -78,19 +72,13 @@ internal object GraphAnalyzer {
         baseAction: KClass<out Action<STATE>>,
         baseState: KClass<STATE>,
     ): List<KClass<out STATE>> {
-        val finalStates = mutableListOf<KClass<out STATE>>()
-
         val graph = GraphGenerator.getAdjacencyMap(
             baseAction,
             baseState,
         )
 
-        graph.forEach { (startState, destinationStates) ->
-            if (destinationStates.isEmpty()) {
-                finalStates.add(startState)
-            }
+        return graph.mapNotNull { (startState, destinationStates) ->
+            if (destinationStates.isEmpty()) startState else null
         }
-
-        return finalStates
     }
 }

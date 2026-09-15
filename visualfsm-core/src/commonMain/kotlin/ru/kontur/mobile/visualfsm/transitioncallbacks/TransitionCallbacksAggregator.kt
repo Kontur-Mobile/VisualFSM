@@ -10,7 +10,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
     private val callbacksList: List<TransitionCallbacks<STATE, ACTION>>
 ) : TransitionCallbacks<STATE, ACTION> {
     override fun onInitialStateReceived(initialState: STATE) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onInitialStateReceived(initialState)
         }
     }
@@ -19,7 +19,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
         action: ACTION,
         currentState: STATE
     ) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onActionLaunched(action, currentState)
         }
     }
@@ -29,7 +29,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
         transition: Transition<STATE, STATE>,
         currentState: STATE
     ) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onTransitionSelected(action, transition, currentState)
         }
     }
@@ -40,7 +40,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
         oldState: STATE,
         newState: STATE
     ) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onNewStateReduced(
                 action = action,
                 transition = transition,
@@ -54,7 +54,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
         action: ACTION,
         currentState: STATE,
     ) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onNoTransitionError(action, currentState)
         }
     }
@@ -64,7 +64,7 @@ class TransitionCallbacksAggregator<STATE : State, ACTION : Action<STATE>>(
         currentState: STATE,
         suitableTransitions: List<Transition<STATE, STATE>>
     ) {
-        callbacksList.onEach {
+        callbacksList.forEach {
             it.onMultipleTransitionError(action, currentState, suitableTransitions)
         }
     }

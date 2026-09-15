@@ -1,4 +1,6 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+rootProject.name = "VisualFSM"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
