@@ -79,7 +79,7 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion
 
 ## Публикация snapshot-версий
 
-До слияния ветки с `main` сопровождающие могут опубликовать её сборку для предварительного тестирования:
+Мейнтейнеры могут опубликовать сборку из ветки разработки до её слияния с веткой `main`:
 
 1. Откройте **Actions → Publish snapshot to Maven Central → Run workflow**.
 2. Выберите ветку для публикации.
