@@ -86,11 +86,19 @@ testImplementation("ru.kontur.mobile.visualfsm:visualfsm-tools:$visualfsmVersion
 3. Укажите версию, например `4.2.1-SNAPSHOT`.
 4. Подтвердите deployment в environment `maven-central-snapshots`, когда GitHub запросит подтверждение.
 
-Чтобы подключить snapshot-версию, добавьте репозиторий snapshot-артефактов Central Portal:
+Чтобы подключить snapshot-версию, добавьте репозиторий snapshot-артефактов Central Portal в
+`dependencyResolutionManagement.repositories` файла `settings.gradle.kts` (не в
+`pluginManagement.repositories`, который используется только для Gradle-плагинов):
 
 ```kotlin
-repositories {
-    maven("https://central.sonatype.com/repository/maven-snapshots/")
+dependencyResolutionManagement {
+    repositories {
+        maven("https://central.sonatype.com/repository/maven-snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
 }
 ```
 
