@@ -85,11 +85,19 @@ Maintainers can publish a build from a development branch before merging it into
 3. Enter a version such as `4.2.1-SNAPSHOT`.
 4. Approve the `maven-central-snapshots` deployment when prompted.
 
-To consume a snapshot, add the Central Portal snapshot repository:
+To consume a snapshot, add the Central Portal snapshot repository to
+`dependencyResolutionManagement.repositories` in `settings.gradle.kts` (not to
+`pluginManagement.repositories`, which is used only for Gradle plugins):
 
 ```kotlin
-repositories {
-    maven("https://central.sonatype.com/repository/maven-snapshots/")
+dependencyResolutionManagement {
+    repositories {
+        maven("https://central.sonatype.com/repository/maven-snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
 }
 ```
 
