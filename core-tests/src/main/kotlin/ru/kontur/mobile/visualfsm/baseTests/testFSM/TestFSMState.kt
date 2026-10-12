@@ -35,4 +35,8 @@ sealed class TestFSMState : State {
     ) : TestFSMState()
 
     object Error : TestFSMState()
+
+    sealed class Foo : TestFSMState() {
+        object Foo1 : Foo()
+    }
 }
